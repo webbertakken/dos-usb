@@ -20,5 +20,30 @@ contextBridge.exposeInMainWorld("electron", {
     }
     return Promise.reject(new Error("Invalid arguments"));
   },
+  downloadGame: (gameInfo) => {
+    if (
+      gameInfo &&
+      typeof gameInfo === "object" &&
+      gameInfo.id &&
+      gameInfo.downloadUrl
+    ) {
+      return ipcRenderer.invoke("download-game", gameInfo);
+    }
+    return Promise.reject(new Error("Invalid game information"));
+  },
+  onDownloadStatus: (callback) => {
+    // Remove any existing listeners to avoid duplicates
+    ipcRenderer.removeAllListeners("download-status");
+
+    // Add new listener
+    ipcRenderer.on("download-status", (_, status) => {
+      callback(status);
+    });
+
+    // Return a function to remove the listener
+    return () => {
+      ipcRenderer.removeAllListeners("download-status");
+    };
+  },
   logError: (error) => ipcRenderer.invoke("log-error", error),
 });

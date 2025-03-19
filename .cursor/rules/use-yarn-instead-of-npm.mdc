@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Use Yarn instead of NPM
+
+- When using a package manager to install or update packages, use Yarn instead of NPM
+- Use Yarn also when running scripts from package.json
+- Yarn should be automatically detected from package.json using Volta.

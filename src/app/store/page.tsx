@@ -12,13 +12,25 @@ export default function StorePage() {
     loading,
     error,
     fetchDosgamesList,
-    downloadGame
+    downloadGame,
+    downloadStatus,
+    setupDownloadListeners,
+    cleanupDownloadListeners
   } = useGameStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [filteredGames, setFilteredGames] = useState<DosgamesListItem[]>([]);
-  const [downloadingGame, setDownloadingGame] = useState<string | null>(null);
+
+  // Set up download status listeners
+  useEffect(() => {
+    setupDownloadListeners();
+
+    // Clean up listeners when component unmounts
+    return () => {
+      cleanupDownloadListeners();
+    };
+  }, [setupDownloadListeners, cleanupDownloadListeners]);
 
   useEffect(() => {
     fetchDosgamesList();
@@ -41,13 +53,7 @@ export default function StorePage() {
   }, [dosgamesList, searchTerm, categoryFilter]);
 
   const handleDownload = (game: DosgamesListItem) => {
-    setDownloadingGame(game.id);
-    downloadGame(game).finally(() => {
-      // Set a timeout to simulate download completion
-      setTimeout(() => {
-        setDownloadingGame(null);
-      }, 2000);
-    });
+    downloadGame(game);
   };
 
   // Get unique categories from the games list
@@ -88,7 +94,7 @@ export default function StorePage() {
         </select>
       </div>
 
-      {loading && !downloadingGame ? (
+      {loading && Object.keys(downloadStatus).length === 0 ? (
         <div className="flex items-center justify-center h-48">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
@@ -130,7 +136,7 @@ export default function StorePage() {
               key={game.id}
               game={game}
               onDownload={handleDownload}
-              isDownloading={downloadingGame === game.id}
+              downloadStatus={downloadStatus[game.id]}
             />
           ))}
         </div>

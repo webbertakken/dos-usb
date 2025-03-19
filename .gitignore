@@ -20,6 +20,7 @@
 # production
 /build
 /dist
+/dos-usb
 
 # misc
 .DS_Store

@@ -16,6 +16,7 @@ export interface DosgamesListItem {
   category: string;
   thumbnail: string;
   downloadUrl: string;
+  fileSize?: string;
 }
 
 export interface GameMetadata {
@@ -33,6 +34,13 @@ export interface ErrorData {
   [key: string]: string | undefined; // Allow for additional error properties as strings
 }
 
+export interface DownloadStatus {
+  gameId: string;
+  status: "downloading" | "extracting" | "completed" | "error";
+  progress?: number;
+  error?: string;
+}
+
 // Declare global Window interface with electron
 declare global {
   interface Window {
@@ -45,6 +53,12 @@ declare global {
         gameId: string,
         metadata: GameMetadata
       ) => Promise<{ success: boolean; error?: string }>;
+      downloadGame: (
+        gameInfo: DosgamesListItem
+      ) => Promise<{ success: boolean; game?: Game; error?: string }>;
+      onDownloadStatus: (
+        callback: (status: DownloadStatus) => void
+      ) => () => void;
       logError: (error: ErrorData) => Promise<{ received: boolean }>;
     };
   }
