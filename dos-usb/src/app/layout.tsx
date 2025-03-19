@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "../components/Navigation";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +29,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white`}
       >
-        <div className="flex h-screen">
-          <Navigation />
-          <main className="flex-1 overflow-y-auto">{children}</main>
-        </div>
+        <ErrorBoundary>
+          <div className="flex h-screen">
+            <Navigation />
+            <main className="flex-1 overflow-y-auto">{children}</main>
+          </div>
+        </ErrorBoundary>
       </body>
     </html>
   );
