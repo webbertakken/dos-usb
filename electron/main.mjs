@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, session } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import isDev from "electron-is-dev";
-import { spawn } from "child_process";
+import { execFile } from "child_process";
 import fs from "fs";
 import https from "https";
 import { createWriteStream } from "fs";
@@ -99,26 +99,393 @@ app.on("activate", () => {
   }
 });
 
-// Handle DOS game launch
-ipcMain.handle("launch-game", async (event, gamePath) => {
+/**
+ * Creates mock game files for development/testing
+ * @param {string} gameDir - Directory where the game is located
+ * @param {string} gameId - ID of the game
+ * @param {string} gameTitle - Title of the game
+ * @returns {string} - Path to the mock game file
+ */
+function createMockGameFiles(gameDir, gameId, gameTitle) {
   try {
-    // Check if DOSBox exists and is accessible
-    const dosboxPath = path.join(process.cwd(), "bin", "dosbox.exe");
+    console.log(`Creating executable game files for: ${gameId}`);
 
-    if (!fs.existsSync(dosboxPath)) {
-      return { success: false, error: "DOSBox executable not found" };
+    // Create the game directory if it doesn't exist
+    if (!fs.existsSync(gameDir)) {
+      fs.mkdirSync(gameDir, { recursive: true });
     }
 
-    // Launch the game with DOSBox
-    const dosbox = spawn(dosboxPath, [gamePath], {
-      detached: true,
-      stdio: "ignore",
+    // Create a demo batch file that launches a simple text-based game
+    const gameFile = "game.bat";
+    const gamePath = path.join(gameDir, gameFile);
+
+    // Create a runnable text-based game
+    const gameContent = `@echo off
+mode con cols=80 lines=25
+color 0A
+title ${gameTitle}
+
+:START
+cls
+echo ===================================
+echo   ${gameTitle.toUpperCase()}
+echo ===================================
+echo.
+echo Welcome to this DOS game!
+echo.
+echo 1. Start Game
+echo 2. Instructions
+echo 3. Quit
+echo.
+echo Enter your choice:
+choice /c 123 /n
+if errorlevel 3 goto END
+if errorlevel 2 goto INSTRUCTIONS
+if errorlevel 1 goto GAME
+
+:INSTRUCTIONS
+cls
+echo INSTRUCTIONS
+echo ============
+echo.
+echo This is a simple text adventure. You can navigate by typing
+echo the number of your choice.
+echo.
+echo Press any key to return to the menu...
+pause > nul
+goto START
+
+:GAME
+cls
+echo You are in a dark room. What do you do?
+echo.
+echo 1. Look for a light switch
+echo 2. Call out for help
+echo 3. Exit the room
+echo.
+choice /c 123 /n
+if errorlevel 3 goto ROOM2
+if errorlevel 2 goto HELP
+if errorlevel 1 goto LIGHT
+
+:LIGHT
+cls
+echo You found a light switch!
+echo The room is illuminated, revealing a door.
+echo.
+echo 1. Go through the door
+echo 2. Return to the previous choice
+echo.
+choice /c 12 /n
+if errorlevel 2 goto GAME
+if errorlevel 1 goto ROOM2
+
+:HELP
+cls
+echo Your voice echoes in the empty room.
+echo No one answers.
+echo.
+echo Press any key to continue...
+pause > nul
+goto GAME
+
+:ROOM2
+cls
+echo You found your way out!
+echo Congratulations on completing this demo game.
+echo.
+echo Press any key to return to the menu...
+pause > nul
+goto START
+
+:END
+cls
+echo Thanks for playing ${gameTitle}!
+echo.
+echo Game ID: ${gameId}
+echo Directory: ${gameDir}
+echo.
+echo Press any key to exit...
+pause > nul
+exit
+`;
+
+    fs.writeFileSync(gamePath, gameContent);
+    console.log(`Created playable game file at: ${gamePath}`);
+
+    return gamePath;
+  } catch (error) {
+    console.error(`Error creating game files:`, error);
+    return "";
+  }
+}
+
+// Modify the launch-game handler to use DOSBoxPortable
+ipcMain.handle("launch-game", async (event, gamePath) => {
+  try {
+    console.log(`Attempting to launch game from path: ${gamePath}`);
+
+    // Get the game ID from the path
+    const gameId = path.basename(gamePath);
+    console.log(`Game ID: ${gameId}`);
+
+    // Check for DOSBoxPortable
+    const dosboxPortablePath = path.join(
+      process.cwd(),
+      "bin",
+      "DOSBoxPortable",
+      "DOSBoxPortable.exe"
+    );
+
+    if (!fs.existsSync(dosboxPortablePath)) {
+      console.error("DOSBoxPortable not found at:", dosboxPortablePath);
+      return { success: false, error: "DOSBoxPortable not found" };
+    }
+
+    console.log(`Using DOSBoxPortable at: ${dosboxPortablePath}`);
+
+    // Try to find metadata for game title
+    let gameTitle = gameId;
+    try {
+      const metadataPath = path.join(gamePath, "metadata.json");
+      if (fs.existsSync(metadataPath)) {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+        gameTitle = metadata.title || gameId;
+      }
+    } catch (error) {
+      console.error("Error reading game metadata:", error);
+    }
+
+    // Find the game file to run (e.g., .bat, .exe, .com files)
+    let gameFiles = [];
+    try {
+      gameFiles = fs
+        .readdirSync(gamePath)
+        .filter((file) =>
+          [".bat", ".exe", ".com"].some((ext) =>
+            file.toLowerCase().endsWith(ext)
+          )
+        );
+    } catch (error) {
+      console.error(`Error reading game directory: ${error.message}`);
+      if (isDev) {
+        // If we can't read the directory or it doesn't exist, create it in dev mode
+        fs.mkdirSync(gamePath, { recursive: true });
+      }
+    }
+
+    // Debug: Log available game files
+    console.log("Game files found:", gameFiles);
+
+    let gameFile = "";
+    if (gameFiles.length > 0) {
+      // Priority order:
+      // 1. Known specific game executables
+      // 2. Files that match the game name (e.g., REVENGE.EXE for revenge-of-the-mutant-camels)
+      // 3. Common main game files (GAME.EXE, PLAY.EXE, etc.)
+      // 4. Regular .bat files (except INSTALL.BAT or SETUP.BAT)
+      // 5. Regular .exe files (except INSTALL.EXE or SETUP.EXE)
+      // 6. Fall back to whatever is available
+
+      // Check for known specific games first
+      if (gameId === "revenge-of-the-mutant-camels") {
+        const revengeExe = gameFiles.find(
+          (file) => file.toUpperCase() === "REVENGE.EXE"
+        );
+        if (revengeExe) {
+          gameFile = revengeExe;
+          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
+        }
+      } else if (gameId === "commander-keen-4") {
+        const keenExe = gameFiles.find(
+          (file) => file.toUpperCase() === "KEEN4E.EXE"
+        );
+        if (keenExe) {
+          gameFile = keenExe;
+          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
+        }
+      } else if (gameId === "doom") {
+        const doomExe = gameFiles.find((file) =>
+          ["DOOM.EXE", "DOOM1.EXE", "DOOM2.EXE"].includes(file.toUpperCase())
+        );
+        if (doomExe) {
+          gameFile = doomExe;
+          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
+        }
+      }
+
+      // If no specific game executable was found, continue with the general approach
+      if (!gameFile) {
+        // Extract game name from ID for matching
+        const gameName = gameId.split("-").pop().toUpperCase(); // e.g., CAMELS from revenge-of-the-mutant-camels
+
+        // Check for files that match the game name or common patterns
+        const gameNameFiles = gameFiles.filter(
+          (file) =>
+            file.toUpperCase().includes(gameName) &&
+            !file.toUpperCase().includes("INSTALL") &&
+            !file.toUpperCase().includes("SETUP")
+        );
+
+        if (gameNameFiles.length > 0) {
+          // Prefer .exe over .bat
+          const exeFile = gameNameFiles.find((file) =>
+            file.toUpperCase().endsWith(".EXE")
+          );
+          if (exeFile) {
+            gameFile = exeFile;
+          } else {
+            gameFile = gameNameFiles[0];
+          }
+        } else {
+          // Look for common main game files
+          const mainGamePatterns = [
+            "GAME.",
+            "PLAY.",
+            "START.",
+            "RUN.",
+            "MAIN.",
+            "GO.",
+          ];
+          const mainGameFile = gameFiles.find((file) =>
+            mainGamePatterns.some(
+              (pattern) =>
+                file.toUpperCase().includes(pattern) &&
+                !file.toUpperCase().includes("INSTALL") &&
+                !file.toUpperCase().includes("SETUP")
+            )
+          );
+
+          if (mainGameFile) {
+            gameFile = mainGameFile;
+          } else {
+            // Exclude INSTALL/SETUP files
+            const nonInstallerFiles = gameFiles.filter(
+              (file) =>
+                !file.toUpperCase().includes("INSTALL") &&
+                !file.toUpperCase().includes("SETUP")
+            );
+
+            if (nonInstallerFiles.length > 0) {
+              // Prefer .exe over .bat
+              const exeFile = nonInstallerFiles.find((file) =>
+                file.toUpperCase().endsWith(".EXE")
+              );
+              if (exeFile) {
+                gameFile = exeFile;
+              } else {
+                gameFile = nonInstallerFiles[0];
+              }
+            } else {
+              // Fall back to any executable, even if it's an installer
+              gameFile = gameFiles[0];
+            }
+          }
+        }
+      }
+    } else if (isDev) {
+      // In dev mode, if no executable is found, create a mock one
+      const mockGamePath = createMockGameFiles(gamePath, gameId, gameTitle);
+      if (mockGamePath) {
+        gameFile = path.basename(mockGamePath);
+      }
+    }
+
+    if (!gameFile) {
+      return { success: false, error: "No executable game file found" };
+    }
+
+    // Get full paths
+    const fullGamePath = path.join(gamePath, gameFile);
+
+    console.log(`Launching game: ${fullGamePath}`);
+
+    // Create a temporary autoexec.bat file for DOSBoxPortable
+    const dosboxDataDir = path.join(
+      process.cwd(),
+      "bin",
+      "DOSBoxPortable",
+      "Data"
+    );
+    const autoexecPath = path.join(dosboxDataDir, "autoexec.bat");
+
+    // Create the drive letter for the mount
+    const driveLetter = "C";
+    const gameDir = path.dirname(fullGamePath);
+    const gameExe = path.basename(fullGamePath);
+
+    // Create autoexec.bat content
+    const autoexecContent = `@echo off
+echo DOS-USB Game Launcher
+echo --------------------
+echo.
+echo Mounting ${gameDir} as ${driveLetter}:
+echo Running: ${gameExe}
+echo.
+
+# Mount the game directory to drive C:
+mount ${driveLetter} "${gameDir}"
+
+# Also mount as CD-ROM for games that need it:
+mount d "${gameDir}" -t cdrom
+
+# Go to the game drive
+${driveLetter}:
+
+# Start the game
+${gameExe}
+
+# Exit DOSBox when game is done
+exit
+`;
+
+    fs.writeFileSync(autoexecPath, autoexecContent);
+    console.log(`Created autoexec.bat at: ${autoexecPath}`);
+
+    // Launch DOSBoxPortable
+    const child = execFile(dosboxPortablePath, {
+      windowsHide: false,
     });
 
-    dosbox.on("error", (err) => {
-      console.error("Failed to start DOSBox:", err);
+    // Store the child process ID for logging
+    const childPid = child.pid;
+    console.log(`DOSBoxPortable started with PID: ${childPid}`);
+
+    // Set up child process event listeners
+    child.stdout.on("data", (data) => {
+      console.log(`DOSBoxPortable output: ${data}`);
+    });
+
+    child.stderr.on("data", (data) => {
+      console.error(`DOSBoxPortable error: ${data}`);
+    });
+
+    child.on("error", (err) => {
+      console.error("Failed to start DOSBoxPortable:", err);
       return { success: false, error: err.message };
     });
+
+    child.on("close", (code) => {
+      console.log(`DOSBoxPortable process exited with code ${code}`);
+
+      // Clean up any leftover processes
+      try {
+        // On Windows, use taskkill to clean up
+        const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+          windowsHide: true,
+          shell: true,
+        });
+
+        cleanup.on("close", (code) => {
+          console.log(`DOSBox cleanup exited with code ${code}`);
+        });
+      } catch (cleanupError) {
+        console.error("Error during DOSBox cleanup:", cleanupError);
+      }
+    });
+
+    // Wait a moment to ensure the process starts
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return { success: true };
   } catch (error) {

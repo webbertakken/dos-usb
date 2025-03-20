@@ -20,6 +20,7 @@
     "cheerio": "^1.0.0",
     "electron-is-dev": "^3.0.1",
     "extract-zip": "^2.0.1",
+    "js-dos": "^8.3.14",
     "jsdom": "^26.0.0",
     "next": "15.2.3",
     "react": "^19.0.0",
