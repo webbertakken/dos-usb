@@ -17,9 +17,14 @@
 /.next/
 /out/
 
-# production
-/build
-/dist
+# DOSBox
+/bin/DOSBoxPortable/**/stdout*
+/bin/DOSBoxPortable/**/stderr*
+/bin/DOSBoxPortable/**/dosbox.log
+/bin/DOSBoxPortable/**/dosbox.cfg
+/bin/DOSBoxPortable/**/dosbox.conf
+/bin/DOSBoxPortable/**/dosbox.conf.bak
+/bin/DOSBoxPortable/**/dosbox.conf.old
 
 # The games that are downloaded
 /games

@@ -402,24 +402,169 @@ ipcMain.handle("launch-game", async (event, gamePath) => {
 
     console.log(`Launching game: ${fullGamePath}`);
 
-    // Directly pass arguments to DOSBoxPortable that will mount and run the game
-    // No autoexec.bat modifications needed
-    const child = execFile(
-      dosboxPortablePath,
-      [
-        "-c",
-        `mount c "${gameDir}"`,
-        "-c",
-        `mount d "${gameDir}" -t cdrom`,
-        "-c",
-        "c:",
-        "-c",
-        gameExe,
-      ],
-      {
-        windowsHide: false,
-      }
+    // Create a custom DOSBox configuration file for this launch
+    const dosboxDataDir = path.join(
+      process.cwd(),
+      "bin",
+      "DOSBoxPortable",
+      "Data"
     );
+
+    // Ensure the Data directory exists
+    if (!fs.existsSync(dosboxDataDir)) {
+      fs.mkdirSync(dosboxDataDir, { recursive: true });
+      console.log(`Created DOSBox data directory: ${dosboxDataDir}`);
+    }
+
+    const dosboxConfigPath = path.join(dosboxDataDir, "dosbox.conf");
+
+    // Read the existing DOSBox configuration
+    let dosboxConfig = "";
+    try {
+      dosboxConfig = fs.readFileSync(dosboxConfigPath, "utf8");
+    } catch (error) {
+      console.error("Error reading DOSBox config:", error);
+      // Create a default configuration
+      dosboxConfig = `
+[sdl]
+fullscreen=false
+fulldouble=false
+fullresolution=original
+windowresolution=1024x768
+output=surface
+autolock=true
+sensitivity=100
+waitonerror=true
+priority=higher,normal
+usescancodes=true
+
+[dosbox]
+language=
+machine=svga_s3
+captures=capture
+memsize=16
+
+[render]
+frameskip=0
+aspect=false
+scaler=normal2x
+
+[cpu]
+core=auto
+cputype=auto
+cycles=auto
+cycleup=500
+cycledown=20
+
+[mixer]
+nosound=false
+rate=22050
+blocksize=2048
+prebuffer=10
+
+[midi]
+mpu401=intelligent
+mididevice=default
+midiconfig=
+
+[sblaster]
+sbtype=sb16
+sbbase=220
+irq=7
+dma=1
+hdma=5
+sbmixer=true
+oplmode=auto
+oplemu=default
+oplrate=22050
+
+[gus]
+gus=false
+gusrate=22050
+gusbase=240
+gusirq=5
+gusdma=3
+ultradir=C:\\ULTRASND
+
+[speaker]
+pcspeaker=true
+pcrate=22050
+tandy=auto
+tandyrate=22050
+disney=true
+
+[joystick]
+joysticktype=auto
+timed=true
+autofire=false
+swap34=false
+buttonwrap=true
+
+[serial]
+serial1=dummy
+serial2=dummy
+serial3=disabled
+serial4=disabled
+
+[dos]
+xms=true
+ems=true
+umb=true
+keyboardlayout=auto
+
+[ipx]
+ipx=false
+`;
+
+      // Save the default config for future use
+      try {
+        fs.writeFileSync(dosboxConfigPath, dosboxConfig);
+        console.log(
+          `Created default DOSBox configuration at: ${dosboxConfigPath}`
+        );
+      } catch (writeError) {
+        console.error("Error writing default DOSBox config:", writeError);
+      }
+    }
+
+    // Extract all sections except [autoexec]
+    const sections = dosboxConfig.split(/\[([^\]]+)\]/g);
+    let newConfig = "";
+
+    for (let i = 0; i < sections.length; i += 2) {
+      if (i + 1 < sections.length) {
+        const sectionName = sections[i + 1].trim();
+        if (sectionName !== "autoexec") {
+          newConfig += `[${sectionName}]${sections[i + 2]}`;
+        }
+      } else {
+        newConfig += sections[i];
+      }
+    }
+
+    // Add our custom autoexec section with changes to prevent early exit
+    const autoexecSection = `
+[autoexec]
+@echo off
+echo DOS-USB Game Launcher
+echo --------------------
+mount c "${gameDir.replace(/\\/g, "/")}"
+mount d "${gameDir.replace(/\\/g, "/")}" -t cdrom
+c:
+${gameExe}
+`;
+
+    newConfig += autoexecSection;
+
+    // Write the updated configuration to a custom file
+    const customConfigPath = path.join(dosboxDataDir, `dosbox-${gameId}.conf`);
+    fs.writeFileSync(customConfigPath, newConfig);
+    console.log(`Created custom DOSBox config at: ${customConfigPath}`);
+
+    // Launch DOSBoxPortable with the custom config
+    const child = execFile(dosboxPortablePath, ["-conf", customConfigPath], {
+      windowsHide: false,
+    });
 
     // Store the child process ID for logging
     const childPid = child.pid;
@@ -442,19 +587,21 @@ ipcMain.handle("launch-game", async (event, gamePath) => {
     child.on("close", (code) => {
       console.log(`DOSBoxPortable process exited with code ${code}`);
 
-      // Clean up any leftover processes
-      try {
-        // On Windows, use taskkill to clean up
-        const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
-          windowsHide: true,
-          shell: true,
-        });
+      // Clean up any leftover processes - only if the main process exited abnormally
+      if (code !== 0) {
+        try {
+          // On Windows, use taskkill to clean up
+          const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+            windowsHide: true,
+            shell: true,
+          });
 
-        cleanup.on("close", (code) => {
-          console.log(`DOSBox cleanup exited with code ${code}`);
-        });
-      } catch (cleanupError) {
-        console.error("Error during DOSBox cleanup:", cleanupError);
+          cleanup.on("close", (code) => {
+            console.log(`DOSBox cleanup exited with code ${code}`);
+          });
+        } catch (cleanupError) {
+          console.error("Error during DOSBox cleanup:", cleanupError);
+        }
       }
     });
 

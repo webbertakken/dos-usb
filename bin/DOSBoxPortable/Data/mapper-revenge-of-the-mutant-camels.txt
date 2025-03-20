@@ -1,0 +1,7 @@
+
+# This is the mapper file for DOSBox
+# Saved by DOSBox version dosbox
+
+# Map Ctrl+F9 to exit DOSBox
+key_escape "key_escape"
+key_f9 "exit"
