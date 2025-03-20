@@ -53,43 +53,46 @@ export const useGameStore = create<GameState>((set, get) => {
       try {
         set({ loading: true, error: null });
 
-        // This is a mock implementation - in production, you would fetch from dosgames.com
-        // or use a proxy API to avoid CORS issues
-        const mockGames: DosgamesListItem[] = [
+        // Use the specified games directly
+        const games = [
           {
-            id: "commander-keen",
-            title: "Commander Keen",
-            description: "Classic side-scrolling platformer by id Software",
-            year: "1990",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen.jpg",
-            downloadUrl: "https://www.dosgames.com/files/keen.zip",
+            id: "commander-keen-4",
+            title: "Commander Keen 4: Secret of the Oracle",
+            description:
+              "A well-received sidescrolling platformer developed by iD Software and published by Apogee.",
+            year: "1991",
+            category: "Sidescrolling",
+            thumbnail: "https://www.dosgames.com/screens/keen4.gif",
+            downloadUrl:
+              "https://www.dosgames.com/game/commander-keen-4-secret-of-the-oracle",
+            fileSize: "623k",
           },
           {
-            id: "doom",
-            title: "Doom",
-            description: "Groundbreaking first-person shooter",
-            year: "1993",
-            category: "FPS",
-            thumbnail: "https://www.dosgames.com/screens/doom.jpg",
-            downloadUrl: "https://www.dosgames.com/files/doom.zip",
+            id: "revenge-of-the-mutant-camels",
+            title: "Revenge of the Mutant Camels",
+            description:
+              "A side-scrolling platforming shooting game where you pilot your goat riding a mutant camel.",
+            year: "1994",
+            category: "Action",
+            thumbnail: "https://www.dosgames.com/screens/revengecamels.png",
+            downloadUrl:
+              "https://www.dosgames.com/game/revenge-of-the-mutant-camels",
+            fileSize: "485k",
           },
           {
-            id: "oregon-trail",
-            title: "The Oregon Trail",
-            description: "Educational game about pioneer life",
-            year: "1985",
-            category: "Educational",
-            thumbnail: "https://www.dosgames.com/screens/oregontrail.jpg",
-            downloadUrl: "https://www.dosgames.com/files/oregontrail.zip",
+            id: "inner-worlds",
+            title: "Inner Worlds",
+            description:
+              "A puzzle platformer with beautiful graphics and challenging gameplay.",
+            year: "1996",
+            category: "Puzzle",
+            thumbnail: "https://www.dosgames.com/screens/iw.gif",
+            downloadUrl: "https://www.dosgames.com/game/inner-worlds",
+            fileSize: "1.1 MB",
           },
         ];
 
-        set({ dosgamesList: mockGames, loading: false });
-
-        // In a real implementation, you would fetch from dosgames.com
-        // const response = await axios.get('https://api.proxy.com/dosgames');
-        // set({ dosgamesList: response.data, loading: false });
+        set({ dosgamesList: games, loading: false });
       } catch (error) {
         console.error("Error fetching dosgames list:", error);
         set({ error: "Failed to fetch games list", loading: false });
