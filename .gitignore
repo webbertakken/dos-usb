@@ -20,7 +20,9 @@
 # production
 /build
 /dist
-/dos-usb
+
+# The games that are downloaded
+/games
 
 # misc
 .DS_Store

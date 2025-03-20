@@ -204,8 +204,8 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
       progress: 0,
     });
 
-    // Create games directory if it doesn't exist
-    const gamesDir = path.join(app.getPath("userData"), "games");
+    // Create games directory if it doesn't exist - store in ./games instead of userData
+    const gamesDir = path.join(process.cwd(), "games");
     await mkdir(gamesDir, { recursive: true });
 
     // Create directory for this specific game

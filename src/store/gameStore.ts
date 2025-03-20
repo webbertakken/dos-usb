@@ -23,6 +23,13 @@ export const useGameStore = create<GameState>((set, get) => {
   // Used to clean up download status listener
   let removeDownloadStatusListener: (() => void) | null = null;
 
+  // Automatically fetch games when the store is loaded
+  setTimeout(() => {
+    if (typeof window !== "undefined") {
+      get().fetchGames();
+    }
+  }, 500);
+
   return {
     games: [],
     dosgamesList: [],
@@ -38,6 +45,7 @@ export const useGameStore = create<GameState>((set, get) => {
         // In Electron environment, use the IPC bridge
         if (typeof window !== "undefined" && window.electron) {
           const games = await window.electron.getGames();
+          console.log("Fetched games:", games);
           set({ games, loading: false });
         } else {
           // Fallback for development in browser
@@ -150,12 +158,8 @@ export const useGameStore = create<GameState>((set, get) => {
             throw new Error(result.error || "Failed to download game");
           }
 
-          // Add the new game to the games list
-          if (result.game) {
-            set((state) => ({
-              games: [...state.games, result.game!],
-            }));
-          }
+          // Refresh the games list after download
+          await get().fetchGames();
         } else {
           // Mock implementation for browser development
           console.log(
@@ -214,6 +218,9 @@ export const useGameStore = create<GameState>((set, get) => {
                     },
                   },
                 }));
+
+                // Refresh games list after mock download too
+                get().fetchGames();
               }, 1000);
             }
           }, 300);
@@ -252,6 +259,14 @@ export const useGameStore = create<GameState>((set, get) => {
                 [status.gameId]: status,
               },
             }));
+
+            // When a download completes or errors, refresh the games list
+            if (status.status === "completed" || status.status === "error") {
+              // Small delay to allow file system operations to complete
+              setTimeout(() => {
+                get().fetchGames();
+              }, 1000);
+            }
           }
         );
       }
