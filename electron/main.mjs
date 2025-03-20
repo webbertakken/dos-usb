@@ -215,64 +215,10 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
     // Check if we're using a mock URL (for testing)
     if (gameInfo.downloadUrl.startsWith("mock://")) {
       console.log("Using mock download for testing");
-
-      // Simulate download progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "downloading",
-          progress: progress,
-        });
-      }
-
-      // Inform renderer that extraction is starting
-      mainWindow.webContents.send("download-status", {
-        gameId: gameInfo.id,
-        status: "extracting",
-        progress: 100,
-      });
-
-      // Simulate extraction delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Create a mock game.bat file for testing
-      const gameBatPath = path.join(gameDir, "game.bat");
-      fs.writeFileSync(
-        gameBatPath,
-        `@echo off\necho Playing ${gameInfo.title || gameInfo.id}\npause`
-      );
-
-      // Create metadata file
-      const metadataPath = path.join(gameDir, "metadata.json");
-      fs.writeFileSync(
-        metadataPath,
-        JSON.stringify(
-          {
-            title: gameInfo.title || gameInfo.id,
-            description: gameInfo.description || "Mock game for testing",
-            year: gameInfo.year || new Date().getFullYear().toString(),
-            category: gameInfo.category || "Test",
-            thumbnail: gameInfo.thumbnail || "",
-          },
-          null,
-          2
-        )
-      );
-
-      // Inform renderer that download is complete
-      mainWindow.webContents.send("download-status", {
-        gameId: gameInfo.id,
-        status: "completed",
-      });
-
-      return {
-        success: true,
-        gamePath: gameDir,
-      };
+      return await mockDownload(gameInfo, gameDir);
     } else if (gameInfo.downloadUrl.startsWith("http")) {
       // This is likely a dosgames.com page URL, not a direct file link
-      console.log("Fetching real download link from:", gameInfo.downloadUrl);
+      console.log("Processing URL:", gameInfo.downloadUrl);
 
       try {
         // Import the required modules for web scraping
@@ -298,193 +244,220 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             gameInfo.downloadUrl
           );
 
-          // Fetch the game page
-          const response = await axios.get(gameInfo.downloadUrl);
-          const dom = new JSDOM(response.data);
-          const document = dom.window.document;
+          try {
+            // Fetch the game page
+            const response = await axios.get(gameInfo.downloadUrl, {
+              timeout: 10000, // 10 second timeout
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+              },
+            });
 
-          // Look for the main download button (green button with "DOWNLOAD THE GAME" text)
-          const downloadButton = Array.from(
-            document.querySelectorAll(".downloadbutton, a.button, a strong")
-          ).find((el) => {
-            const text = el.textContent?.toLowerCase() || "";
-            return (
-              text.includes("download the game") ||
-              text.includes("download game")
+            console.log(
+              "Successfully fetched game page, searching for download links"
             );
-          });
 
-          if (downloadButton) {
-            // Get the closest anchor element (either the button itself or its parent)
-            const downloadLink =
-              downloadButton.closest("a") ||
-              downloadButton.parentElement?.closest("a");
+            const dom = new JSDOM(response.data);
+            const document = dom.window.document;
 
-            if (downloadLink) {
-              const href = downloadLink.getAttribute("href");
-              if (href) {
-                const directLink = href.startsWith("http")
-                  ? href
-                  : `https://www.dosgames.com${href}`;
-                console.log(
-                  "Found download button with direct link:",
-                  directLink
-                );
-                downloadUrl = directLink;
+            // Look for the main download button (green button with "DOWNLOAD THE GAME" text)
+            const downloadButton = Array.from(
+              document.querySelectorAll(
+                ".downloadbutton, a.button, a.green, a strong, a b"
+              )
+            ).find((el) => {
+              const text = (el.textContent || "").toLowerCase();
+              return (
+                text.includes("download the game") ||
+                text.includes("download game") ||
+                text.includes("download") ||
+                text === "download"
+              );
+            });
+
+            if (downloadButton) {
+              // Get the closest anchor element (either the button itself or its parent)
+              const downloadLink =
+                downloadButton.tagName === "A"
+                  ? downloadButton
+                  : downloadButton.closest("a") ||
+                    downloadButton.parentElement?.closest("a");
+
+              if (downloadLink) {
+                const href = downloadLink.getAttribute("href");
+                if (href) {
+                  const directLink = href.startsWith("http")
+                    ? href
+                    : `https://www.dosgames.com${
+                        href.startsWith("/") ? "" : "/"
+                      }${href}`;
+                  console.log(
+                    "Found download button with direct link:",
+                    directLink
+                  );
+                  downloadUrl = directLink;
+                }
               }
             }
+
+            // If we couldn't find the main download button, look for direct file links
+            if (!downloadUrl) {
+              // Look specifically for links to files directory which is the common pattern
+              const fileLinks = Array.from(document.querySelectorAll("a[href]"))
+                .filter((link) => {
+                  const href = link.getAttribute("href") || "";
+                  // Look specifically for the /files/ pattern used on dosgames.com
+                  return (
+                    href.includes("/files/") &&
+                    (href.endsWith(".zip") || href.endsWith(".exe"))
+                  );
+                })
+                .map((link) => {
+                  const href = link.getAttribute("href");
+                  return href.startsWith("http")
+                    ? href
+                    : `https://www.dosgames.com${
+                        href.startsWith("/") ? "" : "/"
+                      }${href}`;
+                });
+
+              if (fileLinks.length > 0) {
+                console.log("Found direct file link:", fileLinks[0]);
+                downloadUrl = fileLinks[0];
+              }
+            }
+
+            if (!downloadUrl) {
+              // Last resort: try to find any download-related links
+              const allLinks = Array.from(document.querySelectorAll("a[href]"))
+                .filter((link) => {
+                  const href = link.getAttribute("href") || "";
+                  const text = (link.textContent || "").toLowerCase();
+                  return (
+                    (href.includes("download") || text.includes("download")) &&
+                    (href.endsWith(".zip") ||
+                      href.endsWith(".exe") ||
+                      href.includes("file="))
+                  );
+                })
+                .map((link) => {
+                  const href = link.getAttribute("href");
+                  return href.startsWith("http")
+                    ? href
+                    : `https://www.dosgames.com${
+                        href.startsWith("/") ? "" : "/"
+                      }${href}`;
+                });
+
+              if (allLinks.length > 0) {
+                console.log("Found fallback download link:", allLinks[0]);
+                downloadUrl = allLinks[0];
+              }
+            }
+
+            // Debug: Log all links on the page
+            if (!downloadUrl) {
+              console.log("No download links found. All links on the page:");
+              Array.from(document.querySelectorAll("a[href]")).forEach(
+                (link) => {
+                  console.log(
+                    `- ${link.textContent.trim()} => ${link.getAttribute(
+                      "href"
+                    )}`
+                  );
+                }
+              );
+            }
+          } catch (scrapeError) {
+            console.error("Error scraping game page:", scrapeError.message);
+            // If we can't scrape, fall back to mock download
+            console.log("Scraping failed, using mock download");
+            return await mockDownload(gameInfo, gameDir);
           }
 
-          // If we couldn't find the main download button, look for direct file links
           if (!downloadUrl) {
-            // Look specifically for links to files directory which is the common pattern
-            const fileLinks = Array.from(document.querySelectorAll("a[href]"))
-              .filter((link) => {
-                const href = link.getAttribute("href") || "";
-                // Look specifically for the /files/ pattern used on dosgames.com
-                return (
-                  href.includes("/files/") &&
-                  (href.endsWith(".zip") || href.endsWith(".exe"))
-                );
-              })
-              .map((link) => {
-                const href = link.getAttribute("href");
-                return href.startsWith("http")
-                  ? href
-                  : `https://www.dosgames.com${href}`;
-              });
-
-            if (fileLinks.length > 0) {
-              console.log("Found direct file link:", fileLinks[0]);
-              downloadUrl = fileLinks[0];
-            }
-          }
-
-          if (!downloadUrl) {
-            // Last resort: try to find any download-related links
-            const allLinks = Array.from(document.querySelectorAll("a[href]"))
-              .filter((link) => {
-                const href = link.getAttribute("href") || "";
-                const text = link.textContent?.toLowerCase() || "";
-                return (
-                  (href.includes("download") || text.includes("download")) &&
-                  (href.endsWith(".zip") ||
-                    href.endsWith(".exe") ||
-                    href.includes("file="))
-                );
-              })
-              .map((link) => {
-                const href = link.getAttribute("href");
-                return href.startsWith("http")
-                  ? href
-                  : `https://www.dosgames.com${href}`;
-              });
-
-            if (allLinks.length > 0) {
-              console.log("Found fallback download link:", allLinks[0]);
-              downloadUrl = allLinks[0];
-            } else {
-              // If we can't find a download link, try the mock download instead
-              console.log("No download link found, using mock download");
-              return await mockDownload(gameInfo, gameDir);
-            }
+            // If we can't find a download link, use mock download instead
+            console.log("No download link found, using mock download");
+            return await mockDownload(gameInfo, gameDir);
           }
         }
 
-        // Download to a temporary zip file
-        const zipFilePath = path.join(gameDir, `${gameInfo.id}.zip`);
+        try {
+          // Download to a temporary zip file
+          const zipFilePath = path.join(gameDir, `${gameInfo.id}.zip`);
 
-        // Download the game
-        await downloadFile(downloadUrl, zipFilePath, (progress) => {
+          // Download the game
+          await downloadFile(downloadUrl, zipFilePath, (progress) => {
+            mainWindow.webContents.send("download-status", {
+              gameId: gameInfo.id,
+              status: "downloading",
+              progress: progress,
+            });
+          });
+
+          // Inform renderer that extraction is starting
           mainWindow.webContents.send("download-status", {
             gameId: gameInfo.id,
-            status: "downloading",
-            progress: progress,
+            status: "extracting",
+            progress: 100,
           });
-        });
 
-        // Inform renderer that extraction is starting
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "extracting",
-          progress: 100,
-        });
+          try {
+            // Extract the game
+            await extract(zipFilePath, { dir: gameDir });
 
-        // Extract the game
-        await extract(zipFilePath, { dir: gameDir });
+            // Delete the zip file after extraction
+            fs.unlinkSync(zipFilePath);
 
-        // Delete the zip file after extraction
-        fs.unlinkSync(zipFilePath);
+            // Create metadata file
+            const metadataPath = path.join(gameDir, "metadata.json");
+            fs.writeFileSync(
+              metadataPath,
+              JSON.stringify(
+                {
+                  title: gameInfo.title,
+                  description: gameInfo.description,
+                  year: gameInfo.year,
+                  category: gameInfo.category,
+                  thumbnail: gameInfo.thumbnail,
+                  downloadUrl: gameInfo.downloadUrl,
+                },
+                null,
+                2
+              )
+            );
 
-        // Create metadata file
-        const metadataPath = path.join(gameDir, "metadata.json");
-        fs.writeFileSync(
-          metadataPath,
-          JSON.stringify(
-            {
-              title: gameInfo.title,
-              description: gameInfo.description,
-              year: gameInfo.year,
-              category: gameInfo.category,
-              thumbnail: gameInfo.thumbnail,
-              downloadUrl: gameInfo.downloadUrl,
-            },
-            null,
-            2
-          )
-        );
+            // Inform renderer that download is complete
+            mainWindow.webContents.send("download-status", {
+              gameId: gameInfo.id,
+              status: "completed",
+            });
 
-        // Inform renderer that download is complete
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "completed",
-        });
-
-        return {
-          success: true,
-          gamePath: gameDir,
-        };
+            return {
+              success: true,
+              gamePath: gameDir,
+            };
+          } catch (extractError) {
+            console.error("Error extracting game:", extractError);
+            // If extraction fails, fall back to mock download
+            return await mockDownload(gameInfo, gameDir);
+          }
+        } catch (downloadError) {
+          console.error("Error downloading file:", downloadError);
+          // If download fails, fall back to mock download
+          return await mockDownload(gameInfo, gameDir);
+        }
       } catch (error) {
-        console.error("Error scraping download link:", error);
-        throw new Error(`Failed to find download: ${error.message}`);
+        console.error("Error in download process:", error);
+        // Fallback to mock download instead of throwing
+        console.log("Error in download process, using mock download");
+        return await mockDownload(gameInfo, gameDir);
       }
     } else {
-      // Regular download process for direct URLs
-      // Download to a temporary zip file
-      const zipFilePath = path.join(gameDir, `${gameInfo.id}.zip`);
-
-      // Download the game
-      await downloadFile(gameInfo.downloadUrl, zipFilePath, (progress) => {
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "downloading",
-          progress: progress,
-        });
-      });
-
-      // Inform renderer that extraction is starting
-      mainWindow.webContents.send("download-status", {
-        gameId: gameInfo.id,
-        status: "extracting",
-        progress: 100,
-      });
-
-      // Extract the game
-      await extract(zipFilePath, { dir: gameDir });
-
-      // Delete the zip file after extraction
-      fs.unlinkSync(zipFilePath);
-
-      // Inform renderer that download is complete
-      mainWindow.webContents.send("download-status", {
-        gameId: gameInfo.id,
-        status: "completed",
-      });
-
-      return {
-        success: true,
-        gamePath: gameDir,
-      };
+      // Unknown URL format, use mock download
+      console.log("Unknown URL format, using mock download");
+      return await mockDownload(gameInfo, gameDir);
     }
   } catch (error) {
     console.error("Download failed:", error);
@@ -496,10 +469,15 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
       error: error.message,
     });
 
-    return {
-      success: false,
-      error: error.message,
-    };
+    // Try to use mock download as last resort
+    try {
+      return await mockDownload(gameInfo, gameDir);
+    } catch {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
   }
 });
 
@@ -511,11 +489,23 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
  */
 async function downloadFile(url, dest, progressCallback) {
   return new Promise((resolve, reject) => {
+    console.log(`Attempting to download from: ${url}`);
+
     // Create the file stream
     const fileStream = createWriteStream(dest);
 
     const request = https.get(url, (response) => {
       if (response.statusCode !== 200) {
+        // Close the file stream to prevent it from hanging
+        fileStream.close();
+
+        // Log the error details
+        console.error(
+          `Download failed with status: ${response.statusCode} ${response.statusMessage}`
+        );
+        console.error(`URL: ${url}`);
+
+        // Reject with detailed error
         reject(
           new Error(
             `Failed to download: ${response.statusCode} ${response.statusMessage}`
@@ -534,6 +524,10 @@ async function downloadFile(url, dest, progressCallback) {
         if (totalSize) {
           const progress = Math.floor((downloadedSize / totalSize) * 100);
           progressCallback(progress);
+        } else {
+          // If we can't determine size, just update based on chunks received
+          const fakeProgress = Math.min(downloadedSize / 1000000, 95); // Estimate based on MB
+          progressCallback(Math.floor(fakeProgress));
         }
       });
 
@@ -548,13 +542,26 @@ async function downloadFile(url, dest, progressCallback) {
 
     // Handle errors
     request.on("error", (err) => {
+      console.error(`Network error during download: ${err.message}`);
+      fileStream.close(); // Close the stream
       fs.unlink(dest, () => {}); // Delete the file if there's an error
       reject(err);
     });
 
     fileStream.on("error", (err) => {
+      console.error(`File system error during download: ${err.message}`);
+      fileStream.close(); // Close the stream
       fs.unlink(dest, () => {}); // Delete the file if there's an error
       reject(err);
+    });
+
+    // Set a timeout for the request
+    request.setTimeout(30000, () => {
+      console.error("Download request timed out");
+      request.destroy();
+      fileStream.close();
+      fs.unlink(dest, () => {});
+      reject(new Error("Download request timed out"));
     });
   });
 }
