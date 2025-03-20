@@ -397,55 +397,29 @@ ipcMain.handle("launch-game", async (event, gamePath) => {
 
     // Get full paths
     const fullGamePath = path.join(gamePath, gameFile);
-
-    console.log(`Launching game: ${fullGamePath}`);
-
-    // Create a temporary autoexec.bat file for DOSBoxPortable
-    const dosboxDataDir = path.join(
-      process.cwd(),
-      "bin",
-      "DOSBoxPortable",
-      "Data"
-    );
-    const autoexecPath = path.join(dosboxDataDir, "autoexec.bat");
-
-    // Create the drive letter for the mount
-    const driveLetter = "C";
     const gameDir = path.dirname(fullGamePath);
     const gameExe = path.basename(fullGamePath);
 
-    // Create autoexec.bat content
-    const autoexecContent = `@echo off
-echo DOS-USB Game Launcher
-echo --------------------
-echo.
-echo Mounting ${gameDir} as ${driveLetter}:
-echo Running: ${gameExe}
-echo.
+    console.log(`Launching game: ${fullGamePath}`);
 
-# Mount the game directory to drive C:
-mount ${driveLetter} "${gameDir}"
-
-# Also mount as CD-ROM for games that need it:
-mount d "${gameDir}" -t cdrom
-
-# Go to the game drive
-${driveLetter}:
-
-# Start the game
-${gameExe}
-
-# Exit DOSBox when game is done
-exit
-`;
-
-    fs.writeFileSync(autoexecPath, autoexecContent);
-    console.log(`Created autoexec.bat at: ${autoexecPath}`);
-
-    // Launch DOSBoxPortable
-    const child = execFile(dosboxPortablePath, {
-      windowsHide: false,
-    });
+    // Directly pass arguments to DOSBoxPortable that will mount and run the game
+    // No autoexec.bat modifications needed
+    const child = execFile(
+      dosboxPortablePath,
+      [
+        "-c",
+        `mount c "${gameDir}"`,
+        "-c",
+        `mount d "${gameDir}" -t cdrom`,
+        "-c",
+        "c:",
+        "-c",
+        gameExe,
+      ],
+      {
+        windowsHide: false,
+      }
+    );
 
     // Store the child process ID for logging
     const childPid = child.pid;
