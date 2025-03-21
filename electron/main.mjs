@@ -106,6 +106,7 @@ app.on("activate", () => {
  * @param {string} gameId - ID of the game
  * @param {string} gameTitle - Title of the game
  * @returns {string} - Path to the mock game file
+ * @deprecated This function is maintained for backward compatibility and reference
  */
 function createMockGameFiles(gameDir, gameId, gameTitle) {
   try {
@@ -267,11 +268,37 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
         { name: "large", width: 1280, height: 960 },
         { name: "xl", width: 1400, height: 1050 },
         { name: "xxl", width: 1600, height: 1200 },
+        { name: "hd", width: 1920, height: 1440 },
+        { name: "2k", width: 2048, height: 1536 },
+        { name: "2.5k", width: 2560, height: 1920 },
+        { name: "4k", width: 3200, height: 2400 },
       ];
 
-      // Find the largest resolution that fits comfortably on screen (80% of screen size)
-      const maxWidth = width * 0.8;
-      const maxHeight = height * 0.8;
+      // For widescreen monitors, add a custom resolution based on available height
+      // This creates a resolution that uses maximum available height while maintaining 4:3 aspect
+      const maxUsableHeight = Math.floor(height * 0.95); // Use 95% of screen height
+      const customWidth = Math.floor(maxUsableHeight * (4 / 3)); // Calculate 4:3 width
+
+      // Add the custom resolution if it doesn't match an existing one
+      const hasCustomResolution = resolutionOptions.some(
+        (res) => res.width === customWidth && res.height === maxUsableHeight
+      );
+
+      if (!hasCustomResolution) {
+        resolutionOptions.push({
+          name: "custom",
+          width: customWidth,
+          height: maxUsableHeight,
+        });
+        console.log(
+          `Added custom resolution: ${customWidth}x${maxUsableHeight}`
+        );
+      }
+
+      // Find the largest resolution that fits the screen
+      // Use 95% of screen width and height (instead of 80%)
+      const maxWidth = width * 0.95;
+      const maxHeight = height * 0.95;
 
       let preferredResolution = resolutionOptions[0]; // Default to smallest
 
@@ -396,6 +423,22 @@ ipx=false
       }
 
       // Set proper 4:3 resolution and aspect
+      // Choose appropriate scaler based on resolution
+      let scaler = "normal3x";
+      let memsize = 16;
+      let cycles = "auto";
+
+      // For higher resolutions, use better quality scalers and more memory
+      if (preferredResolution.width >= 2048) {
+        scaler = "hq3x"; // High-quality scaler for high resolutions
+        memsize = 64; // More memory for higher resolutions
+        cycles = "max"; // Maximum cycle count for better performance
+      } else if (preferredResolution.width >= 1600) {
+        scaler = "advmame3x"; // Advanced scaler for larger resolutions
+        memsize = 32; // More memory for medium-high resolutions
+        cycles = "max"; // Maximum cycle count for better performance
+      }
+
       const resolutionPatch = `
 [sdl]
 fullscreen=false
@@ -405,10 +448,16 @@ windowresolution=${windowSize}
 output=opengl
 autolock=true
 
+[dosbox]
+memsize=${memsize}
+
 [render]
 frameskip=0
 aspect=true
-scaler=normal3x
+scaler=${scaler}
+
+[cpu]
+cycles=${cycles}
 
 `;
 
