@@ -8,6 +8,7 @@ import https from "https";
 import { createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import extract from "extract-zip";
+import electron from "electron";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -220,16 +221,18 @@ exit
   }
 }
 
-// Modify the launch-game handler to use DOSBoxPortable
-ipcMain.handle("launch-game", async (event, gamePath) => {
+/**
+ * Sets up the DOSBox environment for the game
+ */
+async function setupDOSBox(gameId, gameDir, gameExe) {
   try {
-    console.log(`Attempting to launch game from path: ${gamePath}`);
+    // Get primary screen dimensions to determine optimal window size
+    const screen = electron.screen.getPrimaryDisplay();
+    const { width, height } = screen.workAreaSize;
 
-    // Get the game ID from the path
-    const gameId = path.basename(gamePath);
-    console.log(`Game ID: ${gameId}`);
+    console.log(`Primary screen dimensions: ${width}x${height}`);
 
-    // Check for DOSBoxPortable
+    // Path to DOSBoxPortable executable
     const dosboxPortablePath = path.join(
       process.cwd(),
       "bin",
@@ -237,201 +240,66 @@ ipcMain.handle("launch-game", async (event, gamePath) => {
       "DOSBoxPortable.exe"
     );
 
-    if (!fs.existsSync(dosboxPortablePath)) {
-      console.error("DOSBoxPortable not found at:", dosboxPortablePath);
-      return { success: false, error: "DOSBoxPortable not found" };
-    }
+    if (fs.existsSync(dosboxPortablePath)) {
+      console.log(`Using DOSBoxPortable at: ${dosboxPortablePath}`);
 
-    console.log(`Using DOSBoxPortable at: ${dosboxPortablePath}`);
+      // Directory for DOSBox configuration
+      const dosboxDataDir = path.join(
+        process.cwd(),
+        "bin",
+        "DOSBoxPortable",
+        "Data"
+      );
 
-    // Try to find metadata for game title
-    let gameTitle = gameId;
-    try {
-      const metadataPath = path.join(gamePath, "metadata.json");
-      if (fs.existsSync(metadataPath)) {
-        const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-        gameTitle = metadata.title || gameId;
-      }
-    } catch (error) {
-      console.error("Error reading game metadata:", error);
-    }
-
-    // Find the game file to run (e.g., .bat, .exe, .com files)
-    let gameFiles = [];
-    try {
-      gameFiles = fs
-        .readdirSync(gamePath)
-        .filter((file) =>
-          [".bat", ".exe", ".com"].some((ext) =>
-            file.toLowerCase().endsWith(ext)
-          )
-        );
-    } catch (error) {
-      console.error(`Error reading game directory: ${error.message}`);
-      if (isDev) {
-        // If we can't read the directory or it doesn't exist, create it in dev mode
-        fs.mkdirSync(gamePath, { recursive: true });
-      }
-    }
-
-    // Debug: Log available game files
-    console.log("Game files found:", gameFiles);
-
-    let gameFile = "";
-    if (gameFiles.length > 0) {
-      // Priority order:
-      // 1. Known specific game executables
-      // 2. Files that match the game name (e.g., REVENGE.EXE for revenge-of-the-mutant-camels)
-      // 3. Common main game files (GAME.EXE, PLAY.EXE, etc.)
-      // 4. Regular .bat files (except INSTALL.BAT or SETUP.BAT)
-      // 5. Regular .exe files (except INSTALL.EXE or SETUP.EXE)
-      // 6. Fall back to whatever is available
-
-      // Check for known specific games first
-      if (gameId === "revenge-of-the-mutant-camels") {
-        const revengeExe = gameFiles.find(
-          (file) => file.toUpperCase() === "REVENGE.EXE"
-        );
-        if (revengeExe) {
-          gameFile = revengeExe;
-          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
-        }
-      } else if (gameId === "commander-keen-4") {
-        const keenExe = gameFiles.find(
-          (file) => file.toUpperCase() === "KEEN4E.EXE"
-        );
-        if (keenExe) {
-          gameFile = keenExe;
-          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
-        }
-      } else if (gameId === "doom") {
-        const doomExe = gameFiles.find((file) =>
-          ["DOOM.EXE", "DOOM1.EXE", "DOOM2.EXE"].includes(file.toUpperCase())
-        );
-        if (doomExe) {
-          gameFile = doomExe;
-          console.log(`Found specific executable for ${gameId}: ${gameFile}`);
-        }
+      // Ensure the Data directory exists
+      if (!fs.existsSync(dosboxDataDir)) {
+        fs.mkdirSync(dosboxDataDir, { recursive: true });
+        console.log(`Created DOSBox data directory: ${dosboxDataDir}`);
       }
 
-      // If no specific game executable was found, continue with the general approach
-      if (!gameFile) {
-        // Extract game name from ID for matching
-        const gameName = gameId.split("-").pop().toUpperCase(); // e.g., CAMELS from revenge-of-the-mutant-camels
+      const dosboxConfigPath = path.join(dosboxDataDir, "dosbox.conf");
 
-        // Check for files that match the game name or common patterns
-        const gameNameFiles = gameFiles.filter(
-          (file) =>
-            file.toUpperCase().includes(gameName) &&
-            !file.toUpperCase().includes("INSTALL") &&
-            !file.toUpperCase().includes("SETUP")
-        );
+      // Determine the best 4:3 window size based on screen dimensions
+      // These are common 4:3 aspect ratio resolutions
+      const resolutionOptions = [
+        { name: "small", width: 800, height: 600 },
+        { name: "medium", width: 1024, height: 768 },
+        { name: "large", width: 1280, height: 960 },
+        { name: "xl", width: 1400, height: 1050 },
+        { name: "xxl", width: 1600, height: 1200 },
+      ];
 
-        if (gameNameFiles.length > 0) {
-          // Prefer .exe over .bat
-          const exeFile = gameNameFiles.find((file) =>
-            file.toUpperCase().endsWith(".EXE")
-          );
-          if (exeFile) {
-            gameFile = exeFile;
-          } else {
-            gameFile = gameNameFiles[0];
-          }
+      // Find the largest resolution that fits comfortably on screen (80% of screen size)
+      const maxWidth = width * 0.8;
+      const maxHeight = height * 0.8;
+
+      let preferredResolution = resolutionOptions[0]; // Default to smallest
+
+      for (const res of resolutionOptions) {
+        if (res.width <= maxWidth && res.height <= maxHeight) {
+          preferredResolution = res;
         } else {
-          // Look for common main game files
-          const mainGamePatterns = [
-            "GAME.",
-            "PLAY.",
-            "START.",
-            "RUN.",
-            "MAIN.",
-            "GO.",
-          ];
-          const mainGameFile = gameFiles.find((file) =>
-            mainGamePatterns.some(
-              (pattern) =>
-                file.toUpperCase().includes(pattern) &&
-                !file.toUpperCase().includes("INSTALL") &&
-                !file.toUpperCase().includes("SETUP")
-            )
-          );
-
-          if (mainGameFile) {
-            gameFile = mainGameFile;
-          } else {
-            // Exclude INSTALL/SETUP files
-            const nonInstallerFiles = gameFiles.filter(
-              (file) =>
-                !file.toUpperCase().includes("INSTALL") &&
-                !file.toUpperCase().includes("SETUP")
-            );
-
-            if (nonInstallerFiles.length > 0) {
-              // Prefer .exe over .bat
-              const exeFile = nonInstallerFiles.find((file) =>
-                file.toUpperCase().endsWith(".EXE")
-              );
-              if (exeFile) {
-                gameFile = exeFile;
-              } else {
-                gameFile = nonInstallerFiles[0];
-              }
-            } else {
-              // Fall back to any executable, even if it's an installer
-              gameFile = gameFiles[0];
-            }
-          }
+          break; // Stop once we find a resolution too large
         }
       }
-    } else if (isDev) {
-      // In dev mode, if no executable is found, create a mock one
-      const mockGamePath = createMockGameFiles(gamePath, gameId, gameTitle);
-      if (mockGamePath) {
-        gameFile = path.basename(mockGamePath);
-      }
-    }
 
-    if (!gameFile) {
-      return { success: false, error: "No executable game file found" };
-    }
+      const windowSize = `${preferredResolution.width}x${preferredResolution.height}`;
+      console.log(`Selected optimal window size: ${windowSize}`);
 
-    // Get full paths
-    const fullGamePath = path.join(gamePath, gameFile);
-    const gameDir = path.dirname(fullGamePath);
-    const gameExe = path.basename(fullGamePath);
-
-    console.log(`Launching game: ${fullGamePath}`);
-
-    // Create a custom DOSBox configuration file for this launch
-    const dosboxDataDir = path.join(
-      process.cwd(),
-      "bin",
-      "DOSBoxPortable",
-      "Data"
-    );
-
-    // Ensure the Data directory exists
-    if (!fs.existsSync(dosboxDataDir)) {
-      fs.mkdirSync(dosboxDataDir, { recursive: true });
-      console.log(`Created DOSBox data directory: ${dosboxDataDir}`);
-    }
-
-    const dosboxConfigPath = path.join(dosboxDataDir, "dosbox.conf");
-
-    // Read the existing DOSBox configuration
-    let dosboxConfig = "";
-    try {
-      dosboxConfig = fs.readFileSync(dosboxConfigPath, "utf8");
-    } catch (error) {
-      console.error("Error reading DOSBox config:", error);
-      // Create a default configuration
-      dosboxConfig = `
+      // Read the existing DOSBox configuration
+      let dosboxConfig = "";
+      try {
+        dosboxConfig = fs.readFileSync(dosboxConfigPath, "utf8");
+      } catch (error) {
+        console.error("Error reading DOSBox config:", error);
+        // Create a default configuration
+        dosboxConfig = `
 [sdl]
 fullscreen=false
 fulldouble=false
 fullresolution=original
-windowresolution=1024x768
-output=surface
+windowresolution=1280x960
+output=opengl
 autolock=true
 sensitivity=100
 waitonerror=true
@@ -446,8 +314,8 @@ memsize=16
 
 [render]
 frameskip=0
-aspect=false
-scaler=normal2x
+aspect=true
+scaler=normal3x
 
 [cpu]
 core=auto
@@ -516,34 +384,61 @@ keyboardlayout=auto
 ipx=false
 `;
 
-      // Save the default config for future use
-      try {
-        fs.writeFileSync(dosboxConfigPath, dosboxConfig);
-        console.log(
-          `Created default DOSBox configuration at: ${dosboxConfigPath}`
-        );
-      } catch (writeError) {
-        console.error("Error writing default DOSBox config:", writeError);
-      }
-    }
-
-    // Extract all sections except [autoexec]
-    const sections = dosboxConfig.split(/\[([^\]]+)\]/g);
-    let newConfig = "";
-
-    for (let i = 0; i < sections.length; i += 2) {
-      if (i + 1 < sections.length) {
-        const sectionName = sections[i + 1].trim();
-        if (sectionName !== "autoexec") {
-          newConfig += `[${sectionName}]${sections[i + 2]}`;
+        // Save the default config for future use
+        try {
+          fs.writeFileSync(dosboxConfigPath, dosboxConfig);
+          console.log(
+            `Created default DOSBox configuration at: ${dosboxConfigPath}`
+          );
+        } catch (writeError) {
+          console.error("Error writing default DOSBox config:", writeError);
         }
-      } else {
-        newConfig += sections[i];
       }
-    }
 
-    // Add our custom autoexec section with changes to prevent early exit
-    const autoexecSection = `
+      // Set proper 4:3 resolution and aspect
+      const resolutionPatch = `
+[sdl]
+fullscreen=false
+fulldouble=false
+fullresolution=original
+windowresolution=${windowSize}
+output=opengl
+autolock=true
+
+[render]
+frameskip=0
+aspect=true
+scaler=normal3x
+
+`;
+
+      // Start with our resolution settings
+      let newConfig = resolutionPatch;
+
+      // Then add the original config (excluding autoexec and overridden sections)
+      let insideAutoexec = false;
+      for (const line of dosboxConfig.split("\n")) {
+        if (line.trim().startsWith("[autoexec]")) {
+          insideAutoexec = true;
+        } else if (line.trim().startsWith("[") && insideAutoexec) {
+          insideAutoexec = false;
+        }
+
+        // Skip lines we're overriding (sdl and render sections)
+        if (
+          !insideAutoexec &&
+          !line.trim().startsWith("[sdl]") &&
+          !line.trim().startsWith("[render]") &&
+          !line.match(
+            /^(fullscreen|fulldouble|fullresolution|windowresolution|output|autolock|frameskip|aspect|scaler)=/
+          )
+        ) {
+          newConfig += line + "\n";
+        }
+      }
+
+      // Add our custom autoexec section with changes to prevent early exit
+      const autoexecSection = `
 [autoexec]
 @echo off
 echo DOS-USB Game Launcher
@@ -554,61 +449,145 @@ c:
 ${gameExe}
 `;
 
-    newConfig += autoexecSection;
+      newConfig += autoexecSection;
 
-    // Write the updated configuration to a custom file
-    const customConfigPath = path.join(dosboxDataDir, `dosbox-${gameId}.conf`);
-    fs.writeFileSync(customConfigPath, newConfig);
-    console.log(`Created custom DOSBox config at: ${customConfigPath}`);
+      // Write the updated configuration to a custom file
+      const customConfigPath = path.join(
+        dosboxDataDir,
+        `dosbox-${gameId}.conf`
+      );
+      fs.writeFileSync(customConfigPath, newConfig);
+      console.log(`Created custom DOSBox config at: ${customConfigPath}`);
 
-    // Launch DOSBoxPortable with the custom config
-    const child = execFile(dosboxPortablePath, ["-conf", customConfigPath], {
-      windowsHide: false,
-    });
+      // Launch DOSBoxPortable with the custom config
+      const child = execFile(dosboxPortablePath, ["-conf", customConfigPath], {
+        windowsHide: false,
+      });
 
-    // Store the child process ID for logging
-    const childPid = child.pid;
-    console.log(`DOSBoxPortable started with PID: ${childPid}`);
+      // Store the child process ID for logging
+      const childPid = child.pid;
+      console.log(`DOSBoxPortable started with PID: ${childPid}`);
 
-    // Set up child process event listeners
-    child.stdout.on("data", (data) => {
-      console.log(`DOSBoxPortable output: ${data}`);
-    });
+      // Set up child process event listeners
+      child.stdout.on("data", (data) => {
+        console.log(`DOSBoxPortable output: ${data}`);
+      });
 
-    child.stderr.on("data", (data) => {
-      console.error(`DOSBoxPortable error: ${data}`);
-    });
+      child.stderr.on("data", (data) => {
+        console.error(`DOSBoxPortable error: ${data}`);
+      });
 
-    child.on("error", (err) => {
-      console.error("Failed to start DOSBoxPortable:", err);
-      return { success: false, error: err.message };
-    });
+      child.on("error", (err) => {
+        console.error("Failed to start DOSBoxPortable:", err);
+        return { success: false, error: err.message };
+      });
 
-    child.on("close", (code) => {
-      console.log(`DOSBoxPortable process exited with code ${code}`);
+      child.on("close", (code) => {
+        console.log(`DOSBoxPortable process exited with code ${code}`);
 
-      // Clean up any leftover processes - only if the main process exited abnormally
-      if (code !== 0) {
-        try {
-          // On Windows, use taskkill to clean up
-          const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
-            windowsHide: true,
-            shell: true,
-          });
+        // Clean up any leftover processes - only if the main process exited abnormally
+        if (code !== 0) {
+          try {
+            // On Windows, use taskkill to clean up
+            const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+              windowsHide: true,
+              shell: true,
+            });
 
-          cleanup.on("close", (code) => {
-            console.log(`DOSBox cleanup exited with code ${code}`);
-          });
-        } catch (cleanupError) {
-          console.error("Error during DOSBox cleanup:", cleanupError);
+            cleanup.on("close", (code) => {
+              console.log(`DOSBox cleanup exited with code ${code}`);
+            });
+          } catch (cleanupError) {
+            console.error("Error during DOSBox cleanup:", cleanupError);
+          }
+        }
+      });
+
+      // Wait a moment to ensure the process starts
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      return { success: true };
+    }
+  } catch (error) {
+    console.error("Error setting up DOSBox:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Update the launchGame function to use our new setupDOSBox function
+ipcMain.handle("launch-game", async (event, { gamePath }) => {
+  console.log(`Attempting to launch game from path: ${gamePath}`);
+
+  // Extract game ID from path
+  const gameId = path.basename(gamePath);
+  console.log(`Game ID: ${gameId}`);
+
+  try {
+    // Get all files in the game directory
+    const gameFiles = fs.readdirSync(gamePath);
+    console.log("Game files found:", gameFiles);
+
+    // Look for specific executables based on game ID
+    const gameExeMapping = {
+      "commander-keen": "KEEN4E.EXE",
+      doom: "DOOM.EXE",
+      "oregon-trail": "OREGON.EXE",
+      "prince-of-persia": "PRINCE.EXE",
+      wolf3d: "WOLF3D.EXE",
+      "jazz-jackrabbit": "JAZZ.EXE",
+      "duke-nukem": "DUKE.EXE",
+      lemmings: "LEMM.EXE",
+      // Add more mappings as needed
+    };
+
+    // Determine the executable to run
+    let executableFile;
+
+    // First try the specific mapping
+    if (gameExeMapping[gameId] && gameFiles.includes(gameExeMapping[gameId])) {
+      executableFile = gameExeMapping[gameId];
+    } else {
+      // Look for common executable patterns
+      const commonPatterns = [
+        // Exact match for game ID (e.g., DOOM.EXE for doom)
+        new RegExp(`^${gameId}\\.exe$`, "i"),
+        // Game ID without hyphens (e.g., ORTRAIL.EXE for oregon-trail)
+        new RegExp(`^${gameId.replace(/-/g, "")}\\.exe$`, "i"),
+        // First 6 characters of game ID (e.g., OREGON.EXE for oregon-trail)
+        new RegExp(`^${gameId.substring(0, 6)}.*\\.exe$`, "i"),
+        // First 5 characters of game ID
+        new RegExp(`^${gameId.substring(0, 5)}.*\\.exe$`, "i"),
+        // Any EXE file
+        /\.exe$/i,
+        // Any COM file
+        /\.com$/i,
+        // Any BAT file
+        /\.bat$/i,
+      ];
+
+      // Try each pattern until we find a match
+      for (const pattern of commonPatterns) {
+        const match = gameFiles.find((file) => pattern.test(file));
+        if (match) {
+          executableFile = match;
+          break;
         }
       }
-    });
+    }
 
-    // Wait a moment to ensure the process starts
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (executableFile) {
+      console.log(`Found specific executable for ${gameId}: ${executableFile}`);
+      const gameDirPath = path.resolve(gamePath);
+      const gameExePath = executableFile;
 
-    return { success: true };
+      // Use our new setupDOSBox function
+      const result = await setupDOSBox(gameId, gameDirPath, gameExePath);
+
+      return result;
+    } else {
+      console.error(`No suitable executable found for ${gameId}`);
+      return { success: false, error: "No suitable executable found" };
+    }
   } catch (error) {
     console.error("Error launching game:", error);
     return { success: false, error: error.message };

@@ -5,7 +5,7 @@ import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("electron", {
   launchGame: (gamePath) => {
     if (typeof gamePath === "string") {
-      return ipcRenderer.invoke("launch-game", gamePath);
+      return ipcRenderer.invoke("launch-game", { gamePath });
     }
     return Promise.reject(new Error("Invalid game path"));
   },
