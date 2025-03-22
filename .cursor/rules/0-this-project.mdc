@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# This project
+
+- Use `yarn electron-dev` instead of `yarn dev` for most operations
+- If it's already running, don't offer to run it again, just monitor the terminal

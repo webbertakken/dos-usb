@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Quality
+
+- Keep packages up-to-date where possible
+- Suggest ESLint rules when they make sense based on my queries
+- Maintain at least just a couple of unit tests for each area in the code

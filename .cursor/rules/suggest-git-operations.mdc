@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Suggest git operations
+
+- Suggest when to commit changes
+- Suggest when to create a PR and get it merged before continuing

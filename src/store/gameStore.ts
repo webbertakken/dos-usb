@@ -48,8 +48,41 @@ export const useGameStore = create<GameState>((set, get) => {
           console.log("Fetched games:", games);
           set({ games, loading: false });
         } else {
-          // Fallback for development in browser
-          set({ games: [], loading: false });
+          // Fallback for development in browser - provide sample games
+          console.log("Running in browser mode, providing sample games");
+          const sampleGames = [
+            {
+              id: "commander-keen-4",
+              title: "Commander Keen 4: Secret of the Oracle",
+              description:
+                "A well-received sidescrolling platformer developed by iD Software and published by Apogee.",
+              year: "1991",
+              category: "Sidescrolling",
+              thumbnail: "https://www.dosgames.com/screens/keen4.gif",
+              path: "/games/commander-keen-4",
+            },
+            {
+              id: "revenge-of-the-mutant-camels",
+              title: "Revenge of the Mutant Camels",
+              description:
+                "A side-scrolling platforming shooting game where you pilot your goat riding a mutant camel.",
+              year: "1994",
+              category: "Action",
+              thumbnail: "https://www.dosgames.com/screens/revengecamels.png",
+              path: "/games/revenge-of-the-mutant-camels",
+            },
+            {
+              id: "inner-worlds",
+              title: "Inner Worlds",
+              description:
+                "A puzzle platformer with beautiful graphics and challenging gameplay.",
+              year: "1996",
+              category: "Puzzle",
+              thumbnail: "https://www.dosgames.com/screens/iw.gif",
+              path: "/games/inner-worlds",
+            },
+          ];
+          set({ games: sampleGames, loading: false });
         }
       } catch (error) {
         console.error("Error fetching games:", error);

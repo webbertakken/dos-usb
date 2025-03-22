@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaGamepad, FaStore, FaCog } from 'react-icons/fa';
+import { FaGamepad, FaStore } from 'react-icons/fa';
 
 const Navigation: React.FC = () => {
   const pathname = usePathname();
@@ -19,11 +19,6 @@ const Navigation: React.FC = () => {
       name: 'Game Store',
       path: '/store',
       icon: <FaStore className="w-5 h-5 mr-2" />
-    },
-    {
-      name: 'Settings',
-      path: '/settings',
-      icon: <FaCog className="w-5 h-5 mr-2" />
     }
   ];
 

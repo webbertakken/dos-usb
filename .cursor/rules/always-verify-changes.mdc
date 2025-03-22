@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Always verify changes
+
+- The mode I like to work with is to verify every change or set of changes.
+- I will always prefer console errors be piped into the stdout of the server, using a global mechanism for it.
+- I will always prefer that you look at the output of the `yarn dev` or `yarn electron-dev` command. For simple fixes, immediately continue to fix them. For pivotal changes or architectural changes, present me with the options, please.
+- After changes were made, continue monitoring the output from the dev server.

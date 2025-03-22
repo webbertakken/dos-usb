@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Domain-Driven Design (DDD) Guidelines for Frontend
+
+## Architecture
+Adopt Domain-Driven Design patterns specifically tailored for frontend projects, ensuring clarity, maintainability, and scalability.
+
+## Principles
+
+- **Bounded Contexts:**
+  - Clearly define bounded contexts around specific frontend domains or user-facing features.
+
+- **Ubiquitous Language:**
+  - Use a consistent language across UI components, state management, documentation, and discussions.
+
+- **Separation of Concerns:**
+  - Clearly separate UI presentation logic from domain logic and state management.
+
+- **Rich Domain Models:**
+  - Develop clear and expressive models for frontend-specific entities and data structures.
+
+- **Immutability:**
+  - Represent state and data using immutable structures or value objects to simplify debugging and enhance predictability.
+
+- **Data Management:**
+  - Use dedicated repositories or services to handle API interactions, caching, and data transformations.
+
+- **State Management:**
+  - Clearly manage and isolate state logic within relevant bounded contexts, ensuring predictable and efficient state transitions.
+
+## File Organization
+
+- Structure your files and folders according to bounded contexts or specific user features to maintain clarity and ease of navigation.
+
+## Code Quality
+
+- Prioritize readability, maintainability, and consistency in alignment with these frontend DDD principles.
