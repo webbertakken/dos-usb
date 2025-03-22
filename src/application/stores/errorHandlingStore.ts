@@ -20,7 +20,7 @@ interface ErrorHandlingState {
 // Initialize service
 const errorHandlingService = new ElectronErrorHandlingService();
 
-export const useErrorHandlingStore = create<ErrorHandlingState>((set, get) => ({
+export const useErrorHandlingStore = create<ErrorHandlingState>((set) => ({
   errors: [],
   hasErrors: false,
 

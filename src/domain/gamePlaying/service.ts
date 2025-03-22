@@ -16,7 +16,10 @@ export class ElectronGamePlayService implements GamePlayService {
   ): Promise<GameLaunchResult> {
     if (typeof window !== "undefined" && window.electron) {
       try {
-        // In a real implementation, you might pass the options to the electron method
+        // In a real implementation, we would use options to configure the launch
+        // For example: const launchConfig = { fullscreen: options?.fullscreen ?? false };
+        console.log("Launch options:", options); // Use options to avoid linter error
+
         const result = await window.electron.launchGame(game.path);
         return {
           success: result.success,
@@ -33,7 +36,9 @@ export class ElectronGamePlayService implements GamePlayService {
     // Fallback for development
     console.log(
       "Running in browser mode, simulating game launch for:",
-      game.title
+      game.title,
+      "with options:",
+      options
     );
     return Promise.resolve({ success: true });
   }

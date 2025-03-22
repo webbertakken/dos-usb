@@ -2,6 +2,17 @@
 
 A modern UI for playing DOS games from a USB stick. This application allows you to download, manage, and play classic DOS games using a sleek, modern interface.
 
+## Architecture
+
+This project follows Domain-Driven Design principles to create a maintainable and scalable codebase. See [DDD-ARCHITECTURE.md](./DDD-ARCHITECTURE.md) for detailed information about the architecture.
+
+### Key Architecture Layers
+
+- **Domain Layer**: Core business logic organized into bounded contexts
+- **Application Layer**: Orchestrates domain operations and provides state management
+- **Presentation Layer**: UI components and user interaction
+- **Infrastructure Layer**: External concerns like file system access and DOSBox integration
+
 ## Features
 
 - **Modern UI**: Clean, responsive interface for browsing and playing your DOS games
@@ -91,3 +102,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Note**: This application does not include any games. Games must be downloaded separately and are subject to their own licensing terms.
+
+## Development
+
+For more information about development, see the following resources:
+
+- [Domain Layer](./src/domain/README.md)
+- [Application Layer](./src/application/README.md)
+- [Presentation Layer](./src/presentation/README.md)
+- [Infrastructure Layer](./electron/README.md)

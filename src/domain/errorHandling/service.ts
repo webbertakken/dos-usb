@@ -5,6 +5,14 @@
 
 import { ErrorData, ErrorHandlingService, ErrorSeverity } from "./types";
 
+// Define a type that matches what the Electron bridge expects
+interface ElectronErrorData {
+  message?: string;
+  stack?: string;
+  componentStack?: string;
+  [key: string]: string | undefined;
+}
+
 /**
  * Electron implementation of the ErrorHandlingService
  */
@@ -29,12 +37,14 @@ export class ElectronErrorHandlingService implements ErrorHandlingService {
     if (typeof window !== "undefined" && window.electron) {
       try {
         // Convert to format expected by electron bridge
-        const electronErrorData: ErrorData = {
+        const electronErrorData: ElectronErrorData = {
           message: errorWithSeverity.message,
           stack: errorWithSeverity.stack,
           componentStack: errorWithSeverity.componentStack,
-          // Convert any non-string values to strings for compatibility
-          severityLevel: severity,
+          // Convert severity to string for compatibility
+          severityLevel: severity.toString(),
+          // Include any other string properties
+          ...this.convertToStringValues(errorWithSeverity),
         };
 
         await window.electron.logError(electronErrorData);
@@ -51,5 +61,26 @@ export class ElectronErrorHandlingService implements ErrorHandlingService {
 
   clearErrors(): void {
     this.lastError = null;
+  }
+
+  /**
+   * Converts all values in an object to strings if they're not undefined
+   */
+  private convertToStringValues(
+    obj: Record<string, unknown>
+  ): Record<string, string | undefined> {
+    const result: Record<string, string | undefined> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (value === undefined) {
+        result[key] = undefined;
+      } else if (typeof value === "object" && value !== null) {
+        result[key] = JSON.stringify(value);
+      } else {
+        result[key] = String(value);
+      }
+    }
+
+    return result;
   }
 }
