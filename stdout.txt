@@ -1,5 +1,0 @@
-DOSBox version 0.74-3
-Copyright 2002-2019 DOSBox Team, published under GNU GPL.
----
-Exit to error: Can't init SDL No available video device
-
