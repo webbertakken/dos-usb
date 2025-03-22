@@ -63,9 +63,9 @@ const StoreGameCard: React.FC<StoreGameCardProps> = ({
   return (
     <div className="flex flex-col bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
       <div className="relative h-40 w-full">
-        {game.thumbnail ? (
+        {game.image ? (
           <Image
-            src={game.thumbnail}
+            src={game.image}
             alt={game.title}
             className="object-cover"
             fill

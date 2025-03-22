@@ -55,7 +55,7 @@ This project follows Domain-Driven Design principles to create a maintainable an
 The home screen displays all your installed DOS games. You can:
 - Search for games by title, description, or category
 - Launch games with a single click
-- Edit game metadata like title, description, and thumbnail
+- Edit game metadata like title, description, and image
 
 ### Game Store
 

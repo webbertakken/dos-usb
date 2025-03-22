@@ -48,101 +48,15 @@ export const useGameStore = create<GameState>((set, get) => {
           console.log("Fetched games:", games);
           set({ games, loading: false });
         } else {
-          // Fallback for development in browser - provide sample games
-          console.log("Running in browser mode, providing sample games");
-          const sampleGames = [
-            {
-              id: "commander-keen-1",
-              title: "Commander Keen 1: Marooned on Mars",
-              description:
-                "The first episode in the Commander Keen series where Billy Blaze must stop the Vorticons from destroying Earth.",
-              year: "1990",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keen1.gif",
-              path: "/games/commander-keen-1",
-            },
-            {
-              id: "commander-keen-2",
-              title: "Commander Keen 2: The Earth Explodes",
-              description:
-                "The second episode in the series where Keen must continue his battle against the Vorticons.",
-              year: "1990",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keen2.gif",
-              path: "/games/commander-keen-2",
-            },
-            {
-              id: "commander-keen-3",
-              title: "Commander Keen 3: Keen Must Die!",
-              description:
-                "The final episode of the Vorticons trilogy where Keen must face the Grand Intellect on the Vorticon homeworld.",
-              year: "1990",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keen3.gif",
-              path: "/games/commander-keen-3",
-            },
-            {
-              id: "commander-keen-4",
-              title: "Commander Keen 4: Secret of the Oracle",
-              description:
-                "A well-received sidescrolling platformer developed by iD Software and published by Apogee.",
-              year: "1991",
-              category: "Sidescrolling",
-              thumbnail: "https://www.dosgames.com/screens/keen4.gif",
-              path: "/games/commander-keen-4",
-            },
-            {
-              id: "commander-keen-5",
-              title: "Commander Keen 5: The Armageddon Machine",
-              description:
-                "The second episode in the Dreams trilogy where Keen must destroy the Shikadi Armageddon Machine.",
-              year: "1991",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keen5.gif",
-              path: "/games/commander-keen-5",
-            },
-            {
-              id: "commander-keen-6",
-              title: "Commander Keen 6: Aliens Ate My Baby Sitter!",
-              description:
-                "The final episode of the Dreams trilogy where Keen must rescue his babysitter from the Bloogs.",
-              year: "1991",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keen6.gif",
-              path: "/games/commander-keen-6",
-            },
-            {
-              id: "commander-keen-dreams",
-              title: "Commander Keen: Keen Dreams",
-              description:
-                "Often called 'Keen 3.5', a standalone game where Keen fights evil vegetables in his dreams.",
-              year: "1991",
-              category: "Platformer",
-              thumbnail: "https://www.dosgames.com/screens/keendreams.gif",
-              path: "/games/commander-keen-dreams",
-            },
-            {
-              id: "revenge-of-the-mutant-camels",
-              title: "Revenge of the Mutant Camels",
-              description:
-                "A side-scrolling platforming shooting game where you pilot your goat riding a mutant camel.",
-              year: "1994",
-              category: "Action",
-              thumbnail: "https://www.dosgames.com/screens/revengecamels.png",
-              path: "/games/revenge-of-the-mutant-camels",
-            },
-            {
-              id: "inner-worlds",
-              title: "Inner Worlds",
-              description:
-                "A puzzle platformer with beautiful graphics and challenging gameplay.",
-              year: "1996",
-              category: "Puzzle",
-              thumbnail: "https://www.dosgames.com/screens/iw.gif",
-              path: "/games/inner-worlds",
-            },
-          ];
-          set({ games: sampleGames, loading: false });
+          // No fallback for non-Electron environment
+          console.log(
+            "Electron API not available. Running in browser mode without game access."
+          );
+          set({
+            games: [],
+            loading: false,
+            error: "Game functionality requires Electron",
+          });
         }
       } catch (error) {
         console.error("Error fetching games:", error);
@@ -154,121 +68,54 @@ export const useGameStore = create<GameState>((set, get) => {
       try {
         set({ loading: true, error: null });
 
-        // Use the specified games directly
-        const games = [
-          {
-            id: "commander-keen-1",
-            title: "Commander Keen 1: Marooned on Mars",
-            description:
-              "The first episode in the Commander Keen series where Billy Blaze must stop the Vorticons from destroying Earth.",
-            year: "1990",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen1.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-1-marooned-on-mars",
-            fileSize: "334k",
-          },
-          {
-            id: "commander-keen-2",
-            title: "Commander Keen 2: The Earth Explodes",
-            description:
-              "The second episode in the series where Keen must continue his battle against the Vorticons.",
-            year: "1990",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen2.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-2-the-earth-explodes",
-            fileSize: "496k",
-          },
-          {
-            id: "commander-keen-3",
-            title: "Commander Keen 3: Keen Must Die!",
-            description:
-              "The final episode of the Vorticons trilogy where Keen must face the Grand Intellect on the Vorticon homeworld.",
-            year: "1990",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen3.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-3-keen-must-die",
-            fileSize: "532k",
-          },
-          {
-            id: "commander-keen-4",
-            title: "Commander Keen 4: Secret of the Oracle",
-            description:
-              "A well-received sidescrolling platformer developed by iD Software and published by Apogee.",
-            year: "1991",
-            category: "Sidescrolling",
-            thumbnail: "https://www.dosgames.com/screens/keen4.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-4-secret-of-the-oracle",
-            fileSize: "623k",
-          },
-          {
-            id: "commander-keen-5",
-            title: "Commander Keen 5: The Armageddon Machine",
-            description:
-              "The second episode in the Dreams trilogy where Keen must destroy the Shikadi Armageddon Machine.",
-            year: "1991",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen5.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-5-the-armageddon-machine",
-            fileSize: "734k",
-          },
-          {
-            id: "commander-keen-6",
-            title: "Commander Keen 6: Aliens Ate My Baby Sitter!",
-            description:
-              "The final episode of the Dreams trilogy where Keen must rescue his babysitter from the Bloogs.",
-            year: "1991",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keen6.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-6-aliens-ate-my-baby-sitter",
-            fileSize: "830k",
-          },
-          {
-            id: "commander-keen-dreams",
-            title: "Commander Keen: Keen Dreams",
-            description:
-              "Often called 'Keen 3.5', a standalone game where Keen fights evil vegetables in his dreams.",
-            year: "1991",
-            category: "Platformer",
-            thumbnail: "https://www.dosgames.com/screens/keendreams.gif",
-            downloadUrl:
-              "https://www.dosgames.com/game/commander-keen-keen-dreams",
-            fileSize: "487k",
-          },
-          {
-            id: "revenge-of-the-mutant-camels",
-            title: "Revenge of the Mutant Camels",
-            description:
-              "A side-scrolling platforming shooting game where you pilot your goat riding a mutant camel.",
-            year: "1994",
-            category: "Action",
-            thumbnail: "https://www.dosgames.com/screens/revengecamels.png",
-            downloadUrl:
-              "https://www.dosgames.com/game/revenge-of-the-mutant-camels",
-            fileSize: "485k",
-          },
-          {
-            id: "inner-worlds",
-            title: "Inner Worlds",
-            description:
-              "A puzzle platformer with beautiful graphics and challenging gameplay.",
-            year: "1996",
-            category: "Puzzle",
-            thumbnail: "https://www.dosgames.com/screens/iw.gif",
-            downloadUrl: "https://www.dosgames.com/game/inner-worlds",
-            fileSize: "1.1 MB",
-          },
-        ];
+        let games = [];
+        try {
+          // Try to fetch from API endpoint
+          const response = await fetch("/api/games");
+          if (!response.ok) {
+            throw new Error(`API returned status: ${response.status}`);
+          }
+          games = await response.json();
+          console.log("Successfully fetched games from API");
+        } catch (apiError) {
+          console.error("Error fetching from API:", apiError);
+
+          // Fallback data for development - this helps when API has issues
+          console.log("Using fallback game data for development");
+          games = [
+            {
+              id: "commander-keen-1",
+              title: "Commander Keen 1: Marooned on Mars",
+              description: "The first episode in the Commander Keen series",
+              year: "1990",
+              category: "Platformer",
+              image: "https://www.dosgames.com/screens/keen1.gif",
+              downloadUrl:
+                "https://www.dosgames.com/game/commander-keen-1-marooned-on-mars",
+              fileSize: "334k",
+            },
+            {
+              id: "commander-keen-2",
+              title: "Commander Keen 2: The Earth Explodes",
+              description: "The second episode in the Commander Keen series",
+              year: "1990",
+              category: "Platformer",
+              image: "https://www.dosgames.com/screens/keen2.gif",
+              downloadUrl:
+                "https://www.dosgames.com/game/commander-keen-2-the-earth-explodes",
+              fileSize: "496k",
+            },
+          ];
+        }
 
         set({ dosgamesList: games, loading: false });
       } catch (error) {
         console.error("Error fetching dosgames list:", error);
-        set({ error: "Failed to fetch games list", loading: false });
+        set({
+          error: "Failed to fetch games list",
+          loading: false,
+          dosgamesList: [], // Ensure we have an empty array at minimum
+        });
       }
     },
 
@@ -290,8 +137,8 @@ export const useGameStore = create<GameState>((set, get) => {
             throw new Error(result.error || "Failed to launch game");
           }
         } else {
-          // Fallback for development in browser
-          console.log("Game would launch here in Electron:", game.title);
+          // No fallback for non-Electron environment
+          throw new Error("Game launching requires Electron");
         }
 
         set({ loading: false });
@@ -326,69 +173,8 @@ export const useGameStore = create<GameState>((set, get) => {
           // Refresh the games list after download
           await get().fetchGames();
         } else {
-          // Mock implementation for browser development
-          console.log(
-            "Would download game:",
-            game.title,
-            "from",
-            game.downloadUrl
-          );
-
-          // Simulate download progress
-          let progress = 0;
-          const interval = setInterval(() => {
-            progress += 10;
-            set((state) => ({
-              downloadStatus: {
-                ...state.downloadStatus,
-                [game.id]: { gameId: game.id, status: "downloading", progress },
-              },
-            }));
-
-            if (progress >= 100) {
-              clearInterval(interval);
-
-              // Simulate extraction
-              set((state) => ({
-                downloadStatus: {
-                  ...state.downloadStatus,
-                  [game.id]: {
-                    gameId: game.id,
-                    status: "extracting",
-                    progress: 0,
-                  },
-                },
-              }));
-
-              // Simulate completion after a delay
-              setTimeout(() => {
-                const newGame: Game = {
-                  id: game.id,
-                  title: game.title,
-                  description: game.description,
-                  year: game.year,
-                  category: game.category,
-                  thumbnail: game.thumbnail,
-                  path: `/games/${game.id}`,
-                };
-
-                set((state) => ({
-                  games: [...state.games, newGame],
-                  downloadStatus: {
-                    ...state.downloadStatus,
-                    [game.id]: {
-                      gameId: game.id,
-                      status: "completed",
-                      progress: 100,
-                    },
-                  },
-                }));
-
-                // Refresh games list after mock download too
-                get().fetchGames();
-              }, 1000);
-            }
-          }, 300);
+          // No fallback for non-Electron environment
+          throw new Error("Download functionality requires Electron");
         }
       } catch (error) {
         console.error("Error downloading game:", error);

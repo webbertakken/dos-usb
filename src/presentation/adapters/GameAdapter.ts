@@ -19,7 +19,7 @@ export interface GameCardViewModel {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
   isInstalled: boolean;
   isDownloading: boolean;
   downloadProgress?: number;
@@ -49,7 +49,7 @@ export class GameAdapter {
       description: game.description,
       year: game.year,
       category: game.category,
-      thumbnail: game.thumbnail,
+      image: game.image,
       isInstalled,
       isDownloading:
         downloadStatus?.status === "downloading" ||

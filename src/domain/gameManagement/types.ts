@@ -9,7 +9,7 @@ export interface Game {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
   path: string;
 }
 
@@ -18,7 +18,7 @@ export interface GameMetadata {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
 }
 
 /**

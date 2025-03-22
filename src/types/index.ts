@@ -4,7 +4,7 @@ export interface Game {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
   path: string;
 }
 
@@ -14,7 +14,7 @@ export interface DosgamesListItem {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
   downloadUrl: string;
   fileSize?: string;
 }
@@ -24,7 +24,7 @@ export interface GameMetadata {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
 }
 
 export interface ErrorData {

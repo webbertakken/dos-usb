@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# No-mocks
+
+- When prototyping the application, connect to APIs directly instead of using mocks.
+- Do not use mocks unless specifically for testing purposes.
+

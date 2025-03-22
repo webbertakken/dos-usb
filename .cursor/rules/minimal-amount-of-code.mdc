@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Minimal amount of code
+
+- Use a minimal amount of code. 
+- Just focus on really making that code work well.
+- Stay descriptive with function names and members.

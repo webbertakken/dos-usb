@@ -20,7 +20,7 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
     description: '',
     year: '',
     category: '',
-    thumbnail: ''
+    image: ''
   });
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
         description: game.description,
         year: game.year,
         category: game.category,
-        thumbnail: game.thumbnail
+        image: game.image
       });
     }
   }, [game]);
@@ -136,14 +136,14 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-300 mb-1">
-                Thumbnail URL
+              <label htmlFor="image" className="block text-sm font-medium text-gray-300 mb-1">
+                Image URL
               </label>
               <input
                 type="url"
-                id="thumbnail"
-                name="thumbnail"
-                value={formData.thumbnail}
+                id="image"
+                name="image"
+                value={formData.image}
                 onChange={handleChange}
                 placeholder="https://example.com/image.jpg"
                 className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"

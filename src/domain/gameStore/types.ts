@@ -9,7 +9,7 @@ export interface DosgamesListItem {
   description: string;
   year: string;
   category: string;
-  thumbnail: string;
+  image: string;
   downloadUrl: string;
   fileSize?: string;
 }

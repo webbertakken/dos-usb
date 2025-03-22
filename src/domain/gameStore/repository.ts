@@ -17,22 +17,22 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
   }
 
   async getDosgamesList(): Promise<DosgamesListItem[]> {
-    // In a real implementation, this would come from an API
-    // For now, return a sample list
-    return [
-      {
-        id: "commander-keen-1",
-        title: "Commander Keen 1: Marooned on Mars",
-        description:
-          "The first episode in the Commander Keen series where Billy Blaze must stop the Vorticons from destroying Earth.",
-        year: "1990",
-        category: "Platformer",
-        thumbnail: "https://www.dosgames.com/screens/keen1.gif",
-        downloadUrl: "https://www.dosgames.com/files/KEEN1.ZIP",
-        fileSize: "235 KB",
-      },
-      // More games would be included here...
-    ];
+    try {
+      // Fetch games from the API
+      const response = await fetch("/api/games");
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch games: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const games = await response.json();
+      return games;
+    } catch (error) {
+      console.error("Error fetching games list:", error);
+      throw error;
+    }
   }
 
   async downloadGame(
@@ -54,14 +54,11 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
       }
     }
 
-    // Fallback for development
-    console.log("Running in browser mode, simulating download");
-    return new Promise((resolve) => {
-      // Simulate download process
-      setTimeout(() => {
-        resolve({ success: true, gameId: game.id });
-      }, 2000);
-    });
+    // If Electron is not available, return an error
+    return {
+      success: false,
+      error: "Download functionality is only available in the Electron app",
+    };
   }
 
   getDownloadStatus(gameId: string): DownloadStatus | undefined {
