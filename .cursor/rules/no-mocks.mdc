@@ -7,4 +7,5 @@ alwaysApply: false
 
 - When prototyping the application, connect to APIs directly instead of using mocks.
 - Do not use mocks unless specifically for testing purposes.
+- Only fallbacks that would be useful in production too, no prototyping specific fallbacks.
 
