@@ -100,126 +100,38 @@ app.on("activate", () => {
   }
 });
 
-/**
- * Creates mock game files for development/testing
- * @param {string} gameDir - Directory where the game is located
- * @param {string} gameId - ID of the game
- * @param {string} gameTitle - Title of the game
- * @returns {string} - Path to the mock game file
- * @deprecated This function is maintained for backward compatibility and reference
- */
-function createMockGameFiles(gameDir, gameId, gameTitle) {
-  try {
-    console.log(`Creating executable game files for: ${gameId}`);
+// Add a function to ensure DOSBox is fully terminated before starting a new instance
+async function ensureDOSBoxClosed() {
+  return new Promise((resolve) => {
+    try {
+      console.log(
+        "Ensuring no DOSBox instances are running before starting a new one"
+      );
+      const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+        windowsHide: true,
+        shell: true,
+      });
 
-    // Create the game directory if it doesn't exist
-    if (!fs.existsSync(gameDir)) {
-      fs.mkdirSync(gameDir, { recursive: true });
+      cleanup.on("close", (code) => {
+        console.log(`DOSBox cleanup exited with code ${code}`);
+        // Wait a moment to ensure processes are fully terminated
+        setTimeout(resolve, 500);
+      });
+
+      cleanup.on("error", () => {
+        // Error likely means no DOSBox was running, which is fine
+        console.log("No DOSBox instances were running");
+        resolve();
+      });
+    } catch (error) {
+      // If the command fails, it's likely because DOSBox isn't running
+      console.log(
+        "No DOSBox instances found or error in cleanup:",
+        error.message
+      );
+      resolve();
     }
-
-    // Create a demo batch file that launches a simple text-based game
-    const gameFile = "game.bat";
-    const gamePath = path.join(gameDir, gameFile);
-
-    // Create a runnable text-based game
-    const gameContent = `@echo off
-mode con cols=80 lines=25
-color 0A
-title ${gameTitle}
-
-:START
-cls
-echo ===================================
-echo   ${gameTitle.toUpperCase()}
-echo ===================================
-echo.
-echo Welcome to this DOS game!
-echo.
-echo 1. Start Game
-echo 2. Instructions
-echo 3. Quit
-echo.
-echo Enter your choice:
-choice /c 123 /n
-if errorlevel 3 goto END
-if errorlevel 2 goto INSTRUCTIONS
-if errorlevel 1 goto GAME
-
-:INSTRUCTIONS
-cls
-echo INSTRUCTIONS
-echo ============
-echo.
-echo This is a simple text adventure. You can navigate by typing
-echo the number of your choice.
-echo.
-echo Press any key to return to the menu...
-pause > nul
-goto START
-
-:GAME
-cls
-echo You are in a dark room. What do you do?
-echo.
-echo 1. Look for a light switch
-echo 2. Call out for help
-echo 3. Exit the room
-echo.
-choice /c 123 /n
-if errorlevel 3 goto ROOM2
-if errorlevel 2 goto HELP
-if errorlevel 1 goto LIGHT
-
-:LIGHT
-cls
-echo You found a light switch!
-echo The room is illuminated, revealing a door.
-echo.
-echo 1. Go through the door
-echo 2. Return to the previous choice
-echo.
-choice /c 12 /n
-if errorlevel 2 goto GAME
-if errorlevel 1 goto ROOM2
-
-:HELP
-cls
-echo Your voice echoes in the empty room.
-echo No one answers.
-echo.
-echo Press any key to continue...
-pause > nul
-goto GAME
-
-:ROOM2
-cls
-echo You found your way out!
-echo Congratulations on completing this demo game.
-echo.
-echo Press any key to return to the menu...
-pause > nul
-goto START
-
-:END
-cls
-echo Thanks for playing ${gameTitle}!
-echo.
-echo Game ID: ${gameId}
-echo Directory: ${gameDir}
-echo.
-echo Press any key to exit...
-pause > nul
-exit
-`;
-
-    fs.writeFileSync(gamePath, gameContent);
-    console.log(`Created playable game file at: ${gamePath}`);
-
-    return gamePath;
-  } catch (error) {
-    console.error(`Error creating game files:`, error);
-    return "";
-  }
+  });
 }
 
 /**
@@ -227,11 +139,17 @@ exit
  */
 async function setupDOSBox(gameId, gameDir, gameExe) {
   try {
+    // First ensure any existing DOSBox instances are closed
+    await ensureDOSBoxClosed();
+
     // Get primary screen dimensions to determine optimal window size
     const screen = electron.screen.getPrimaryDisplay();
     const { width, height } = screen.workAreaSize;
 
     console.log(`Primary screen dimensions: ${width}x${height}`);
+    console.log(
+      `Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`
+    );
 
     // Path to DOSBoxPortable executable
     const dosboxPortablePath = path.join(
@@ -486,16 +404,35 @@ cycles=${cycles}
         }
       }
 
-      // Add our custom autoexec section with changes to prevent early exit
+      // Determine if this is a batch file
+      const isBatFile = gameExe.toLowerCase().endsWith(".bat");
+
+      // Check if we need special handling for START.EXE (common for some games)
+      const isStartExe = gameExe.toLowerCase() === "start.exe";
+
+      // Create a universal autoexec section that handles common cases
       const autoexecSection = `
 [autoexec]
 @echo off
 echo DOS-USB Game Launcher
 echo --------------------
 mount c "${gameDir.replace(/\\/g, "/")}"
-mount d "${gameDir.replace(/\\/g, "/")}" -t cdrom
 c:
+cls
+echo Loading game: ${gameId}
+echo.
+${isBatFile ? "echo Running batch file..." : "echo Executing: " + gameExe}
+echo.
+echo Available files:
+dir *.exe
+echo.
 ${gameExe}
+echo.
+echo If the game closed or didn't start properly:
+echo - For games that need a START command, type: START
+echo - For other games, try running the executable directly
+echo.
+echo Type 'EXIT' when done to return to Windows.
 `;
 
       newConfig += autoexecSection;
@@ -528,34 +465,39 @@ ${gameExe}
 
       child.on("error", (err) => {
         console.error("Failed to start DOSBoxPortable:", err);
-      return { success: false, error: err.message };
-    });
+        return { success: false, error: err.message };
+      });
+
+      // For START.EXE, add a delay to prevent premature exit
+      if (isStartExe) {
+        console.log("Using special handling for START.EXE launcher");
+        // Wait a bit longer before resolving to give the game time to launch
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
 
       child.on("close", (code) => {
         console.log(`DOSBoxPortable process exited with code ${code}`);
 
-        // Clean up any leftover processes - only if the main process exited abnormally
-        if (code !== 0) {
-          try {
-            // On Windows, use taskkill to clean up
-            const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
-              windowsHide: true,
-              shell: true,
-            });
+        // Clean up any leftover processes - always clean up to be safe
+        try {
+          // On Windows, use taskkill to clean up
+          const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+            windowsHide: true,
+            shell: true,
+          });
 
-            cleanup.on("close", (code) => {
-              console.log(`DOSBox cleanup exited with code ${code}`);
-            });
-          } catch (cleanupError) {
-            console.error("Error during DOSBox cleanup:", cleanupError);
-          }
+          cleanup.on("close", (code) => {
+            console.log(`DOSBox cleanup exited with code ${code}`);
+          });
+        } catch (cleanupError) {
+          console.error("Error during DOSBox cleanup:", cleanupError);
         }
       });
 
       // Wait a moment to ensure the process starts
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return { success: true };
+      return { success: true };
     }
   } catch (error) {
     console.error("Error setting up DOSBox:", error);
@@ -567,6 +509,9 @@ ${gameExe}
 ipcMain.handle("launch-game", async (event, { gamePath }) => {
   console.log(`Attempting to launch game from path: ${gamePath}`);
 
+  // First ensure any existing DOSBox instances are closed
+  await ensureDOSBoxClosed();
+
   // Extract game ID from path
   const gameId = path.basename(gamePath);
   console.log(`Game ID: ${gameId}`);
@@ -576,36 +521,43 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
     const gameFiles = fs.readdirSync(gamePath);
     console.log("Game files found:", gameFiles);
 
-    // Look for specific executables based on game ID
-    const gameExeMapping = {
-      "commander-keen": "KEEN4E.EXE",
+    // Common executable mappings for popular games - only keeps most essential ones
+    const commonGameExes = {
+      "commander-keen-dreams": "START.EXE", // Special case: Keen Dreams needs START.EXE
       doom: "DOOM.EXE",
-      "oregon-trail": "OREGON.EXE",
-      "prince-of-persia": "PRINCE.EXE",
       wolf3d: "WOLF3D.EXE",
-      "jazz-jackrabbit": "JAZZ.EXE",
-      "duke-nukem": "DUKE.EXE",
-      lemmings: "LEMM.EXE",
-      // Add more mappings as needed
     };
 
     // Determine the executable to run
     let executableFile;
 
-    // First try the specific mapping
-    if (gameExeMapping[gameId] && gameFiles.includes(gameExeMapping[gameId])) {
-      executableFile = gameExeMapping[gameId];
-    } else {
-      // Look for common executable patterns
-      const commonPatterns = [
+    // 1. First check for game.bat (our mock game setup)
+    if (gameFiles.includes("game.bat")) {
+      executableFile = "game.bat";
+      console.log(`Using game.bat for ${gameId}`);
+    }
+    // 2. Check for game-specific mapping
+    else if (
+      commonGameExes[gameId] &&
+      gameFiles.includes(commonGameExes[gameId])
+    ) {
+      executableFile = commonGameExes[gameId];
+      console.log(`Using known executable for ${gameId}: ${executableFile}`);
+    }
+    // 3. Look for START.EXE or START.BAT (common launchers)
+    else if (gameFiles.includes("START.EXE")) {
+      executableFile = "START.EXE";
+      console.log(`Using START.EXE launcher for ${gameId}`);
+    } else if (gameFiles.includes("START.BAT")) {
+      executableFile = "START.BAT";
+      console.log(`Using START.BAT launcher for ${gameId}`);
+    }
+    // 4. Look for game ID matching executable
+    else {
+      // Try finding an executable by common patterns
+      const patterns = [
         // Exact match for game ID (e.g., DOOM.EXE for doom)
-        new RegExp(`^${gameId}\\.exe$`, "i"),
-        // Game ID without hyphens (e.g., ORTRAIL.EXE for oregon-trail)
         new RegExp(`^${gameId.replace(/-/g, "")}\\.exe$`, "i"),
-        // First 6 characters of game ID (e.g., OREGON.EXE for oregon-trail)
-        new RegExp(`^${gameId.substring(0, 6)}.*\\.exe$`, "i"),
-        // First 5 characters of game ID
-        new RegExp(`^${gameId.substring(0, 5)}.*\\.exe$`, "i"),
         // Any EXE file
         /\.exe$/i,
         // Any COM file
@@ -615,7 +567,7 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
       ];
 
       // Try each pattern until we find a match
-      for (const pattern of commonPatterns) {
+      for (const pattern of patterns) {
         const match = gameFiles.find((file) => pattern.test(file));
         if (match) {
           executableFile = match;
@@ -624,17 +576,36 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
       }
     }
 
+    // If we found an executable, launch it
     if (executableFile) {
-      console.log(`Found specific executable for ${gameId}: ${executableFile}`);
+      console.log(`Will execute: ${executableFile} for ${gameId}`);
       const gameDirPath = path.resolve(gamePath);
-      const gameExePath = executableFile;
 
-      // Use our new setupDOSBox function
-      const result = await setupDOSBox(gameId, gameDirPath, gameExePath);
-
-      return result;
+      return await setupDOSBox(gameId, gameDirPath, executableFile);
     } else {
       console.error(`No suitable executable found for ${gameId}`);
+
+      // Create a basic game.bat file to use as fallback
+      const gameBatPath = path.join(gamePath, "game.bat");
+      if (!gameFiles.includes("game.bat")) {
+        fs.writeFileSync(
+          gameBatPath,
+          `@echo off
+echo Loading game...
+echo.
+echo No specific executable was found for this game.
+echo Please check the game files and try again.
+echo.
+echo Available files:
+dir *.exe
+echo.
+pause
+`
+        );
+        console.log(`Created fallback game.bat for ${gameId}`);
+        return await setupDOSBox(gameId, gamePath, "game.bat");
+      }
+
       return { success: false, error: "No suitable executable found" };
     }
   } catch (error) {
@@ -761,7 +732,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
           );
 
           try {
-          // Fetch the game page
+            // Fetch the game page
             const response = await axios.get(gameInfo.downloadUrl, {
               timeout: 10000, // 10 second timeout
               headers: {
@@ -774,101 +745,101 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
               "Successfully fetched game page, searching for download links"
             );
 
-          const dom = new JSDOM(response.data);
-          const document = dom.window.document;
+            const dom = new JSDOM(response.data);
+            const document = dom.window.document;
 
-          // Look for the main download button (green button with "DOWNLOAD THE GAME" text)
-          const downloadButton = Array.from(
+            // Look for the main download button (green button with "DOWNLOAD THE GAME" text)
+            const downloadButton = Array.from(
               document.querySelectorAll(
                 ".downloadbutton, a.button, a.green, a strong, a b"
               )
-          ).find((el) => {
+            ).find((el) => {
               const text = (el.textContent || "").toLowerCase();
-            return (
-              text.includes("download the game") ||
+              return (
+                text.includes("download the game") ||
                 text.includes("download game") ||
                 text.includes("download") ||
                 text === "download"
-            );
-          });
+              );
+            });
 
-          if (downloadButton) {
-            // Get the closest anchor element (either the button itself or its parent)
-            const downloadLink =
+            if (downloadButton) {
+              // Get the closest anchor element (either the button itself or its parent)
+              const downloadLink =
                 downloadButton.tagName === "A"
                   ? downloadButton
                   : downloadButton.closest("a") ||
-              downloadButton.parentElement?.closest("a");
+                    downloadButton.parentElement?.closest("a");
 
-            if (downloadLink) {
-              const href = downloadLink.getAttribute("href");
-              if (href) {
-                const directLink = href.startsWith("http")
-                  ? href
+              if (downloadLink) {
+                const href = downloadLink.getAttribute("href");
+                if (href) {
+                  const directLink = href.startsWith("http")
+                    ? href
                     : `https://www.dosgames.com${
                         href.startsWith("/") ? "" : "/"
                       }${href}`;
-                console.log(
-                  "Found download button with direct link:",
-                  directLink
-                );
-                downloadUrl = directLink;
+                  console.log(
+                    "Found download button with direct link:",
+                    directLink
+                  );
+                  downloadUrl = directLink;
+                }
               }
             }
-          }
 
-          // If we couldn't find the main download button, look for direct file links
-          if (!downloadUrl) {
-            // Look specifically for links to files directory which is the common pattern
-            const fileLinks = Array.from(document.querySelectorAll("a[href]"))
-              .filter((link) => {
-                const href = link.getAttribute("href") || "";
-                // Look specifically for the /files/ pattern used on dosgames.com
-                return (
-                  href.includes("/files/") &&
-                  (href.endsWith(".zip") || href.endsWith(".exe"))
-                );
-              })
-              .map((link) => {
-                const href = link.getAttribute("href");
-                return href.startsWith("http")
-                  ? href
+            // If we couldn't find the main download button, look for direct file links
+            if (!downloadUrl) {
+              // Look specifically for links to files directory which is the common pattern
+              const fileLinks = Array.from(document.querySelectorAll("a[href]"))
+                .filter((link) => {
+                  const href = link.getAttribute("href") || "";
+                  // Look specifically for the /files/ pattern used on dosgames.com
+                  return (
+                    href.includes("/files/") &&
+                    (href.endsWith(".zip") || href.endsWith(".exe"))
+                  );
+                })
+                .map((link) => {
+                  const href = link.getAttribute("href");
+                  return href.startsWith("http")
+                    ? href
                     : `https://www.dosgames.com${
                         href.startsWith("/") ? "" : "/"
                       }${href}`;
-              });
+                });
 
-            if (fileLinks.length > 0) {
-              console.log("Found direct file link:", fileLinks[0]);
-              downloadUrl = fileLinks[0];
+              if (fileLinks.length > 0) {
+                console.log("Found direct file link:", fileLinks[0]);
+                downloadUrl = fileLinks[0];
+              }
             }
-          }
 
-          if (!downloadUrl) {
-            // Last resort: try to find any download-related links
-            const allLinks = Array.from(document.querySelectorAll("a[href]"))
-              .filter((link) => {
-                const href = link.getAttribute("href") || "";
+            if (!downloadUrl) {
+              // Last resort: try to find any download-related links
+              const allLinks = Array.from(document.querySelectorAll("a[href]"))
+                .filter((link) => {
+                  const href = link.getAttribute("href") || "";
                   const text = (link.textContent || "").toLowerCase();
-                return (
-                  (href.includes("download") || text.includes("download")) &&
-                  (href.endsWith(".zip") ||
-                    href.endsWith(".exe") ||
-                    href.includes("file="))
-                );
-              })
-              .map((link) => {
-                const href = link.getAttribute("href");
-                return href.startsWith("http")
-                  ? href
+                  return (
+                    (href.includes("download") || text.includes("download")) &&
+                    (href.endsWith(".zip") ||
+                      href.endsWith(".exe") ||
+                      href.includes("file="))
+                  );
+                })
+                .map((link) => {
+                  const href = link.getAttribute("href");
+                  return href.startsWith("http")
+                    ? href
                     : `https://www.dosgames.com${
                         href.startsWith("/") ? "" : "/"
                       }${href}`;
-              });
+                });
 
-            if (allLinks.length > 0) {
-              console.log("Found fallback download link:", allLinks[0]);
-              downloadUrl = allLinks[0];
+              if (allLinks.length > 0) {
+                console.log("Found fallback download link:", allLinks[0]);
+                downloadUrl = allLinks[0];
               }
             }
 
@@ -894,66 +865,66 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
 
           if (!downloadUrl) {
             // If we can't find a download link, use mock download instead
-              console.log("No download link found, using mock download");
-              return await mockDownload(gameInfo, gameDir);
+            console.log("No download link found, using mock download");
+            return await mockDownload(gameInfo, gameDir);
           }
         }
 
         try {
-        // Download to a temporary zip file
-        const zipFilePath = path.join(gameDir, `${gameInfo.id}.zip`);
+          // Download to a temporary zip file
+          const zipFilePath = path.join(gameDir, `${gameInfo.id}.zip`);
 
-        // Download the game
-        await downloadFile(downloadUrl, zipFilePath, (progress) => {
+          // Download the game
+          await downloadFile(downloadUrl, zipFilePath, (progress) => {
+            mainWindow.webContents.send("download-status", {
+              gameId: gameInfo.id,
+              status: "downloading",
+              progress: progress,
+            });
+          });
+
+          // Inform renderer that extraction is starting
           mainWindow.webContents.send("download-status", {
             gameId: gameInfo.id,
-            status: "downloading",
-            progress: progress,
+            status: "extracting",
+            progress: 100,
           });
-        });
-
-        // Inform renderer that extraction is starting
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "extracting",
-          progress: 100,
-        });
 
           try {
-        // Extract the game
-        await extract(zipFilePath, { dir: gameDir });
+            // Extract the game
+            await extract(zipFilePath, { dir: gameDir });
 
-        // Delete the zip file after extraction
-        fs.unlinkSync(zipFilePath);
+            // Delete the zip file after extraction
+            fs.unlinkSync(zipFilePath);
 
-        // Create metadata file
-        const metadataPath = path.join(gameDir, "metadata.json");
-        fs.writeFileSync(
-          metadataPath,
-          JSON.stringify(
-            {
-              title: gameInfo.title,
-              description: gameInfo.description,
-              year: gameInfo.year,
-              category: gameInfo.category,
-              thumbnail: gameInfo.thumbnail,
-              downloadUrl: gameInfo.downloadUrl,
-            },
-            null,
-            2
-          )
-        );
+            // Create metadata file
+            const metadataPath = path.join(gameDir, "metadata.json");
+            fs.writeFileSync(
+              metadataPath,
+              JSON.stringify(
+                {
+                  title: gameInfo.title,
+                  description: gameInfo.description,
+                  year: gameInfo.year,
+                  category: gameInfo.category,
+                  thumbnail: gameInfo.thumbnail,
+                  downloadUrl: gameInfo.downloadUrl,
+                },
+                null,
+                2
+              )
+            );
 
-        // Inform renderer that download is complete
-        mainWindow.webContents.send("download-status", {
-          gameId: gameInfo.id,
-          status: "completed",
-        });
+            // Inform renderer that download is complete
+            mainWindow.webContents.send("download-status", {
+              gameId: gameInfo.id,
+              status: "completed",
+            });
 
-        return {
-          success: true,
-          gamePath: gameDir,
-        };
+            return {
+              success: true,
+              gamePath: gameDir,
+            };
           } catch (extractError) {
             console.error("Error extracting game:", extractError);
             // If extraction fails, fall back to mock download
@@ -989,10 +960,10 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
     try {
       return await mockDownload(gameInfo, gameDir);
     } catch {
-    return {
-      success: false,
-      error: error.message,
-    };
+      return {
+        success: false,
+        error: error.message,
+      };
     }
   }
 });
@@ -1106,11 +1077,105 @@ async function mockDownload(gameInfo, gameDir) {
   // Simulate extraction delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Create a mock game.bat file for testing
+  // Common executable names to check for in the game ID
+  // This helps create appropriate mock files for known games
+  const commonExePatterns = {
+    "commander-keen-dreams": "START.EXE", // Special case that uses START.EXE
+    keen: "KEEN",
+    wolf: "WOLF",
+    doom: "DOOM",
+    duke: "DUKE",
+  };
+
+  // Determine the right mock executable to create
+  let mockExeName = null;
+
+  // Check if any known pattern matches the game ID
+  for (const [pattern, exePrefix] of Object.entries(commonExePatterns)) {
+    if (gameInfo.id.includes(pattern)) {
+      // For keen dreams, use the special executable
+      if (pattern === "commander-keen-dreams") {
+        mockExeName = exePrefix;
+      }
+      // Otherwise generate a numbered executable if it's a numbered game
+      else {
+        // Extract any numbers from the game ID
+        const matches = gameInfo.id.match(/\d+/);
+        const number = matches ? matches[0] : "";
+        mockExeName = number ? `${exePrefix}${number}.EXE` : `${exePrefix}.EXE`;
+      }
+      break;
+    }
+  }
+
+  // If no specific pattern matched, use a generic name
+  if (!mockExeName) {
+    mockExeName = "GAME.EXE";
+  }
+
+  // Create a mock game.bat file that will run the appropriate exe
   const gameBatPath = path.join(gameDir, "game.bat");
   fs.writeFileSync(
     gameBatPath,
-    `@echo off\necho Playing ${gameInfo.title || gameInfo.id}\npause`
+    `@echo off
+echo Loading ${gameInfo.title || gameInfo.id}...
+echo.
+if exist ${mockExeName} (
+  ${mockExeName}
+) else (
+  echo Could not find ${mockExeName}
+  echo.
+  echo Available files:
+  dir *.exe
+  echo.
+  pause
+)
+`
+  );
+
+  // Create the mock executable file
+  const exePath = path.join(gameDir, mockExeName);
+  console.log(`Creating mock executable: ${exePath}`);
+  fs.writeFileSync(
+    exePath,
+    `@echo off
+echo This is a mock executable for ${gameInfo.title}.
+echo In a real download, this would be the actual game executable.
+echo.
+echo Press any key to return to DOS...
+pause > nul
+`
+  );
+
+  // For games using START.EXE, also create a necessary companion file
+  if (mockExeName === "START.EXE") {
+    // Games with START.EXE often need a companion file
+    const companionFile = path.join(gameDir, "KDREAMS.EXE");
+    fs.writeFileSync(
+      companionFile,
+      `@echo off
+echo This is a companion file for ${gameInfo.title}.
+echo.
+echo Press any key to return to DOS...
+pause > nul
+`
+    );
+  }
+
+  // Create a README.TXT with general instructions
+  const readmePath = path.join(gameDir, "README.TXT");
+  fs.writeFileSync(
+    readmePath,
+    `${gameInfo.title}
+==============================
+
+This is a mock download of ${gameInfo.title}.
+In a real installation, this would contain the actual game files.
+
+The game should start automatically when launched using the executable: ${mockExeName}
+
+Enjoy the game!
+`
   );
 
   // Create metadata file
