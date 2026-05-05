@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Game, GameMetadata } from '../types';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { Game, GameMetadata } from "../types";
+import { FaSave, FaTimes } from "react-icons/fa";
 
 interface GameEditModalProps {
   game: Game | null;
@@ -9,18 +9,13 @@ interface GameEditModalProps {
   isLoading: boolean;
 }
 
-const GameEditModal: React.FC<GameEditModalProps> = ({
-  game,
-  onClose,
-  onSave,
-  isLoading
-}) => {
+const GameEditModal: React.FC<GameEditModalProps> = ({ game, onClose, onSave, isLoading }) => {
   const [formData, setFormData] = useState<GameMetadata>({
-    title: '',
-    description: '',
-    year: '',
-    category: '',
-    image: ''
+    title: "",
+    description: "",
+    year: "",
+    category: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -30,14 +25,16 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
         description: game.description,
         year: game.year,
         category: game.category,
-        image: game.image
+        image: game.image,
       });
     }
   }, [game]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,10 +51,7 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
       <div className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Edit Game Details</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <FaTimes size={20} />
           </button>
         </div>
@@ -168,7 +162,7 @@ const GameEditModal: React.FC<GameEditModalProps> = ({
               disabled={isLoading}
             >
               <FaSave className="mr-2" />
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

@@ -49,9 +49,7 @@ export const useGameStore = create<GameState>((set, get) => {
           set({ games, loading: false });
         } else {
           // No fallback for non-Electron environment
-          console.log(
-            "Electron API not available. Running in browser mode without game access."
-          );
+          console.log("Electron API not available. Running in browser mode without game access.");
           set({
             games: [],
             loading: false,
@@ -90,8 +88,7 @@ export const useGameStore = create<GameState>((set, get) => {
               year: "1990",
               category: "Platformer",
               image: "https://www.dosgames.com/screens/keen1.gif",
-              downloadUrl:
-                "https://www.dosgames.com/game/commander-keen-1-marooned-on-mars",
+              downloadUrl: "https://www.dosgames.com/game/commander-keen-1-marooned-on-mars",
               fileSize: "334k",
             },
             {
@@ -101,8 +98,7 @@ export const useGameStore = create<GameState>((set, get) => {
               year: "1990",
               category: "Platformer",
               image: "https://www.dosgames.com/screens/keen2.gif",
-              downloadUrl:
-                "https://www.dosgames.com/game/commander-keen-2-the-earth-explodes",
+              downloadUrl: "https://www.dosgames.com/game/commander-keen-2-the-earth-explodes",
               fileSize: "496k",
             },
           ];
@@ -145,8 +141,7 @@ export const useGameStore = create<GameState>((set, get) => {
       } catch (error) {
         console.error("Error launching game:", error);
         set({
-          error:
-            error instanceof Error ? error.message : "Failed to launch game",
+          error: error instanceof Error ? error.message : "Failed to launch game",
           loading: false,
         });
       }
@@ -186,10 +181,7 @@ export const useGameStore = create<GameState>((set, get) => {
             [game.id]: {
               gameId: game.id,
               status: "error",
-              error:
-                error instanceof Error
-                  ? error.message
-                  : "Failed to download game",
+              error: error instanceof Error ? error.message : "Failed to download game",
             },
           },
         }));
@@ -202,24 +194,22 @@ export const useGameStore = create<GameState>((set, get) => {
         get().cleanupDownloadListeners();
 
         // Set up the download status listener
-        removeDownloadStatusListener = window.electron.onDownloadStatus(
-          (status) => {
-            set((state) => ({
-              downloadStatus: {
-                ...state.downloadStatus,
-                [status.gameId]: status,
-              },
-            }));
+        removeDownloadStatusListener = window.electron.onDownloadStatus((status) => {
+          set((state) => ({
+            downloadStatus: {
+              ...state.downloadStatus,
+              [status.gameId]: status,
+            },
+          }));
 
-            // When a download completes or errors, refresh the games list
-            if (status.status === "completed" || status.status === "error") {
-              // Small delay to allow file system operations to complete
-              setTimeout(() => {
-                get().fetchGames();
-              }, 1000);
-            }
+          // When a download completes or errors, refresh the games list
+          if (status.status === "completed" || status.status === "error") {
+            // Small delay to allow file system operations to complete
+            setTimeout(() => {
+              get().fetchGames();
+            }, 1000);
           }
-        );
+        });
       }
     },
 
@@ -239,10 +229,7 @@ export const useGameStore = create<GameState>((set, get) => {
         set({ loading: true, error: null });
 
         if (typeof window !== "undefined" && window.electron) {
-          const result = await window.electron.saveGameMetadata(
-            gameId,
-            metadata
-          );
+          const result = await window.electron.saveGameMetadata(gameId, metadata);
 
           if (!result.success) {
             throw new Error(result.error || "Failed to update game metadata");
@@ -251,7 +238,7 @@ export const useGameStore = create<GameState>((set, get) => {
           // Update the local games list
           const { games } = get();
           const updatedGames = games.map((game) =>
-            game.id === gameId ? { ...game, ...metadata } : game
+            game.id === gameId ? { ...game, ...metadata } : game,
           );
 
           set({ games: updatedGames, loading: false });

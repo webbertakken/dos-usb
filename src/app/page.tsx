@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useGameStore } from '../store/gameStore';
-import GameCard from '../components/GameCard';
-import GameEditModal from '../components/GameEditModal';
-import { Game, GameMetadata } from '../types';
-import { FaSearch, FaExclamationCircle } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useGameStore } from "../store/gameStore";
+import GameCard from "../components/GameCard";
+import GameEditModal from "../components/GameEditModal";
+import { Game, GameMetadata } from "../types";
+import { FaSearch, FaExclamationCircle } from "react-icons/fa";
 
 export default function Home() {
   const {
@@ -16,10 +16,10 @@ export default function Home() {
     launchGame,
     selectedGame,
     setSelectedGame,
-    updateGameMetadata
+    updateGameMetadata,
   } = useGameStore();
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredGames, setFilteredGames] = useState<Game[]>([]);
 
   useEffect(() => {
@@ -29,11 +29,12 @@ export default function Home() {
   useEffect(() => {
     if (games) {
       setFilteredGames(
-        games.filter(game =>
-          game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          game.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          game.category.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        games.filter(
+          (game) =>
+            game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            game.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            game.category.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
       );
     }
   }, [games, searchTerm]);
@@ -90,8 +91,7 @@ export default function Home() {
           <p className="text-gray-400 mb-4">
             {searchTerm
               ? `No games found matching "${searchTerm}"`
-              : "No games installed yet. Visit the Game Store to download games."
-            }
+              : "No games installed yet. Visit the Game Store to download games."}
           </p>
           {!searchTerm && (
             <a
@@ -105,12 +105,7 @@ export default function Home() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredGames.map((game) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              onPlay={handlePlayGame}
-              onEdit={handleEditGame}
-            />
+            <GameCard key={game.id} game={game} onPlay={handlePlayGame} onEdit={handleEditGame} />
           ))}
         </div>
       )}

@@ -40,19 +40,13 @@ export class ErrorAdapter {
    */
   static getErrors(): ErrorViewModel[] {
     const errorStore = useErrorHandlingStore.getState();
-    return errorStore.errors.map((error, index) =>
-      this.toErrorViewModel(error, index)
-    );
+    return errorStore.errors.map((error, index) => this.toErrorViewModel(error, index));
   }
 
   /**
    * Logs a new error
    */
-  static logError(
-    message: string,
-    details?: string,
-    severity?: ErrorSeverity
-  ): Promise<void> {
+  static logError(message: string, details?: string, severity?: ErrorSeverity): Promise<void> {
     const error: ErrorData = {
       message,
       stack: details,

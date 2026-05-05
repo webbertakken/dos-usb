@@ -7,13 +7,30 @@
   "author": "Webber Takken",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/ensure-husky.mjs && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "electron-dev": "concurrently \"yarn dev\" \"electron .\"",
     "electron-build": "yarn build && electron-builder",
-    "electron-start": "electron ."
+    "electron-start": "electron .",
+    "test": "node scripts/ensure-husky.mjs && vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "yarn oxlint --report-unused-disable-directives",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
+    "typecheck": "tsgo --noEmit",
+    "typecheck:tsc": "tsc --noEmit",
+    "setup:hooks": "node scripts/ensure-husky.mjs",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
+      "oxlint --fix --quiet",
+      "oxfmt --write"
+    ],
+    "*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
+    ".github/workflows/*.@(yml|yaml)": "actionlint"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -29,19 +46,31 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-icons": "^2.2.7",
+    "@typescript/native-preview": "^7.0.0-dev.20260505.1",
+    "@vitejs/plugin-react-swc": "^4.3.0",
+    "@vitest/coverage-istanbul": "^3",
     "concurrently": "^8.2.2",
     "electron": "^35.0.2",
     "electron-builder": "^25.1.8",
-    "eslint": "^9",
-    "eslint-config-next": "15.2.3",
+    "eslint": "^10.3.0",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "happy-dom": "^20.9.0",
+    "husky": "9",
+    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vite": "^6",
+    "vitest": "^3",
     "wait-on": "^7.2.0"
   },
   "build": {

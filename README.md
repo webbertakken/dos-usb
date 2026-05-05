@@ -1,10 +1,12 @@
 # DOS USB
 
-A modern UI for playing DOS games from a USB stick. This application allows you to download, manage, and play classic DOS games using a sleek, modern interface.
+A modern UI for playing DOS games from a USB stick. This application allows you to download, manage,
+and play classic DOS games using a sleek, modern interface.
 
 ## Architecture
 
-This project follows Domain-Driven Design principles to create a maintainable and scalable codebase. See [DDD-ARCHITECTURE.md](./DDD-ARCHITECTURE.md) for detailed information about the architecture.
+This project follows Domain-Driven Design principles to create a maintainable and scalable codebase.
+See [DDD-ARCHITECTURE.md](./DDD-ARCHITECTURE.md) for detailed information about the architecture.
 
 ### Key Architecture Layers
 
@@ -32,7 +34,8 @@ This project follows Domain-Driven Design principles to create a maintainable an
 
 #### For Users
 
-1. Download the latest release from the [Releases page](https://github.com/webbertakken/dos-usb/releases)
+1. Download the latest release from the
+   [Releases page](https://github.com/webbertakken/dos-usb/releases)
 2. Extract the contents to your USB drive
 3. Run `DOSGamesPortable.exe` from your USB drive
 
@@ -53,6 +56,7 @@ This project follows Domain-Driven Design principles to create a maintainable an
 ### My Games
 
 The home screen displays all your installed DOS games. You can:
+
 - Search for games by title, description, or category
 - Launch games with a single click
 - Edit game metadata like title, description, and image
@@ -60,6 +64,7 @@ The home screen displays all your installed DOS games. You can:
 ### Game Store
 
 The Store tab lets you browse and download classic DOS games:
+
 - Browse games by category
 - Search for specific games
 - Download games directly to your collection
@@ -67,6 +72,7 @@ The Store tab lets you browse and download classic DOS games:
 ### Settings
 
 Configure your DOS USB environment:
+
 - Set custom DOSBox path
 - Set custom games directory
 - View application information
@@ -84,6 +90,7 @@ This will create a portable executable that can be run directly from a USB drive
 ## Technical Details
 
 This application is built with:
+
 - [Next.js](https://nextjs.org/) - React framework
 - [Electron](https://www.electronjs.org/) - Desktop application framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
@@ -101,7 +108,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Note**: This application does not include any games. Games must be downloaded separately and are subject to their own licensing terms.
+**Note**: This application does not include any games. Games must be downloaded separately and are
+subject to their own licensing terms.
 
 ## Development
 

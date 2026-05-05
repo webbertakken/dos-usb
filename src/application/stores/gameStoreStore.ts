@@ -35,8 +35,7 @@ export const useGameStoreStore = create<GameStoreState>((set, get) => ({
       const dosgamesList = await gameStoreRepository.getDosgamesList();
       set({ dosgamesList, loading: false });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to fetch games list";
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch games list";
       console.error("Error fetching games list:", error);
       set({ error: errorMessage, loading: false });
     }
@@ -90,8 +89,7 @@ export const useGameStoreStore = create<GameStoreState>((set, get) => ({
         }
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       console.error("Error downloading game:", error);
       set((state) => ({
         error: errorMessage,

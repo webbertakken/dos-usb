@@ -25,76 +25,70 @@ interface GameManagementState {
 const gameRepository = new ElectronGameRepository();
 const gamePlayService = new ElectronGamePlayService();
 
-export const useGameManagementStore = create<GameManagementState>(
-  (set, get) => ({
-    games: [],
-    loading: false,
-    error: null,
-    selectedGame: null,
+export const useGameManagementStore = create<GameManagementState>((set, get) => ({
+  games: [],
+  loading: false,
+  error: null,
+  selectedGame: null,
 
-    fetchGames: async () => {
-      try {
-        set({ loading: true, error: null });
-        const games = await gameRepository.getGames();
-        set({ games, loading: false });
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to fetch games";
-        console.error("Error fetching games:", error);
-        set({ error: errorMessage, loading: false });
+  fetchGames: async () => {
+    try {
+      set({ loading: true, error: null });
+      const games = await gameRepository.getGames();
+      set({ games, loading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch games";
+      console.error("Error fetching games:", error);
+      set({ error: errorMessage, loading: false });
+    }
+  },
+
+  launchGame: async (gameId: string) => {
+    const game = get().games.find((g) => g.id === gameId);
+    if (!game) {
+      set({ error: `Game with ID ${gameId} not found` });
+      return;
+    }
+
+    try {
+      set({ loading: true, error: null });
+      const result = await gamePlayService.launchGame(game);
+
+      if (!result.success) {
+        set({
+          error: result.error || "Failed to launch game",
+          loading: false,
+        });
+      } else {
+        set({ loading: false });
       }
-    },
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Error launching game:", error);
+      set({ error: errorMessage, loading: false });
+    }
+  },
 
-    launchGame: async (gameId: string) => {
-      const game = get().games.find((g) => g.id === gameId);
-      if (!game) {
-        set({ error: `Game with ID ${gameId} not found` });
-        return;
-      }
+  setSelectedGame: (game: Game | null) => {
+    set({ selectedGame: game });
+  },
 
-      try {
-        set({ loading: true, error: null });
-        const result = await gamePlayService.launchGame(game);
+  updateGameMetadata: async (gameId: string, metadata: GameMetadata) => {
+    try {
+      set({ loading: true, error: null });
+      await gameRepository.saveGameMetadata(gameId, metadata);
 
-        if (!result.success) {
-          set({
-            error: result.error || "Failed to launch game",
-            loading: false,
-          });
-        } else {
-          set({ loading: false });
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        console.error("Error launching game:", error);
-        set({ error: errorMessage, loading: false });
-      }
-    },
+      // Update the game in the local state
+      const updatedGames = get().games.map((game) =>
+        game.id === gameId ? { ...game, ...metadata } : game,
+      );
 
-    setSelectedGame: (game: Game | null) => {
-      set({ selectedGame: game });
-    },
-
-    updateGameMetadata: async (gameId: string, metadata: GameMetadata) => {
-      try {
-        set({ loading: true, error: null });
-        await gameRepository.saveGameMetadata(gameId, metadata);
-
-        // Update the game in the local state
-        const updatedGames = get().games.map((game) =>
-          game.id === gameId ? { ...game, ...metadata } : game
-        );
-
-        set({ games: updatedGames, loading: false, selectedGame: null });
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to update game metadata";
-        console.error("Error updating game metadata:", error);
-        set({ error: errorMessage, loading: false });
-      }
-    },
-  })
-);
+      set({ games: updatedGames, loading: false, selectedGame: null });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update game metadata";
+      console.error("Error updating game metadata:", error);
+      set({ error: errorMessage, loading: false });
+    }
+  },
+}));

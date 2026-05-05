@@ -27,7 +27,7 @@ export function useErrorHandling() {
   const handleLogError = (
     message: string,
     details?: string,
-    severity: ErrorSeverity = ErrorSeverity.MEDIUM
+    severity: ErrorSeverity = ErrorSeverity.MEDIUM,
   ) => {
     return ErrorAdapter.logError(message, details, severity);
   };

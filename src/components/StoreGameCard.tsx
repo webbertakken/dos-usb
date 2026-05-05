@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import { FaDownload, FaSpinner, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
-import { DosgamesListItem, DownloadStatus } from '../types';
+import React from "react";
+import Image from "next/image";
+import { FaDownload, FaSpinner, FaCheck, FaExclamationTriangle } from "react-icons/fa";
+import { DosgamesListItem, DownloadStatus } from "../types";
 
 interface StoreGameCardProps {
   game: DosgamesListItem;
@@ -9,15 +9,11 @@ interface StoreGameCardProps {
   downloadStatus?: DownloadStatus;
 }
 
-const StoreGameCard: React.FC<StoreGameCardProps> = ({
-  game,
-  onDownload,
-  downloadStatus
-}) => {
-  const isDownloading = downloadStatus?.status === 'downloading';
-  const isExtracting = downloadStatus?.status === 'extracting';
-  const isCompleted = downloadStatus?.status === 'completed';
-  const hasError = downloadStatus?.status === 'error';
+const StoreGameCard: React.FC<StoreGameCardProps> = ({ game, onDownload, downloadStatus }) => {
+  const isDownloading = downloadStatus?.status === "downloading";
+  const isExtracting = downloadStatus?.status === "extracting";
+  const isCompleted = downloadStatus?.status === "completed";
+  const hasError = downloadStatus?.status === "error";
   const isProcessing = isDownloading || isExtracting;
 
   // Determine the button state
@@ -81,7 +77,9 @@ const StoreGameCard: React.FC<StoreGameCardProps> = ({
 
       <div className="p-4 flex-grow">
         <h3 className="text-xl font-bold text-white mb-1">{game.title}</h3>
-        <p className="text-gray-400 text-sm mb-2">{game.year} • {game.category}</p>
+        <p className="text-gray-400 text-sm mb-2">
+          {game.year} • {game.category}
+        </p>
         <p className="text-gray-300 text-sm mb-4 line-clamp-3">{game.description}</p>
       </div>
 
@@ -100,12 +98,12 @@ const StoreGameCard: React.FC<StoreGameCardProps> = ({
           disabled={isProcessing || isCompleted}
           className={`w-full flex items-center justify-center ${
             isCompleted
-              ? 'bg-green-600 cursor-default'
+              ? "bg-green-600 cursor-default"
               : hasError
-                ? 'bg-red-600 hover:bg-red-700'
+                ? "bg-red-600 hover:bg-red-700"
                 : isProcessing
-                  ? 'bg-gray-600 cursor-wait'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? "bg-gray-600 cursor-wait"
+                  : "bg-blue-600 hover:bg-blue-700"
           } text-white px-4 py-2 rounded-md transition-colors`}
         >
           {getButtonContent()}

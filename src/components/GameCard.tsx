@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import { FaPlay, FaEdit } from 'react-icons/fa';
-import { Game } from '../types';
+import React from "react";
+import Image from "next/image";
+import { FaPlay, FaEdit } from "react-icons/fa";
+import { Game } from "../types";
 
 interface GameCardProps {
   game: Game;
@@ -30,7 +30,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit }) => {
 
       <div className="p-4">
         <h3 className="text-xl font-bold text-white mb-1">{game.title}</h3>
-        <p className="text-gray-400 text-sm mb-2">{game.year} • {game.category}</p>
+        <p className="text-gray-400 text-sm mb-2">
+          {game.year} • {game.category}
+        </p>
         <p className="text-gray-300 text-sm mb-4 line-clamp-2">{game.description}</p>
 
         <div className="flex justify-between">

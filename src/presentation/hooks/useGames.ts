@@ -5,10 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { GameCardViewModel, GameAdapter } from "../adapters/GameAdapter";
-import {
-  useGameManagementStore,
-  useGameStoreStore,
-} from "../../application/stores";
+import { useGameManagementStore, useGameStoreStore } from "../../application/stores";
 import { GameMetadata } from "../../domain/gameManagement/types";
 import { DosgamesListItem } from "../../domain/gameStore/types";
 

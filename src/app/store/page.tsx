@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import StoreGameCard from '../../components/StoreGameCard';
-import { DosgamesListItem } from '../../types';
-import { FaSearch, FaExclamationCircle } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useGameStore } from "../../store/gameStore";
+import StoreGameCard from "../../components/StoreGameCard";
+import { DosgamesListItem } from "../../types";
+import { FaSearch, FaExclamationCircle } from "react-icons/fa";
 
 export default function StorePage() {
   const {
@@ -15,11 +15,11 @@ export default function StorePage() {
     downloadGame,
     downloadStatus,
     setupDownloadListeners,
-    cleanupDownloadListeners
+    cleanupDownloadListeners,
   } = useGameStore();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [filteredGames, setFilteredGames] = useState<DosgamesListItem[]>([]);
 
   // Set up download status listeners
@@ -39,7 +39,7 @@ export default function StorePage() {
   useEffect(() => {
     if (dosgamesList) {
       setFilteredGames(
-        dosgamesList.filter(game => {
+        dosgamesList.filter((game) => {
           const matchesSearch =
             game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             game.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -47,7 +47,7 @@ export default function StorePage() {
           const matchesCategory = !categoryFilter || game.category === categoryFilter;
 
           return matchesSearch && matchesCategory;
-        })
+        }),
       );
     }
   }, [dosgamesList, searchTerm, categoryFilter]);
@@ -58,7 +58,7 @@ export default function StorePage() {
 
   // Get unique categories from the games list
   const categories = dosgamesList
-    ? [...new Set(dosgamesList.map(game => game.category))].sort()
+    ? [...new Set(dosgamesList.map((game) => game.category))].sort()
     : [];
 
   return (
@@ -114,14 +114,13 @@ export default function StorePage() {
           <p className="text-gray-400">
             {searchTerm || categoryFilter
               ? "No games found matching your search criteria."
-              : "No games available in the store at the moment."
-            }
+              : "No games available in the store at the moment."}
           </p>
           {(searchTerm || categoryFilter) && (
             <button
               onClick={() => {
-                setSearchTerm('');
-                setCategoryFilter('');
+                setSearchTerm("");
+                setCategoryFilter("");
               }}
               className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
             >

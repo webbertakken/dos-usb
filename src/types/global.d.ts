@@ -18,16 +18,14 @@ export interface ErrorData {
 declare global {
   interface Window {
     electron: {
-      launchGame: (
-        gamePath: string
-      ) => Promise<{ success: boolean; error?: string }>;
+      launchGame: (gamePath: string) => Promise<{ success: boolean; error?: string }>;
       getGames: () => Promise<Game[]>;
       saveGameMetadata: (
         gameId: string,
-        metadata: GameMetadata
+        metadata: GameMetadata,
       ) => Promise<{ success: boolean; error?: string }>;
       downloadGame: (
-        gameInfo: DosgamesListItem
+        gameInfo: DosgamesListItem,
       ) => Promise<{ success: boolean; game?: Game; error?: string }>;
       onDownloadStatus: (
         callback: (status: {
@@ -35,7 +33,7 @@ declare global {
           status: "downloading" | "extracting" | "completed" | "error";
           progress?: number;
           error?: string;
-        }) => void
+        }) => void,
       ) => () => void;
       logError: (error: ErrorData) => Promise<{ received: boolean }>;
     };

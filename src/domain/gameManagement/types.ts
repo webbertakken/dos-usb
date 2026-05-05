@@ -26,8 +26,5 @@ export interface GameMetadata {
  */
 export interface GameRepository {
   getGames: () => Promise<Game[]>;
-  saveGameMetadata: (
-    gameId: string,
-    metadata: GameMetadata
-  ) => Promise<boolean>;
+  saveGameMetadata: (gameId: string, metadata: GameMetadata) => Promise<boolean>;
 }

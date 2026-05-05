@@ -1,6 +1,7 @@
 # Presentation Layer
 
-The presentation layer is responsible for rendering the UI and handling user interactions. It depends on the application layer to access domain functionality.
+The presentation layer is responsible for rendering the UI and handling user interactions. It
+depends on the application layer to access domain functionality.
 
 ## Structure
 
@@ -22,4 +23,4 @@ The presentation layer is responsible for rendering the UI and handling user int
 1. Use adapters to transform domain objects into view models
 2. Keep UI logic separate from business logic
 3. Components should be as stateless and reusable as possible
-4. Use hooks to encapsulate logic for accessing application state 
+4. Use hooks to encapsulate logic for accessing application state

@@ -19,9 +19,6 @@ export interface GameLaunchResult {
  * GamePlayService interface - defines operations for playing games
  */
 export interface GamePlayService {
-  launchGame: (
-    game: Game,
-    options?: GameLaunchOptions
-  ) => Promise<GameLaunchResult>;
+  launchGame: (game: Game, options?: GameLaunchOptions) => Promise<GameLaunchResult>;
   terminateGame: () => Promise<boolean>;
 }
