@@ -19,10 +19,7 @@ interface ElectronErrorData {
 export class ElectronErrorHandlingService implements ErrorHandlingService {
   private lastError: ErrorData | null = null;
 
-  async logError(
-    error: ErrorData,
-    severity: ErrorSeverity = ErrorSeverity.MEDIUM
-  ): Promise<void> {
+  async logError(error: ErrorData, severity: ErrorSeverity = ErrorSeverity.MEDIUM): Promise<void> {
     this.lastError = error;
 
     // Add severity to the error data
@@ -66,9 +63,7 @@ export class ElectronErrorHandlingService implements ErrorHandlingService {
   /**
    * Converts all values in an object to strings if they're not undefined
    */
-  private convertToStringValues(
-    obj: Record<string, unknown>
-  ): Record<string, string | undefined> {
+  private convertToStringValues(obj: Record<string, unknown>): Record<string, string | undefined> {
     const result: Record<string, string | undefined> = {};
 
     for (const [key, value] of Object.entries(obj)) {

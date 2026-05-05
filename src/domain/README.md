@@ -10,8 +10,9 @@ This folder contains the domain-specific logic organized into bounded contexts.
 4. **Error Handling** - Cross-cutting concern for error management
 
 Each bounded context contains:
+
 - **Entities** - Core domain objects
 - **Value Objects** - Immutable objects that represent domain concepts
 - **Repositories** - Data access abstraction
 - **Services** - Domain logic and business rules
-- **Events** - Domain events for communication between bounded contexts 
+- **Events** - Domain events for communication between bounded contexts

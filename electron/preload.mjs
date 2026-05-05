@@ -11,22 +11,13 @@ contextBridge.exposeInMainWorld("electron", {
   },
   getGames: () => ipcRenderer.invoke("get-games"),
   saveGameMetadata: (gameId, metadata) => {
-    if (
-      typeof gameId === "string" &&
-      metadata &&
-      typeof metadata === "object"
-    ) {
+    if (typeof gameId === "string" && metadata && typeof metadata === "object") {
       return ipcRenderer.invoke("save-game-metadata", { gameId, metadata });
     }
     return Promise.reject(new Error("Invalid arguments"));
   },
   downloadGame: (gameInfo) => {
-    if (
-      gameInfo &&
-      typeof gameInfo === "object" &&
-      gameInfo.id &&
-      gameInfo.downloadUrl
-    ) {
+    if (gameInfo && typeof gameInfo === "object" && gameInfo.id && gameInfo.downloadUrl) {
       return ipcRenderer.invoke("download-game", gameInfo);
     }
     return Promise.reject(new Error("Invalid game information"));

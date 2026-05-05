@@ -1,6 +1,7 @@
 # Infrastructure Layer
 
-The infrastructure layer provides concrete implementations of domain interfaces. It handles external concerns like file system access, network communication, and hardware interaction.
+The infrastructure layer provides concrete implementations of domain interfaces. It handles external
+concerns like file system access, network communication, and hardware interaction.
 
 ## Structure
 
@@ -20,4 +21,4 @@ The infrastructure layer provides concrete implementations of domain interfaces.
 1. All domain interface implementations should be kept in this layer
 2. Avoid adding domain logic to infrastructure code
 3. Use dependency injection to inject infrastructure implementations into domain services
-4. Infrastructure code should be testable and replaceable 
+4. Infrastructure code should be testable and replaceable

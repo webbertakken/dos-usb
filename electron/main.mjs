@@ -59,12 +59,9 @@ function createWindow() {
     console.error("Renderer process crashed!");
   });
 
-  mainWindow.webContents.on(
-    "did-fail-load",
-    (event, errorCode, errorDescription) => {
-      console.error(`Failed to load: ${errorDescription} (${errorCode})`);
-    }
-  );
+  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
+    console.error(`Failed to load: ${errorDescription} (${errorCode})`);
+  });
 
   // Handle uncaught exceptions in the main process
   process.on("uncaughtException", (error) => {
@@ -104,9 +101,7 @@ app.on("activate", () => {
 async function ensureDOSBoxClosed() {
   return new Promise((resolve) => {
     try {
-      console.log(
-        "Ensuring no DOSBox instances are running before starting a new one"
-      );
+      console.log("Ensuring no DOSBox instances are running before starting a new one");
       const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
         windowsHide: true,
         shell: true,
@@ -125,10 +120,7 @@ async function ensureDOSBoxClosed() {
       });
     } catch (error) {
       // If the command fails, it's likely because DOSBox isn't running
-      console.log(
-        "No DOSBox instances found or error in cleanup:",
-        error.message
-      );
+      console.log("No DOSBox instances found or error in cleanup:", error.message);
       resolve();
     }
   });
@@ -147,28 +139,21 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
     const { width, height } = screen.workAreaSize;
 
     console.log(`Primary screen dimensions: ${width}x${height}`);
-    console.log(
-      `Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`
-    );
+    console.log(`Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`);
 
     // Path to DOSBoxPortable executable
     const dosboxPortablePath = path.join(
       process.cwd(),
       "bin",
       "DOSBoxPortable",
-      "DOSBoxPortable.exe"
+      "DOSBoxPortable.exe",
     );
 
     if (fs.existsSync(dosboxPortablePath)) {
       console.log(`Using DOSBoxPortable at: ${dosboxPortablePath}`);
 
       // Directory for DOSBox configuration
-      const dosboxDataDir = path.join(
-        process.cwd(),
-        "bin",
-        "DOSBoxPortable",
-        "Data"
-      );
+      const dosboxDataDir = path.join(process.cwd(), "bin", "DOSBoxPortable", "Data");
 
       // Ensure the Data directory exists
       if (!fs.existsSync(dosboxDataDir)) {
@@ -199,7 +184,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
       // Add the custom resolution if it doesn't match an existing one
       const hasCustomResolution = resolutionOptions.some(
-        (res) => res.width === customWidth && res.height === maxUsableHeight
+        (res) => res.width === customWidth && res.height === maxUsableHeight,
       );
 
       if (!hasCustomResolution) {
@@ -208,9 +193,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
           width: customWidth,
           height: maxUsableHeight,
         });
-        console.log(
-          `Added custom resolution: ${customWidth}x${maxUsableHeight}`
-        );
+        console.log(`Added custom resolution: ${customWidth}x${maxUsableHeight}`);
       }
 
       // Find the largest resolution that fits the screen
@@ -332,9 +315,7 @@ ipx=false
         // Save the default config for future use
         try {
           fs.writeFileSync(dosboxConfigPath, dosboxConfig);
-          console.log(
-            `Created default DOSBox configuration at: ${dosboxConfigPath}`
-          );
+          console.log(`Created default DOSBox configuration at: ${dosboxConfigPath}`);
         } catch (writeError) {
           console.error("Error writing default DOSBox config:", writeError);
         }
@@ -397,7 +378,7 @@ cycles=${cycles}
           !line.trim().startsWith("[sdl]") &&
           !line.trim().startsWith("[render]") &&
           !line.match(
-            /^(fullscreen|fulldouble|fullresolution|windowresolution|output|autolock|frameskip|aspect|scaler)=/
+            /^(fullscreen|fulldouble|fullresolution|windowresolution|output|autolock|frameskip|aspect|scaler)=/,
           )
         ) {
           newConfig += line + "\n";
@@ -438,10 +419,7 @@ echo Type 'EXIT' when done to return to Windows.
       newConfig += autoexecSection;
 
       // Write the updated configuration to a custom file
-      const customConfigPath = path.join(
-        dosboxDataDir,
-        `dosbox-${gameId}.conf`
-      );
+      const customConfigPath = path.join(dosboxDataDir, `dosbox-${gameId}.conf`);
       fs.writeFileSync(customConfigPath, newConfig);
       console.log(`Created custom DOSBox config at: ${customConfigPath}`);
 
@@ -537,10 +515,7 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
       console.log(`Using game.bat for ${gameId}`);
     }
     // 2. Check for game-specific mapping
-    else if (
-      commonGameExes[gameId] &&
-      gameFiles.includes(commonGameExes[gameId])
-    ) {
+    else if (commonGameExes[gameId] && gameFiles.includes(commonGameExes[gameId])) {
       executableFile = commonGameExes[gameId];
       console.log(`Using known executable for ${gameId}: ${executableFile}`);
     }
@@ -600,7 +575,7 @@ echo Available files:
 dir *.exe
 echo.
 pause
-`
+`,
         );
         console.log(`Created fallback game.bat for ${gameId}`);
         return await setupDOSBox(gameId, gamePath, "game.bat");
@@ -649,11 +624,13 @@ ipcMain.handle("get-games", async () => {
           }
         }
 
-        return {
-          id: dir,
-          path: path.join(gamesDir, dir),
-          ...metadata,
-        };
+        return Object.assign(
+          {
+            id: dir,
+            path: path.join(gamesDir, dir),
+          },
+          metadata,
+        );
       });
 
     return gamesList;
@@ -726,10 +703,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
           console.log("Using direct file URL:", downloadUrl);
         } else {
           // It's a game page, so we need to scrape it to find the download link
-          console.log(
-            "Scraping game page for download link:",
-            gameInfo.downloadUrl
-          );
+          console.log("Scraping game page for download link:", gameInfo.downloadUrl);
 
           try {
             // Fetch the game page
@@ -741,9 +715,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
               },
             });
 
-            console.log(
-              "Successfully fetched game page, searching for download links"
-            );
+            console.log("Successfully fetched game page, searching for download links");
 
             const dom = new JSDOM(response.data);
             const document = dom.window.document;
@@ -751,8 +723,8 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             // ===== STRATEGY 1: Look for specific download buttons =====
             const downloadButton = Array.from(
               document.querySelectorAll(
-                ".downloadbutton, a.button, a.green, a.download, .btn-download, strong, b, a"
-              )
+                ".downloadbutton, a.button, a.green, a.download, .btn-download, strong, b, a",
+              ),
             ).find((el) => {
               const text = (el.textContent || "").toLowerCase().trim();
               return (
@@ -769,21 +741,15 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
               const downloadLink =
                 downloadButton.tagName === "A"
                   ? downloadButton
-                  : downloadButton.closest("a") ||
-                    downloadButton.parentElement?.closest("a");
+                  : downloadButton.closest("a") || downloadButton.parentElement?.closest("a");
 
               if (downloadLink) {
                 const href = downloadLink.getAttribute("href");
                 if (href) {
                   const directLink = href.startsWith("http")
                     ? href
-                    : `https://www.dosgames.com${
-                        href.startsWith("/") ? "" : "/"
-                      }${href}`;
-                  console.log(
-                    "Found download button with direct link:",
-                    directLink
-                  );
+                    : `https://www.dosgames.com${href.startsWith("/") ? "" : "/"}${href}`;
+                  console.log("Found download button with direct link:", directLink);
                   downloadUrl = directLink;
                 }
               }
@@ -803,9 +769,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
                   const href = link.getAttribute("href");
                   return href.startsWith("http")
                     ? href
-                    : `https://www.dosgames.com${
-                        href.startsWith("/") ? "" : "/"
-                      }${href}`;
+                    : `https://www.dosgames.com${href.startsWith("/") ? "" : "/"}${href}`;
                 });
 
               if (fileLinks.length > 0) {
@@ -819,8 +783,8 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
               // Look for sections that might contain download info - especially in tables
               const downloadSections = Array.from(
                 document.querySelectorAll(
-                  "table, div.content, div.download, .dg-download-button, .btn-download, #download-button"
-                )
+                  "table, div.content, div.download, .dg-download-button, .btn-download, #download-button",
+                ),
               );
 
               for (const section of downloadSections) {
@@ -839,15 +803,11 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
                       text.includes("download") ||
                       text === "here" ||
                       text.includes("get game")) &&
-                    (href.endsWith(".zip") ||
-                      href.endsWith(".exe") ||
-                      href.includes("php"))
+                    (href.endsWith(".zip") || href.endsWith(".exe") || href.includes("php"))
                   ) {
                     const fullUrl = href.startsWith("http")
                       ? href
-                      : `https://www.dosgames.com${
-                          href.startsWith("/") ? "" : "/"
-                        }${href}`;
+                      : `https://www.dosgames.com${href.startsWith("/") ? "" : "/"}${href}`;
 
                     console.log("Found download link in section:", fullUrl);
                     downloadUrl = fullUrl;
@@ -863,20 +823,15 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             if (!downloadUrl) {
               // Look for the main download area - the key phrase often precedes the download link
               const downloadLinkText = response.data.match(
-                /DOWNLOAD THE GAME FREE[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i
+                /DOWNLOAD THE GAME FREE[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i,
               );
               if (downloadLinkText && downloadLinkText[1]) {
                 const href = downloadLinkText[1];
                 const fullUrl = href.startsWith("http")
                   ? href
-                  : `https://www.dosgames.com${
-                      href.startsWith("/") ? "" : "/"
-                    }${href}`;
+                  : `https://www.dosgames.com${href.startsWith("/") ? "" : "/"}${href}`;
 
-                console.log(
-                  "Found direct download link in main download area:",
-                  fullUrl
-                );
+                console.log("Found direct download link in main download area:", fullUrl);
                 downloadUrl = fullUrl;
               }
             }
@@ -885,13 +840,13 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             if (!downloadUrl) {
               // Look for file references in pre-formatted text or code blocks
               const zipFileReferences = response.data.match(
-                /([a-zA-Z0-9_-]+\.zip)\s*-\s*[\d.]+[kmg]?b?\s*-\s*(?:Run|Unzip)/i
+                /([a-zA-Z0-9_-]+\.zip)\s*-\s*[\d.]+[kmg]?b?\s*-\s*(?:Run|Unzip)/i,
               );
               if (zipFileReferences && zipFileReferences[1]) {
                 const filename = zipFileReferences[1];
                 const fullUrl = `https://www.dosgames.com/files/${filename}`;
                 console.log(
-                  `Found zip filename reference in text: ${filename}, using URL: ${fullUrl}`
+                  `Found zip filename reference in text: ${filename}, using URL: ${fullUrl}`,
                 );
                 downloadUrl = fullUrl;
               }
@@ -901,13 +856,13 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             if (!downloadUrl && gameInfo.id.includes("commander-keen")) {
               // Look for the DOSBOX download pattern which is common for Commander Keen games
               const keenPattern = response.data.match(
-                /DOSBOX_KEEN\d?\.ZIP|dosbox_keen\d?\.zip|(\d)keen\.zip/i
+                /DOSBOX_KEEN\d?\.ZIP|dosbox_keen\d?\.zip|(\d)keen\.zip/i,
               );
               if (keenPattern) {
                 const filename = keenPattern[0];
                 const fullUrl = `https://www.dosgames.com/files/${filename}`;
                 console.log(
-                  `Found Commander Keen filename in page content: ${filename}, using URL: ${fullUrl}`
+                  `Found Commander Keen filename in page content: ${filename}, using URL: ${fullUrl}`,
                 );
                 downloadUrl = fullUrl;
               }
@@ -917,20 +872,15 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             if (!downloadUrl) {
               // Sometimes the page content indicates we need to wait for download to start
               const downloadingSection = response.data.match(
-                /Downloading\s*\.\.\.[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i
+                /Downloading\s*\.\.\.[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/i,
               );
               if (downloadingSection && downloadingSection[1]) {
                 const href = downloadingSection[1];
                 const fullUrl = href.startsWith("http")
                   ? href
-                  : `https://www.dosgames.com${
-                      href.startsWith("/") ? "" : "/"
-                    }${href}`;
+                  : `https://www.dosgames.com${href.startsWith("/") ? "" : "/"}${href}`;
 
-                console.log(
-                  "Found download link in 'Downloading...' section:",
-                  fullUrl
-                );
+                console.log("Found download link in 'Downloading...' section:", fullUrl);
                 downloadUrl = fullUrl;
               }
             }
@@ -950,9 +900,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
 
                 // Special case for Keen 1
                 if (keenNumber === "1") {
-                  possibleUrls.unshift(
-                    `https://www.dosgames.com/files/DOSBOX_KEEN.ZIP`
-                  );
+                  possibleUrls.unshift(`https://www.dosgames.com/files/DOSBOX_KEEN.ZIP`);
                 }
 
                 // Test each URL with a HEAD request to see if it exists
@@ -980,18 +928,10 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             if (!downloadUrl) {
               // Debug: Log all links on the page
               console.log("No download links found. All links on the page:");
-              Array.from(document.querySelectorAll("a[href]")).forEach(
-                (link) => {
-                  console.log(
-                    `- ${link.textContent.trim()} => ${link.getAttribute(
-                      "href"
-                    )}`
-                  );
-                }
-              );
-              throw new Error(
-                "Failed to find a valid download link on the game page"
-              );
+              Array.from(document.querySelectorAll("a[href]")).forEach((link) => {
+                console.log(`- ${link.textContent.trim()} => ${link.getAttribute("href")}`);
+              });
+              throw new Error("Failed to find a valid download link on the game page");
             }
           } catch (scrapeError) {
             console.error("Error scraping game page:", scrapeError.message);
@@ -1005,10 +945,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
           // Determine file type from URL
           const isExeFile = downloadUrl.toLowerCase().endsWith(".exe");
           const fileExtension = isExeFile ? ".exe" : ".zip";
-          const downloadedFilePath = path.join(
-            gameDir,
-            `${gameInfo.id}${fileExtension}`
-          );
+          const downloadedFilePath = path.join(gameDir, `${gameInfo.id}${fileExtension}`);
 
           // Download the file
           await downloadFile(downloadUrl, downloadedFilePath, (progress) => {
@@ -1037,7 +974,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
               `@echo off
 echo Running ${gameInfo.title}
 "${path.basename(downloadedFilePath)}"
-`
+`,
             );
           } else {
             // Extract the ZIP file
@@ -1061,8 +998,8 @@ echo Running ${gameInfo.title}
                 downloadUrl: gameInfo.downloadUrl,
               },
               null,
-              2
-            )
+              2,
+            ),
           );
 
           // Inform renderer that download is complete
@@ -1101,10 +1038,7 @@ echo Running ${gameInfo.title}
             fs.unlinkSync(exeFilePath);
           }
         } catch (cleanupError) {
-          console.error(
-            "Error cleaning up after failed download:",
-            cleanupError
-          );
+          console.error("Error cleaning up after failed download:", cleanupError);
         }
 
         // Try to use mock download as last resort
@@ -1158,16 +1092,12 @@ async function downloadFile(url, dest, progressCallback) {
 
         // Log the error details
         console.error(
-          `Download failed with status: ${response.statusCode} ${response.statusMessage}`
+          `Download failed with status: ${response.statusCode} ${response.statusMessage}`,
         );
         console.error(`URL: ${url}`);
 
         // Reject with detailed error
-        reject(
-          new Error(
-            `Failed to download: ${response.statusCode} ${response.statusMessage}`
-          )
-        );
+        reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
         return;
       }
 
@@ -1300,7 +1230,7 @@ if exist ${mockExeName} (
   echo.
   pause
 )
-`
+`,
   );
 
   // Create the mock executable file
@@ -1314,7 +1244,7 @@ echo In a real download, this would be the actual game executable.
 echo.
 echo Press any key to return to DOS...
 pause > nul
-`
+`,
   );
 
   // For games using START.EXE, also create a necessary companion file
@@ -1328,7 +1258,7 @@ echo This is a companion file for ${gameInfo.title}.
 echo.
 echo Press any key to return to DOS...
 pause > nul
-`
+`,
     );
   }
 
@@ -1345,7 +1275,7 @@ In a real installation, this would contain the actual game files.
 The game should start automatically when launched using the executable: ${mockExeName}
 
 Enjoy the game!
-`
+`,
   );
 
   // Create metadata file
@@ -1361,8 +1291,8 @@ Enjoy the game!
         thumbnail: gameInfo.thumbnail || "",
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   // Inform renderer that download is complete

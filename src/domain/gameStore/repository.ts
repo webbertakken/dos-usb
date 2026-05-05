@@ -22,9 +22,7 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
       const response = await fetch("/api/games");
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch games: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch games: ${response.status} ${response.statusText}`);
       }
 
       const games = await response.json();
@@ -36,7 +34,7 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
   }
 
   async downloadGame(
-    game: DosgamesListItem
+    game: DosgamesListItem,
   ): Promise<{ success: boolean; gameId?: string; error?: string }> {
     if (typeof window !== "undefined" && window.electron) {
       try {
@@ -47,8 +45,7 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
           error: result.error,
         };
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         console.error("Error downloading game:", errorMessage);
         return { success: false, error: errorMessage };
       }
@@ -70,12 +67,10 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
    */
   setupDownloadListeners(): void {
     if (typeof window !== "undefined" && window.electron) {
-      this.downloadListenerCleanup = window.electron.onDownloadStatus(
-        (status) => {
-          this.downloadStatuses[status.gameId] = status;
-          // Here you could emit an event that other parts of the application can listen to
-        }
-      );
+      this.downloadListenerCleanup = window.electron.onDownloadStatus((status) => {
+        this.downloadStatuses[status.gameId] = status;
+        // Here you could emit an event that other parts of the application can listen to
+      });
     }
   }
 

@@ -27,7 +27,7 @@ export interface DownloadStatus {
 export interface GameStoreRepository {
   getDosgamesList: () => Promise<DosgamesListItem[]>;
   downloadGame: (
-    game: DosgamesListItem
+    game: DosgamesListItem,
   ) => Promise<{ success: boolean; gameId?: string; error?: string }>;
   getDownloadStatus: (gameId: string) => DownloadStatus | undefined;
 }

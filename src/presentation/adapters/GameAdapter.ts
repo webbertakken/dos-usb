@@ -5,10 +5,7 @@
 
 import { Game, GameMetadata } from "../../domain/gameManagement/types";
 import { DosgamesListItem } from "../../domain/gameStore/types";
-import {
-  useGameManagementStore,
-  useGameStoreStore,
-} from "../../application/stores";
+import { useGameManagementStore, useGameStoreStore } from "../../application/stores";
 
 /**
  * Represents data needed for displaying a game card in the UI
@@ -41,7 +38,7 @@ export class GameAdapter {
       status: string;
       progress?: number;
       error?: string;
-    }
+    },
   ): GameCardViewModel {
     return {
       id: game.id,
@@ -52,8 +49,7 @@ export class GameAdapter {
       image: game.image,
       isInstalled,
       isDownloading:
-        downloadStatus?.status === "downloading" ||
-        downloadStatus?.status === "extracting",
+        downloadStatus?.status === "downloading" || downloadStatus?.status === "extracting",
       downloadProgress: downloadStatus?.progress,
       downloadError: downloadStatus?.error,
     };
@@ -79,9 +75,7 @@ export class GameAdapter {
     const gameManagementStore = useGameManagementStore.getState();
     const gameStoreStore = useGameStoreStore.getState();
 
-    const installedGameIds = new Set(
-      gameManagementStore.games.map((g) => g.id)
-    );
+    const installedGameIds = new Set(gameManagementStore.games.map((g) => g.id));
 
     return gameStoreStore.dosgamesList.map((game) => {
       const isInstalled = installedGameIds.has(game.id);
@@ -107,12 +101,7 @@ export class GameAdapter {
   /**
    * Updates game metadata
    */
-  static updateGameMetadata(
-    gameId: string,
-    metadata: GameMetadata
-  ): Promise<void> {
-    return useGameManagementStore
-      .getState()
-      .updateGameMetadata(gameId, metadata);
+  static updateGameMetadata(gameId: string, metadata: GameMetadata): Promise<void> {
+    return useGameManagementStore.getState().updateGameMetadata(gameId, metadata);
   }
 }
