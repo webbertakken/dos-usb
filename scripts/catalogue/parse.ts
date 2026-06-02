@@ -36,6 +36,11 @@ export interface GamePageDetails {
   dgRating?: number;
 }
 
+export interface ExternalLink {
+  label: string;
+  url: string;
+}
+
 export interface GameMeta {
   title: string;
   year: string;
@@ -45,6 +50,9 @@ export interface GameMeta {
   license?: string;
   tags: string[];
   mature: boolean;
+  links: ExternalLink[];
+  resolution?: string;
+  multiplayer?: string;
 }
 
 /** Resolve a possibly-relative dosgames.com URL to an absolute one. */
@@ -164,6 +172,29 @@ export function parseGameMeta(html: string, base: string = BASE_URL): GameMeta {
     }
   });
 
+  // External links live in `Link` / `Wiki` rows as anchors.
+  const links: ExternalLink[] = [];
+  $(".d-table-row").each((_, row) => {
+    const cells = $(row).find(".d-table-cell");
+    if (cells.length < 2) return;
+    const label = cells
+      .eq(0)
+      .text()
+      .replace(/[:\s]+$/, "")
+      .trim();
+    if (label !== "Link" && label !== "Wiki") return;
+    cells
+      .eq(1)
+      .find("a[href]")
+      .each((__, anchor) => {
+        const url = $(anchor).attr("href") ?? "";
+        const text = $(anchor).text().replace(/\*.*$/, "").replace(/\s+/g, " ").trim();
+        if (url && /^https?:\/\//i.test(url)) {
+          links.push({ label: text || label, url });
+        }
+      });
+  });
+
   const yearText = $(".pageHeader-year").first().text().trim();
   const yearMatch = yearText.match(/(19|20)\d{2}/);
   const ogImage = $('meta[property="og:image"]').attr("content") ?? "";
@@ -183,6 +214,9 @@ export function parseGameMeta(html: string, base: string = BASE_URL): GameMeta {
     license: details["License"] || undefined,
     tags,
     mature,
+    links,
+    resolution: details["Resolution"] || undefined,
+    multiplayer: details["Multiplayer"] || undefined,
   };
 }
 

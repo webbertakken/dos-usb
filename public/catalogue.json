@@ -21,7 +21,15 @@
         "page": 15,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://trinhnguyen.itch.io/2048"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "3-demon",
@@ -43,7 +51,19 @@
         "page": 13,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/3-demon"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/3-Demon"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "3d-bomber",
@@ -67,7 +87,19 @@
         "page": 12,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.shdon.com/software/games/3dbomber"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/3d-bomber"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "3d-xmas-adventure-santas-rescue",
@@ -91,7 +123,19 @@
         "page": 12,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19980117140237/http://www.psky.com/SantaGame.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/3d-xmas-adventure-santas-rescue"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "4d-boxing",
@@ -114,7 +158,19 @@
         "page": 10,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/4d-boxing"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/4D_Sports_Boxing"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "688-attack-sub",
@@ -137,7 +193,19 @@
         "page": 11,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/688-attack-sub"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/688_Attack_Sub"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "absence",
@@ -161,7 +229,15 @@
         "page": 12,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.moddb.com/mods/absence1"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "abuse",
@@ -190,7 +266,23 @@
         "page": 1,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19981202193419/http://www.crack.com/games/abuse/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/abuse"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Abuse_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "acid-tetris",
@@ -214,7 +306,19 @@
         "page": 14,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.dddgames.com/saba/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/acid-tetris"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "action-supercross",
@@ -238,7 +342,23 @@
         "page": 9,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.elastomania.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/action-supercross"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Elasto_Mania"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "adom-ancient-domains-of-mystery",
@@ -262,7 +382,23 @@
         "page": 9,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.adom.de/home/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/ancient-domains-of-mystery"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Ancient_Domains_of_Mystery"
+      }
+    ],
+    "resolution": "720 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "aethra-chronicles-celystras-bane",
@@ -286,7 +422,23 @@
         "page": 13,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.blimix.com/aethra/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/aethra-chronicles-volume-one-celystras-bane"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Aethra_Chronicles"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "albion",
@@ -309,7 +461,23 @@
         "page": 14,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20110309090347/http://www.bluebyte.net/eng/products/albion/index.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/albion"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Albion_(video_game)"
+      }
+    ],
+    "resolution": "360 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "aldos-adventure",
@@ -333,7 +501,15 @@
         "page": 12,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/aldos-adventure"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "alien-cabal",
@@ -357,7 +533,19 @@
         "page": 7,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20010209175429/http://www.aliencabal.com:80/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/alien-cabal"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "alien-carnage",
@@ -380,7 +568,23 @@
         "page": 7,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/alien-carnage_48/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/alien-carnage"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Alien_Carnage"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "alien-rampage",
@@ -409,7 +613,19 @@
         "page": 1,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19961219133722/http://www.alienrampage.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/alien-rampage"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "alien-trilogy",
@@ -432,7 +648,23 @@
         "page": 8,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19980208084046/http://www.aklm.com/anation/twitch/interactive/alien-trilogy/AlienT.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/alien-trilogy"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Alien_Trilogy"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "alley-cat",
@@ -456,7 +688,15 @@
         "page": 3,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/alley-cat"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "alone-in-the-dark",
@@ -479,7 +719,23 @@
         "page": 5,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20000620144523/http://www.aloneinthedark.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/alone-in-the-dark"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Alone_in_the_Dark_(1992_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "amazon-guardians-of-eden",
@@ -502,7 +758,19 @@
         "page": 10,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/amazon-guardians-of-eden"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Amazon:_Guardians_of_Eden"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "amulets-and-armor",
@@ -526,7 +794,23 @@
         "page": 12,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://amuletsandarmor.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/amulets-and-armor"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Amulets_%26_Armor"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ant-run",
@@ -550,7 +834,15 @@
         "page": 17,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/ant-run"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "antarctic-adventure",
@@ -574,7 +866,19 @@
         "page": 15,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/antarctic-adventure"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Antarctic_Adventure"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "apples-and-oranges",
@@ -596,7 +900,15 @@
         "page": 13,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/apples-oranges"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Up to 2 players, Turn-based shared keyboard competitive"
   },
   {
     "id": "aqua-man",
@@ -620,7 +932,9 @@
         "page": 13,
         "position": 6
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "aquanoid",
@@ -644,7 +958,15 @@
         "page": 20,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/aquanoid"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "arctic-adventure",
@@ -667,7 +989,23 @@
         "page": 7,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/arctic-adventure_41/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/arctic-adventure"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Arctic_Adventure_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "arcy-2",
@@ -688,7 +1026,15 @@
         "page": 8,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/arcy-2"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ark",
@@ -712,7 +1058,9 @@
         "page": 11,
         "position": 1
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "ascii-invaders",
@@ -736,7 +1084,9 @@
         "page": 19,
         "position": 4
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ascii-patrol",
@@ -758,7 +1108,15 @@
         "page": 13,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://ascii-patrol.com/"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "asciiquest",
@@ -780,7 +1138,9 @@
         "page": 11,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "aspetra",
@@ -804,7 +1164,15 @@
         "page": 17,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/aspetra"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "assault-trooper",
@@ -828,7 +1196,15 @@
         "page": 17,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/assault-trooper"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "astrofire",
@@ -851,7 +1227,19 @@
         "page": 20,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.ortsoftware.com/af.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/astrofire"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "attack-of-the-petscii-robots",
@@ -875,7 +1263,19 @@
         "page": 13,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.the8bitguy.com/category/the-8-bit-guy/petscii-robots/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/157357/attack-of-the-petscii-robots/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "babytype",
@@ -903,7 +1303,15 @@
         "page": 8,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/babytype"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "backlash-a-turret-gunner-simulation",
@@ -927,7 +1335,15 @@
         "page": 13,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/backlash-a-turret-gunner-simulation"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "balloon-challenge",
@@ -956,7 +1372,15 @@
         "page": 2,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/balloon-challenge"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "balloons",
@@ -980,7 +1404,15 @@
         "page": 6,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/balloons_"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 2 players, Simultaneous competitive"
   },
   {
     "id": "banyon-wars",
@@ -1004,7 +1436,15 @@
         "page": 13,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/banyon-wars"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "barren-planet",
@@ -1028,7 +1468,15 @@
         "page": 11,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://dos.cyningstan.org.uk/downloads/7/barren-planet"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "baryon",
@@ -1052,7 +1500,15 @@
         "page": 16,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/baryon"
+      }
+    ],
+    "resolution": "256 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous cooperative shared keyboard joystick"
   },
   {
     "id": "battle-arena-toshinden",
@@ -1075,7 +1531,23 @@
         "page": 8,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19970302142735/http://www.playmatestoys.com/pages/pie/tsdpc.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/battle-arena-toshinden"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Battle_Arena_Toshinden"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "battle-bugs",
@@ -1098,7 +1570,19 @@
         "page": 14,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/battle-bugs"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Battle_Bugs"
+      }
+    ],
+    "resolution": "800 × 600",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "battle-cheese",
@@ -1122,7 +1606,15 @@
         "page": 4,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/battle-cheese"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "battle-for-atlantis",
@@ -1146,7 +1638,15 @@
         "page": 3,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/battle-for-atlantis"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "battleship",
@@ -1170,7 +1670,15 @@
         "page": 17,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/battleship"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "beast",
@@ -1194,7 +1702,19 @@
         "page": 20,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/beast_"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Beast_(video_game)"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "beats-of-rage",
@@ -1223,7 +1743,23 @@
         "page": 1,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.senileteam.com/beatsofrage.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/beats-of-rage"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Beats_of_Rage"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Up to 2 players, Simultaneous co-op"
   },
   {
     "id": "beneath-a-steel-sky",
@@ -1251,7 +1787,22 @@
         "page": 5,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://revolution.co.uk/games/beneath-a-steel-sky/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/beneath-a-steel-sky"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Beneath_a_Steel_Sky"
+      }
+    ],
+    "multiplayer": "Single player"
   },
   {
     "id": "beyond-castle-wolfenstein",
@@ -1274,7 +1825,23 @@
         "page": 4,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.oldskool.org/pc/BCW"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/1760/beyond-castle-wolfenstein/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Beyond_Castle_Wolfenstein"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "big-rig",
@@ -1298,7 +1865,15 @@
         "page": 19,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/big-rig"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "bio-menace",
@@ -1321,7 +1896,23 @@
         "page": 12,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/bio-menace_42/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/bio-menace"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Bio_Menace"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "black-hole",
@@ -1345,7 +1936,9 @@
         "page": 14,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "blackthorne",
@@ -1368,7 +1961,23 @@
         "page": 16,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://us.blizzard.com/en-us/games/legacy/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/blackthorne"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Blackthorne"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "blake-stone-aliens-of-gold",
@@ -1392,7 +2001,23 @@
         "page": 4,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/blake-stone_15/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/blake-stone-aliens-of-gold"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Blake_Stone:_Aliens_of_Gold"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "blam-machinehead",
@@ -1415,7 +2040,23 @@
         "page": 8,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970614163429/http://www.eidosinteractive.com/machinehead/machinehead.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/machine-head"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Blam!_Machinehead"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "block-man",
@@ -1439,7 +2080,15 @@
         "page": 8,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/block-man-1"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "blockout",
@@ -1462,7 +2111,23 @@
         "page": 1,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.blockout.net/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/blockout"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Blockout"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "blood",
@@ -1485,7 +2150,23 @@
         "page": 1,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970705063955/http://www.blood.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/blood"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Blood_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, LAN, Modem"
   },
   {
     "id": "blupi-at-home",
@@ -1506,7 +2187,19 @@
         "page": 14,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://blupi.org/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://fr.wikipedia.org/wiki/Blupi"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "body-blows",
@@ -1529,7 +2222,23 @@
         "page": 7,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20060509091746/http://www.team17.com/games.html?filterType=title&title=Body%20Blows"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/body-blows"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Body_Blows"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "bolo-adventures",
@@ -1553,7 +2262,15 @@
         "page": 11,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/bolo-adventures-i"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "bolo-adventures-3",
@@ -1577,7 +2294,15 @@
         "page": 14,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/bolo-adventures-iii"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "bolo-ball",
@@ -1606,7 +2331,15 @@
         "page": 3,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/bolo-ball"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "bombaway",
@@ -1630,7 +2363,9 @@
         "page": 14,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 2 players, Turn-based shared keyboard and/or mouse"
   },
   {
     "id": "brainstorm-pro",
@@ -1654,7 +2389,15 @@
         "page": 11,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/brainstorm-pro"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "brutal-paws-of-fury",
@@ -1677,7 +2420,23 @@
         "page": 19,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19961105055649/http://www.gametek.com/webfinall/other_products/brutal.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/brutal-paws-of-fury"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Brutal:_Paws_of_Fury"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "bust-a-move-2-arcade-edition",
@@ -1700,7 +2459,19 @@
         "page": 6,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/bust-a-move-again"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Puzzle_Bobble"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "c-dogs",
@@ -1724,7 +2495,23 @@
         "page": 17,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20060307194825/http://www.orcsoftware.com/~ronny/C-Dogs.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/c-dogs"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/C-Dogs"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Couch co-op shared keyboard"
   },
   {
     "id": "cannon-fodder",
@@ -1753,7 +2540,19 @@
         "page": 3,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/cannon-fodder"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Cannon_Fodder_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "captain-comic",
@@ -1777,7 +2576,19 @@
         "page": 20,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/adventures-of-captain-comic"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Captain_Comic"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "capture-the-flag",
@@ -1801,7 +2612,15 @@
         "page": 8,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/capture-the-flag"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Up to 2 players, Shared keyboard, modem, or play-by-email"
   },
   {
     "id": "carmageddon",
@@ -1824,7 +2643,23 @@
         "page": 7,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.carmageddon.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/carmageddon"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Carmageddon"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "castle-adventure",
@@ -1848,7 +2683,23 @@
         "page": 9,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.thealmightyguru.com/Reviews/CastleAdventure/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/castle-adventure"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Castle_Adventure"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "cavern-of-the-evil-wizard",
@@ -1872,7 +2723,15 @@
         "page": 13,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://gamejolt.com/games/Cavernoftheevilwizard/493137"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "cd-man",
@@ -1894,7 +2753,15 @@
         "page": 7,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/cd-man-version-20"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "champ-kong",
@@ -1918,7 +2785,19 @@
         "page": 1,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.champ-em.com/kong.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/champ-kong"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ms-pac-em",
@@ -1947,7 +2826,19 @@
         "page": 1,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.champ-em.com/mspacem.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/champ-ms-pac-em"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "pac-em",
@@ -1976,7 +2867,19 @@
         "page": 1,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.champ-em.com/pacem.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/champ-pac-em"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard or joystick"
   },
   {
     "id": "charlie-ii",
@@ -1999,7 +2902,19 @@
         "page": 16,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.wieringsoftware.nl/ch2/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/charlie-ii"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "charlie-the-duck",
@@ -2023,7 +2938,19 @@
         "page": 15,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.wieringsoftware.nl/charlie/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/charlie-the-duck"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "chasm-the-rift",
@@ -2046,7 +2973,19 @@
         "page": 3,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/chasm-the-rift"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Chasm:_The_Rift"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Up to 2 players, LAN, Modem?"
   },
   {
     "id": "chesshousers",
@@ -2070,7 +3009,15 @@
         "page": 14,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/chess-housers"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "chex-quest",
@@ -2094,7 +3041,19 @@
         "page": 10,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/chex-quest"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Chex_Quest"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "chompsters",
@@ -2118,7 +3077,15 @@
         "page": 3,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19991013115229/http://geocities.com:80/SiliconValley/Way/1791/chomp.htm"
+      }
+    ],
+    "resolution": "533 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "clockwiser",
@@ -2141,7 +3108,23 @@
         "page": 1,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://archive.org/details/ClockwiserAmiga"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/15392/clockwiser-time-is-running-out/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Clockwiser"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "cochese",
@@ -2165,7 +3148,9 @@
         "page": 11,
         "position": 6
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "coffeebreak-card-games",
@@ -2189,7 +3174,9 @@
         "page": 11,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "colossal-cave-adventure",
@@ -2213,7 +3200,23 @@
         "page": 4,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://rickadams.org/adventure/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/adventure_"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Colossal_Cave_Adventure"
+      }
+    ],
+    "resolution": "1280 × 800",
+    "multiplayer": "Single player"
   },
   {
     "id": "commander-keen-1-invasion-of-the-vorticons",
@@ -2237,7 +3240,23 @@
         "page": 2,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/keen1/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/commander-keen-1-marooned-on-mars"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Commander_Keen_in_Invasion_of_the_Vorticons"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "commander-keen-4-secret-of-the-oracle",
@@ -2261,7 +3280,23 @@
         "page": 1,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/commander-keen-goodbye-galaxy_8/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/commander-keen-4-secret-of-the-oracle"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Commander_Keen_in_Goodbye,_Galaxy"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "commander-keen-6-aliens-ate-my-babysitter",
@@ -2284,7 +3319,19 @@
         "page": 9,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/commander-keen-aliens-ate-my-babysitter"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Commander_Keen_in_Aliens_Ate_My_Babysitter"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "commander-keen-keen-dreams",
@@ -2308,7 +3355,23 @@
         "page": 9,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20110129180939/http://www.idsoftware.com/games/vintage/ck-dreams/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/commander-keen-keen-dreams"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Commander_Keen_in_Keen_Dreams"
+      }
+    ],
+    "resolution": "320 × 300",
+    "multiplayer": "Single player"
   },
   {
     "id": "corridor-7-alien-invasion",
@@ -2331,7 +3394,23 @@
         "page": 9,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://corridor7.tripod.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/corridor-7-alien-invasion"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Corridor_7:_Alien_Invasion"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "cosmos-cosmic-adventure",
@@ -2355,7 +3434,23 @@
         "page": 5,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/cosmo/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/cosmos-cosmic-adventure"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Cosmo%27s_Cosmic_Adventure"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "crayon-box",
@@ -2379,7 +3474,9 @@
         "page": 14,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "crazy-drake",
@@ -2403,7 +3500,19 @@
         "page": 5,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19980623223645/http://www.onereality.com/Sales/Catalog/Crazy_Drake/Crazy_Drake_Extra/crazy_drake_extra.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/crazy-drake"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "crazy-eights",
@@ -2427,7 +3536,9 @@
         "page": 14,
         "position": 8
       }
-    ]
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "crime-fighter",
@@ -2451,7 +3562,19 @@
         "page": 9,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.pssoft.de/english/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/crime-fighter"
+      }
+    ],
+    "resolution": "475 × 260",
+    "multiplayer": "Up to 4 players, Shared keyboard turn based"
   },
   {
     "id": "cross-of-insanity",
@@ -2475,7 +3598,9 @@
         "page": 14,
         "position": 9
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "crystal-caves",
@@ -2499,7 +3624,23 @@
         "page": 10,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/crystal-caves_7/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/crystal-caves"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Crystal_Caves"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "cyberbox-2",
@@ -2523,7 +3664,15 @@
         "page": 11,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/159970/cyberbox-ii/"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "cybersphere",
@@ -2546,7 +3695,15 @@
         "page": 14,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/cybersphere"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "cybersphere-plus",
@@ -2569,7 +3726,15 @@
         "page": 15,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/cybersphere-plus"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dgeneration",
@@ -2590,7 +3755,19 @@
         "page": 19,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/dgeneration"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/D/Generation"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dangerous-dave",
@@ -2614,7 +3791,23 @@
         "page": 5,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://rome.ro/dangerous-dave/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/dangerous-dave-in-the-deserted-pirates-hideout"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Dangerous_Dave"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dangerous-dave-in-copyright-infringement",
@@ -2638,7 +3831,9 @@
         "page": 1,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "daymare-1",
@@ -2662,7 +3857,9 @@
         "page": 11,
         "position": 9
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dbquest",
@@ -2686,7 +3883,15 @@
         "page": 15,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://catenama.ipower.com/lostdragon/downloads/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dc-games-graphics-adventure-game-builder",
@@ -2710,7 +3915,9 @@
         "page": 11,
         "position": 10
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "death-rally",
@@ -2734,7 +3941,23 @@
         "page": 12,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/death-rally_13/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/death-rally"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Death_Rally"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 4 players, Network, deathmatch"
   },
   {
     "id": "deluxe-ski-jump",
@@ -2758,7 +3981,19 @@
         "page": 15,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20021010172825/http://www.mediamond.fi/main.php?cat=dsj"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/8926/deluxe-ski-jump/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "descent",
@@ -2786,7 +4021,23 @@
         "page": 1,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970609060553/http://www.interplay.com/descent/descent.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/descent"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Descent_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, IPX"
   },
   {
     "id": "descent-2",
@@ -2809,7 +4060,19 @@
         "page": 13,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/descent-ii"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Descent_II"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "desert-storm-command",
@@ -2833,7 +4096,15 @@
         "page": 15,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/desert-storm-command-deluxe"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "destruction-derby",
@@ -2856,7 +4127,19 @@
         "page": 8,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/destruction-derby"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Destruction_Derby"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "digger-remastered",
@@ -2880,7 +4163,23 @@
         "page": 5,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.digger.org/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/digger____"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Digger_(video_game)"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "digital-league-baseball",
@@ -2904,7 +4203,15 @@
         "page": 15,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/digital-league-baseball"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "dinosaur-predators",
@@ -2928,7 +4235,15 @@
         "page": 15,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/dinosaur-predators-"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "disneys-aladdin",
@@ -2951,7 +4266,19 @@
         "page": 4,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/disneys-aladdin"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Disney%27s_Aladdin_(Virgin_Games_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "beauty-and-the-beast",
@@ -2974,7 +4301,15 @@
         "page": 13,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/disneys-beauty-and-the-beast__"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "doom",
@@ -3008,7 +4343,23 @@
         "page": 1,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.classicdoom.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/doom"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Doom_(1993_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "doom-2d",
@@ -3032,7 +4383,15 @@
         "page": 10,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/doom-2d"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard cooperative or deathmatch"
   },
   {
     "id": "doom-the-roguelike",
@@ -3056,7 +4415,19 @@
         "page": 19,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://drl.chaosforge.org/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/doom-the-roguelike"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "double-pacman",
@@ -3080,7 +4451,15 @@
         "page": 14,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://breadbingames.itch.io/double-pacman"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard cooperative or competitive"
   },
   {
     "id": "dreamweb",
@@ -3103,7 +4482,19 @@
         "page": 2,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/dreamweb"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Dreamweb"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "drug-wars-a-game-based-on-the-new-york-drug-market",
@@ -3127,7 +4518,19 @@
         "page": 4,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/drug-wars-a-game-based-on-the-new-york-drug-market"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Drugwars"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "duke-nukem",
@@ -3156,7 +4559,23 @@
         "page": 1,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/duke-nukem-1_24/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/duke-nukem"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Duke_Nukem_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "duke-nukem-3d",
@@ -3185,7 +4604,19 @@
         "page": 1,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/duke-nukem-3d_27/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/duke-nukem-3d"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem, Coop, Deathmatch"
   },
   {
     "id": "duke-nukem-2",
@@ -3209,7 +4640,23 @@
         "page": 8,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/duke-nukem-2_19/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/duke-nukem-ii"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Duke_Nukem_II"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "dungeons-of-drakklor",
@@ -3233,7 +4680,9 @@
         "page": 15,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "dynamo-draughts",
@@ -3257,7 +4706,9 @@
         "page": 12,
         "position": 1
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "earthworm-jim-1-and-2",
@@ -3280,7 +4731,19 @@
         "page": 2,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/earthworm-jim-1-2-the-whole-can-o-worms"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Earthworm_Jim"
+      }
+    ],
+    "resolution": "320 × 224",
+    "multiplayer": "Single player"
   },
   {
     "id": "edchess",
@@ -3304,7 +4767,15 @@
         "page": 15,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/chess____"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "ega-trek",
@@ -3328,7 +4799,19 @@
         "page": 18,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.flightsim.com/arcanum/egatrek.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/ega-trek"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "elder-scrolls-arena",
@@ -3356,7 +4839,23 @@
         "page": 2,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20051224060834/http://www.bethsoft.com:80/games/games_arena.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/elder-scrolls-arena"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Elder_Scrolls:_Arena"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "elder-scrolls-daggerfall",
@@ -3387,7 +4886,19 @@
         "page": 2,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://elderscrolls.bethesda.net/en/daggerfall"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/elder-scrolls-chapter-ii-daggerfall"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "eliminator",
@@ -3411,7 +4922,9 @@
         "page": 15,
         "position": 9
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "emerald-hunt",
@@ -3440,7 +4953,9 @@
         "page": 2,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "enchantasy-quest-for-the-eternal-grimoire",
@@ -3464,7 +4979,15 @@
         "page": 15,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19990508001219/http://members.aol.com/enchantasy/"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "epic-pinball",
@@ -3493,7 +5016,19 @@
         "page": 2,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/epic-pinball"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Epic_Pinball"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "excelsior-phase-one-lysandia",
@@ -3517,7 +5052,19 @@
         "page": 2,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.excelsior-rpg.com/ex1.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/excelsior-phase-one-lysandia"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "extreme-pinball",
@@ -3540,7 +5087,19 @@
         "page": 6,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/extreme-pinball"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Extreme_Pinball"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "facetrex",
@@ -3564,7 +5123,15 @@
         "page": 16,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/facetrex"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "fgodmom",
@@ -3588,7 +5155,23 @@
         "page": 19,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20080908105300/http://members.aol.com/soggybread/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/fgodmom"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/F.Godmom"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "fatal-fumes",
@@ -3612,7 +5195,19 @@
         "page": 16,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20000611163410/http://www.saunalahti.fi/abax/ff.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/fatal-fumes"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "final-impact",
@@ -3635,7 +5230,15 @@
         "page": 16,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/final-impact"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard cooperative"
   },
   {
     "id": "football-fanatic",
@@ -3663,7 +5266,19 @@
         "page": 2,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20010331131254/http://www.thunderbear.com:80/footy/default.asp"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/footy-fanatic"
+      }
+    ],
+    "resolution": "720 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "frabs",
@@ -3687,7 +5302,15 @@
         "page": 2,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20070112221541/http://www.cs.uidaho.edu:80/~cass0664/fRaBs/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "fracas",
@@ -3710,7 +5333,9 @@
         "page": 8,
         "position": 1
       }
-    ]
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Up to 4 players, Competitive deathmatch"
   },
   {
     "id": "freaks",
@@ -3734,7 +5359,9 @@
         "page": 16,
         "position": 4
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "freddy-pharkas-frontier-pharmacist",
@@ -3757,7 +5384,23 @@
         "page": 8,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://allowe.com/games/fpfp/about-freddy.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/freddy-pharkas-frontier-pharmacist"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Freddy_Pharkas:_Frontier_Pharmacist"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "funballs",
@@ -3781,7 +5424,9 @@
         "page": 16,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "g-quest",
@@ -3805,7 +5450,9 @@
         "page": 16,
         "position": 6
       }
-    ]
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "galacta-the-battle-for-saturn",
@@ -3834,7 +5481,19 @@
         "page": 5,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.allabout.com/afs/software/games/galacta.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/galacta-the-battle-for-saturn"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "game-builder-lite",
@@ -3855,7 +5514,9 @@
         "page": 16,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "gobliiins",
@@ -3883,7 +5544,19 @@
         "page": 8,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/gobliiins"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Gobliiins"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "gobliins-2",
@@ -3906,7 +5579,19 @@
         "page": 16,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/gobliins-2-the-prince-buffoon"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Gobliiins#Gobliins_2:_The_Prince_Buffoon"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "goldhunt",
@@ -3930,7 +5615,9 @@
         "page": 16,
         "position": 9
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "grand-theft-auto",
@@ -3963,7 +5650,15 @@
         "page": 2,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/grand-theft-auto"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "groundfire",
@@ -3987,7 +5682,9 @@
         "page": 16,
         "position": 10
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "guimo",
@@ -4010,7 +5707,19 @@
         "page": 3,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19980122195840/http://www.jackbox.com/products.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/guimo"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hamster-republic-role-playing-game-construction-engine",
@@ -4032,7 +5741,19 @@
         "page": 17,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://rpg.hamsterrepublic.com/ohrrpgce/Main_Page"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/OHRRPGCE"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hangman",
@@ -4054,7 +5775,9 @@
         "page": 17,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "hangman-",
@@ -4078,7 +5801,15 @@
         "page": 12,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/hangman__"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "hanks-quest-victim-of-society",
@@ -4102,7 +5833,15 @@
         "page": 17,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://home.deds.nl/~femo/projects.html#hank"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "happyland-adventures",
@@ -4126,7 +5865,15 @@
         "page": 19,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/happyland-adventures"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "happyland-adventures-x-mas-edition",
@@ -4150,7 +5897,19 @@
         "page": 4,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20110623195122/http://freelunchdesign.com/games.php?id=2"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/happyland-adventures-x-mas-edition"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "helious-2",
@@ -4173,7 +5932,19 @@
         "page": 17,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.allabout.com/afs/software/games/helious.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/helious-ii"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "heretic",
@@ -4197,7 +5968,19 @@
         "page": 6,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/heretic-shadow-of-the-serpent-riders"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Heretic_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem, Coop, Deathmatch, Internet"
   },
   {
     "id": "heros-heart",
@@ -4221,7 +6004,15 @@
         "page": 8,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/heros-heart"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "heroes",
@@ -4245,7 +6036,15 @@
         "page": 2,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://heroes.sourceforge.net/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Competitive deathmatch"
   },
   {
     "id": "hexen-beyond-heretic",
@@ -4268,7 +6067,19 @@
         "page": 11,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/hexen"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Hexen:_Beyond_Heretic"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem, Coop, Deathmatch, Internet"
   },
   {
     "id": "hexxagon",
@@ -4297,7 +6108,15 @@
         "page": 2,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/hexxagon"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard"
   },
   {
     "id": "highway-hunter",
@@ -4321,7 +6140,19 @@
         "page": 8,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/highway-hunter"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Highway_Hunter"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hocus-pocus",
@@ -4350,7 +6181,19 @@
         "page": 2,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/hocus/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/hocus-pocus"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hopy-one",
@@ -4372,7 +6215,15 @@
         "page": 17,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/24132/hopy-one/"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "hubie",
@@ -4396,7 +6247,9 @@
         "page": 6,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hugo-3-jungle-of-doom",
@@ -4425,7 +6278,23 @@
         "page": 8,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.dgray.com/hwpage.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/hugo-iii-jungle-of-doom"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Hugo_III,_Jungle_of_Doom!"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "hugos-house-of-horrors",
@@ -4449,7 +6318,23 @@
         "page": 6,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.dgray.com/hwpage.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/hugos-house-of-horrors"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Hugo%27s_House_of_Horrors"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "humbug",
@@ -4473,7 +6358,23 @@
         "page": 17,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.grahamcluley.com/misc/humbug/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/humbug"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Humbug_(video_game)"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "indiana-jones-and-the-fate-of-atlantis",
@@ -4496,7 +6397,19 @@
         "page": 8,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/indiana-jones-and-the-fate-of-atlantis"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Indiana_Jones_and_the_Fate_of_Atlantis"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "inner-worlds",
@@ -4537,7 +6450,19 @@
         "page": 17,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19971015213000/http://www.webfootgames.com/catalog/interpos.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/interpose"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "interpose-xmas-greetings",
@@ -4560,7 +6485,19 @@
         "page": 9,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970329034440/http://www.tzsoft.no/interpose.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/interpose-x-mas-greetings"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "invasion-of-the-mutant-space-bats-of-doom",
@@ -4589,7 +6526,15 @@
         "page": 4,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/invasion-of-the-mutant-space-bats-of-doom"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "iron-blood",
@@ -4612,7 +6557,15 @@
         "page": 17,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/iron-blood"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "isle-wars",
@@ -4636,7 +6589,15 @@
         "page": 5,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/isle-wars"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "iter-vehemens-ad-necem",
@@ -4660,7 +6621,15 @@
         "page": 17,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://ivan.sourceforge.net/"
+      }
+    ],
+    "resolution": "800 × 600",
+    "multiplayer": "Single player"
   },
   {
     "id": "jack-in-the-dark",
@@ -4684,7 +6653,15 @@
         "page": 9,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/1231/jack-in-the-dark/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jason-jupiter-star-cadet-in-unfinished-business",
@@ -4708,7 +6685,9 @@
         "page": 12,
         "position": 3
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jazz-jackrabbit",
@@ -4737,7 +6716,23 @@
         "page": 1,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20000622101114/http://www.epicgames.com:80/jazz.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/jazz-jackrabbit"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Jazz_Jackrabbit_(1994_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jazz-jackrabbit-holiday-hare-1994",
@@ -4771,7 +6766,19 @@
         "page": 3,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/jazz-jackrabbit-holiday-hare-1994"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Jazz_Jackrabbit_(1994_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jetpack",
@@ -4799,7 +6806,23 @@
         "page": 3,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.adeptsoftware.com/jetpack/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/jetpack"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Jetpack_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jetpack-christmas-special",
@@ -4828,7 +6851,19 @@
         "page": 3,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/jetpack-christmas-special"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Jetpack_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jill-of-the-jungle",
@@ -4851,7 +6886,19 @@
         "page": 16,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/jill-of-the-jungle"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Jill_of_the_Jungle"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "joust-vga",
@@ -4875,7 +6922,15 @@
         "page": 17,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/joust-vga"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "jungle-jack",
@@ -4899,7 +6954,9 @@
         "page": 18,
         "position": 1
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "kaboom",
@@ -4923,7 +6980,9 @@
         "page": 18,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 4 players, Simultaneous shared keyboard competitive deathmatch"
   },
   {
     "id": "kball",
@@ -4952,7 +7011,15 @@
         "page": 3,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://kball.sourceforge.net/"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "kknd-krush-kill-n-destroy",
@@ -4975,7 +7042,19 @@
         "page": 18,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/520/kknd-krush-kill-n-destroy/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/KKnD_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 6 players, Simultaneous competitive (no multiplayer in demo version)"
   },
   {
     "id": "klass-of-99",
@@ -4999,7 +7078,23 @@
         "page": 12,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://retrospec.sgn.net/users/rjordan/klass/index.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/klass-of-99"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Skool_Daze#Sequels_and_conversions"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "kosmonaut",
@@ -5022,7 +7117,15 @@
         "page": 12,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/kosmonaut"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "krypton-egg",
@@ -5046,7 +7149,23 @@
         "page": 3,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.kryptonegg.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/krypton-egg"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Krypton_Egg"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ladder-man",
@@ -5070,7 +7189,15 @@
         "page": 12,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/ladder-man-i"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "lemmings",
@@ -5091,7 +7218,19 @@
         "page": 3,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/lemmings"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Lemmings_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "lure-of-the-temptress",
@@ -5114,7 +7253,19 @@
         "page": 3,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/lure-of-the-temptress"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Lure_of_the_Temptress"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mad-painter",
@@ -5138,7 +7289,9 @@
         "page": 18,
         "position": 4
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "magic-carpet",
@@ -5161,7 +7314,23 @@
         "page": 6,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970607190630/http://www.bullfrog.co.uk/games/magic-carpet/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/magic-carpet"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Magic_Carpet_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Network only"
   },
   {
     "id": "magus",
@@ -5185,7 +7354,9 @@
         "page": 12,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "1066 × 800",
+    "multiplayer": "Single player"
   },
   {
     "id": "major-stryker",
@@ -5208,7 +7379,23 @@
         "page": 4,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/major-stryker_47/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/major-stryker"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Major_Stryker"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mario-and-luigi",
@@ -5232,7 +7419,19 @@
         "page": 4,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.wieringsoftware.nl/mario/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/mario-luigi"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mario-bros-vga",
@@ -5256,7 +7455,15 @@
         "page": 2,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/mario-brothers-vga"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mario-teaches-typing",
@@ -5279,7 +7486,19 @@
         "page": 10,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/mario-teaches-typing"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/List_of_Mario_educational_games#Mario_Teaches_Typing_games"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "math-rescue",
@@ -5303,7 +7522,23 @@
         "page": 17,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.redwoodgames.com/math.php"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/math-rescue"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Math_Rescue"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "matrix",
@@ -5327,7 +7562,9 @@
         "page": 3,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mechwar",
@@ -5351,7 +7588,9 @@
         "page": 18,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Up to 2 players, Turn-based shared keyboard/mouse competitive"
   },
   {
     "id": "megazeux",
@@ -5380,7 +7619,15 @@
         "page": 3,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.digitalmzx.com/"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "menace-of-dr-spoil-sport",
@@ -5404,7 +7651,9 @@
         "page": 18,
         "position": 6
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "meteor",
@@ -5428,7 +7677,15 @@
         "page": 3,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.jbplay.com/games/meteor/"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "mice-maze",
@@ -5452,7 +7709,9 @@
         "page": 18,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "mice-men",
@@ -5476,7 +7735,15 @@
         "page": 2,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/mice-men"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard"
   },
   {
     "id": "micro-machines",
@@ -5499,7 +7766,19 @@
         "page": 6,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/micro-machines"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Micro_Machines_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "micros-dilemma-ii",
@@ -5523,7 +7802,9 @@
         "page": 9,
         "position": 3
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mimi-and-the-mites",
@@ -5547,7 +7828,15 @@
         "page": 3,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/mimi-the-mites"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "mine-mayhem",
@@ -5571,7 +7860,15 @@
         "page": 3,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://adoxa.altervista.org/mine/index.html"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "mirror-magic",
@@ -5595,7 +7892,19 @@
         "page": 3,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.artsoft.org/mirrormagic/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/191814/mirror-magic/"
+      }
+    ],
+    "resolution": "800 × 600",
+    "multiplayer": "Single player"
   },
   {
     "id": "monkey-island-the-secret-of",
@@ -5623,7 +7932,19 @@
         "page": 2,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/secret-of-monkey-island"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Secret_of_Monkey_Island"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "monster-bash",
@@ -5647,7 +7968,23 @@
         "page": 20,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/monster-bash_38/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/monster-bash"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Monster_Bash"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "moraffs-world",
@@ -5671,7 +8008,19 @@
         "page": 9,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20120329133855/http://www.softwarediversions.com/catalog/product_info.php?cPath=28&products_id=68"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/moraffs-world"
+      }
+    ],
+    "resolution": "800 × 600",
+    "multiplayer": "Single player"
   },
   {
     "id": "mortal-kombat-2",
@@ -5699,7 +8048,19 @@
         "page": 4,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/mortal-kombat-ii"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Mortal_Kombat_II"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous competitive deathmatch"
   },
   {
     "id": "mortal-kombat-3",
@@ -5727,7 +8088,19 @@
         "page": 4,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/mortal-kombat-3"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Mortal_Kombat_3"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "mortar-mayhem",
@@ -5751,7 +8124,19 @@
         "page": 4,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20020121152620/http://mortar.address.com:80/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/mortar"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 8 players, Shared keyboard turn based"
   },
   {
     "id": "ms-pacman-pc",
@@ -5775,7 +8160,15 @@
         "page": 1,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/ms-pac-pc"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "need-for-speed",
@@ -5798,7 +8191,19 @@
         "page": 3,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/need-for-speed"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Need_for_Speed"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "nethack",
@@ -5822,7 +8227,19 @@
         "page": 4,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.nethack.org/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/nethack"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "neut-tower",
@@ -5846,7 +8263,15 @@
         "page": 6,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://spindleyq.itch.io/neut-tower"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "nitemare-3d",
@@ -5870,7 +8295,23 @@
         "page": 18,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.dgray.com/n3dpage.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/nitemare-3d"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Nitemare_3D"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "nyet",
@@ -5894,7 +8335,15 @@
         "page": 17,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/nyet"
+      }
+    ],
+    "resolution": "720 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "offroad",
@@ -5918,7 +8367,15 @@
         "page": 18,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/offroad"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "one-must-fall-2097",
@@ -5941,7 +8398,23 @@
         "page": 11,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19961018071827/http://www.epicgames.com/omf.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/one-must-fall-2097"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/One_Must_Fall:_2097"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "oo-topos",
@@ -5964,7 +8437,19 @@
         "page": 18,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://graphicsmagician.com/polarware/comprehend.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/oo-topos_"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "out-of-this-world-another-world",
@@ -5992,7 +8477,19 @@
         "page": 3,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/out-of-this-world"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "http://www.mobygames.com/game/dos/out-of-this-world"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "outburst-the-game-of-topics",
@@ -6016,7 +8513,9 @@
         "page": 12,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Up to 2 players, Turn based shared keyboard competitive"
   },
   {
     "id": "outfox",
@@ -6040,7 +8539,15 @@
         "page": 18,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/outfox"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "pac-pc",
@@ -6069,7 +8576,15 @@
         "page": 4,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/pac-pc"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "packman",
@@ -6093,7 +8608,15 @@
         "page": 14,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/packman"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "paranoid",
@@ -6117,7 +8640,15 @@
         "page": 3,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/paranoid"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "pea-shootin-pete",
@@ -6141,7 +8672,15 @@
         "page": 12,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/pea-shootin-pete"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "pentix",
@@ -6165,7 +8704,9 @@
         "page": 15,
         "position": 8
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "perestroika",
@@ -6189,7 +8730,15 @@
         "page": 20,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/toppler"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "peter-pan-a-story-painting-adventure",
@@ -6212,7 +8761,15 @@
         "page": 19,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/peter-pan-a-story-painting-adventure"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "pharaohs-tomb",
@@ -6235,7 +8792,23 @@
         "page": 20,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/pharaohs-tomb_46/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/pharaohs-tomb"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Pharaoh%27s_Tomb"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "pinball-fantasies",
@@ -6263,7 +8836,19 @@
         "page": 1,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/pinball-fantasies"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Pinball_Fantasies"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "pipe-dream",
@@ -6286,7 +8871,19 @@
         "page": 4,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/pipe-dream"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Pipe_Mania"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "pizza-worm",
@@ -6310,7 +8907,19 @@
         "page": 7,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20011031170136/http://zorlim.cjb.net:80/pub/pizza_worm/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/pizza-worm"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "plundermine",
@@ -6334,7 +8943,9 @@
         "page": 19,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 3 players, Simultaneous competitive keyboard joysticks"
   },
   {
     "id": "pod",
@@ -6358,7 +8969,9 @@
         "page": 9,
         "position": 5
       }
-    ]
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "popcorn",
@@ -6382,7 +8995,19 @@
         "page": 5,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/popcorn"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/PopCorn_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 9 players, Turn based shared keyboard/mouse"
   },
   {
     "id": "powball",
@@ -6405,7 +9030,19 @@
         "page": 9,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://powgames.itch.io/powball-deluxe"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/powball"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous co-op"
   },
   {
     "id": "powerslave",
@@ -6428,7 +9065,19 @@
         "page": 15,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/powerslave"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/PowerSlave"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem, Coop, Deathmatch? (Uses Build engine)"
   },
   {
     "id": "pray-for-death",
@@ -6451,7 +9100,15 @@
         "page": 19,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/pray-for-death"
+      }
+    ],
+    "resolution": "300 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "prehistorik-2",
@@ -6474,7 +9131,19 @@
         "page": 18,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/prehistorik-2"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Prehistorik_2"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "prince-of-persia",
@@ -6497,7 +9166,23 @@
         "page": 2,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.jordanmechner.com/projects/prince-of-persia/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/prince-of-persia"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Prince_of_Persia_(1989_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "prince-of-persia-2-the-shadow-and-the-flame",
@@ -6520,7 +9205,19 @@
         "page": 8,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/prince-of-persia-2-the-shadow-the-flame"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Prince_of_Persia_2:_The_Shadow_and_the_Flame"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "purple-martians",
@@ -6544,7 +9241,15 @@
         "page": 19,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20030228235111/http://www.angelfire.com/retro/michaelweiss/purple.htm"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "putt-putt-goes-to-the-moon",
@@ -6567,7 +9272,23 @@
         "page": 7,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://humongous.com/games/putt-putt-goes-to-the-moon/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/putt-putt-goes-to-the-moon"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Putt-Putt_Goes_to_the_Moon"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "putt-putt-joins-the-parade",
@@ -6590,7 +9311,23 @@
         "page": 12,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://humongous.com/games/putt-putt-joins-the-parade/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/putt-putt-joins-the-parade"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Putt-Putt_Joins_the_Parade"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "quake",
@@ -6619,7 +9356,23 @@
         "page": 4,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/20010630183941/http://www.idsoftware.com:80/quake/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/quake"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Quake_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "quarantine",
@@ -6642,7 +9395,19 @@
         "page": 5,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/quarantine"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Quarantine_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "quato",
@@ -6666,7 +9431,15 @@
         "page": 4,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/quato"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "ragnarok",
@@ -6694,7 +9467,23 @@
         "page": 1,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://dos-ragnarok.wikia.com/wiki/Ragnarok_/_Valhalla_Wiki"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/ragnarok"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Ragnarok_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "rags-to-riches-the-financial-market-simulation",
@@ -6717,7 +9506,15 @@
         "page": 19,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/rags-to-riches-the-financial-market-simulation"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "raptor-call-of-the-shadows",
@@ -6741,7 +9538,23 @@
         "page": 4,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/raptor_23/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/raptor-call-of-the-shadows"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Raptor:_Call_of_the_Shadows"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "rayman",
@@ -6769,7 +9582,19 @@
         "page": 4,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/rayman"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Rayman_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "rebel-decade-chess",
@@ -6793,7 +9618,15 @@
         "page": 5,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.rebel.nl/whatsnew.htm"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "retrofuel",
@@ -6816,7 +9649,19 @@
         "page": 7,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://coconutpizza.itch.io/retrofuel"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/retro-fuel"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "revenge-of-the-mutant-camels",
@@ -6858,7 +9703,23 @@
         "page": 10,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/rott/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/rise-of-the-triad-dark-war"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Rise_of_the_Triad"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 11 players, LAN, Modem?"
   },
   {
     "id": "robod",
@@ -6882,7 +9743,15 @@
         "page": 19,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.crabaware.com/robod/"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "robots-the-game",
@@ -6906,7 +9775,9 @@
         "page": 19,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "rock-rush-xmas-edition",
@@ -6930,7 +9801,9 @@
         "page": 9,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "rockrush",
@@ -6954,7 +9827,15 @@
         "page": 7,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.js.mikedx.co.uk/games/view/15"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "rocks-n-diamonds",
@@ -6981,7 +9862,23 @@
         "page": 4,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.artsoft.org/rocksndiamonds/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/rocks-n-diamonds"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Rocks%27n%27Diamonds"
+      }
+    ],
+    "resolution": "800 × 600",
+    "multiplayer": "Single player"
   },
   {
     "id": "rogue",
@@ -7010,7 +9907,19 @@
         "page": 2,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/rogue"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Rogue_(video_game)"
+      }
+    ],
+    "resolution": "720 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "rooms-of-the-abyss",
@@ -7033,7 +9942,15 @@
         "page": 19,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.softwarebymartin.com/Rooms/"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "sam-and-max-hit-the-road",
@@ -7066,7 +9983,19 @@
         "page": 4,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/sam-max-hit-the-road"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Sam_%26_Max_Hit_the_Road"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sango-fighter",
@@ -7089,7 +10018,23 @@
         "page": 15,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.sangofighter.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/sango-fighter"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Sango_Fighter"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "scorched-earth",
@@ -7118,7 +10063,23 @@
         "page": 4,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.whicken.com/scorch/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/scorched-earth"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Scorched_Earth_(video_game)"
+      }
+    ],
+    "resolution": "360 × 240",
+    "multiplayer": "Up to 10 players, Turn based shared keyboard competitive"
   },
   {
     "id": "screamer",
@@ -7141,7 +10102,23 @@
         "page": 9,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970615123549/http://www.vie.com/low/games/scream.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/621/screamer/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Screamer_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sdi2040",
@@ -7165,7 +10142,15 @@
         "page": 19,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/sdi2040"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "seal-team",
@@ -7188,7 +10173,19 @@
         "page": 12,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/seal-team"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/SEAL_Team_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "secret-agent",
@@ -7212,7 +10209,23 @@
         "page": 11,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/secret-agent_39/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/secret-agent"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Secret_Agent_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "seek-and-destroy",
@@ -7236,7 +10249,19 @@
         "page": 18,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/seek-and-destroy"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Seek_and_Destroy_(1996_video_game)"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "shadow-warrior",
@@ -7260,7 +10285,23 @@
         "page": 5,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/sw/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/shadow-warrior"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Shadow_Warrior_(1997_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem, Coop, Deathmatch"
   },
   {
     "id": "shards",
@@ -7284,7 +10325,9 @@
         "page": 20,
         "position": 1
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sherlock",
@@ -7308,7 +10351,15 @@
         "page": 3,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/sherlock_"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "silencer",
@@ -7332,7 +10383,9 @@
         "page": 20,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "simcity",
@@ -7360,7 +10413,23 @@
         "page": 5,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.simcity.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/simcity"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/SimCity"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "simcity-2000",
@@ -7388,7 +10457,19 @@
         "page": 2,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/simcity-2000"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/SimCity_2000"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "simon-the-sorcerer",
@@ -7416,7 +10497,23 @@
         "page": 7,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.adventuresoft.com/gs1.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/simon-the-sorcerer"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Simon_the_Sorcerer"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sir-addalots-mini-math-adventure",
@@ -7440,7 +10537,15 @@
         "page": 20,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/sir-addalots-mini-math-adventure"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ski-jump-international",
@@ -7464,7 +10569,19 @@
         "page": 17,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.nomasi.com/sj3/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/ski-jump-international"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "skyroads-xmas-special",
@@ -7488,7 +10605,19 @@
         "page": 6,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/skyroads-xmas-special"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/SkyRoads_(video_game)#SkyRoads_XMAS-Special"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "slash",
@@ -7512,7 +10641,19 @@
         "page": 5,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.proudft.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/70773/slash/"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "sleuth",
@@ -7536,7 +10677,19 @@
         "page": 13,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.calcaprt.com/share.htm#Sleuth"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/sleuth"
+      }
+    ],
+    "resolution": "720 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "slipspeed",
@@ -7558,7 +10711,15 @@
         "page": 9,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://voxel.itch.io/slipspeed"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "snack-attack",
@@ -7582,7 +10743,15 @@
         "page": 9,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.berighteous.com/euphoria/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "snipes",
@@ -7606,7 +10775,19 @@
         "page": 6,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/snipes"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Snipes_(video_game)"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "snood",
@@ -7630,7 +10811,23 @@
         "page": 3,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.snoodworld.com/snood-game/snood/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/snood"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Snood_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "sokoball-of-osaka",
@@ -7654,7 +10851,15 @@
         "page": 13,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/sokoball-of-osaka"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "sokoban-3d",
@@ -7677,7 +10882,19 @@
         "page": 20,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19970801171548/http://logos.cyber.mephi.ru/logos/demo/soko/soko3d.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/209408/sokoban-3d/"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "sokoland",
@@ -7701,7 +10918,15 @@
         "page": 20,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20010821030833/http://members.nbci.com/titusfox98/sokoland.htm"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "solar-winds-the-escape",
@@ -7725,7 +10950,19 @@
         "page": 5,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/solar-winds-the-escape"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Solar_Winds"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sopwith",
@@ -7749,7 +10986,23 @@
         "page": 10,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.sopwith.org/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/sopwith-"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Sopwith_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Network?"
   },
   {
     "id": "space-invaders-",
@@ -7773,7 +11026,15 @@
         "page": 20,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/58948/space-invaders/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "space-pilot",
@@ -7797,7 +11058,9 @@
         "page": 20,
         "position": 7
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "spacewar",
@@ -7819,7 +11082,19 @@
         "page": 19,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/spacewar"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Spacewar!"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Up to 2 players, Simultaneous deathmatch"
   },
   {
     "id": "spear-of-destiny",
@@ -7842,7 +11117,19 @@
         "page": 14,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/spear-of-destiny"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Wolfenstein_3D"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "speed-haste",
@@ -7865,7 +11152,23 @@
         "page": 20,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970326223652/http://www.friendware-europe.com:80/sp_haste.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/14257/speed-haste/"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Speed_Haste"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "spych",
@@ -7889,7 +11192,9 @@
         "page": 6,
         "position": 2
       }
-    ]
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "squarez-deluxe",
@@ -7912,7 +11217,15 @@
         "page": 5,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/squarez-deluxe"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Local head-to-head deathmatch"
   },
   {
     "id": "star-control-ii-the-ur-quan-masters",
@@ -7940,7 +11253,19 @@
         "page": 5,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/star-control-ii"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Star_Control_II"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "star-wars-dark-forces",
@@ -7968,7 +11293,19 @@
         "page": 5,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/star-wars-dark-forces"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Star_Wars:_Dark_Forces"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "stargunner",
@@ -7991,7 +11328,19 @@
         "page": 7,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/stargunner_45/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/stargunner"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "stone-mist",
@@ -8015,7 +11364,9 @@
         "page": 20,
         "position": 9
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "styx",
@@ -8039,7 +11390,15 @@
         "page": 10,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/styx"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "sub-battle-simulator",
@@ -8062,7 +11421,19 @@
         "page": 20,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/sub-battle-simulator"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Sub_Battle_Simulator"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "subhunt",
@@ -8086,7 +11457,15 @@
         "page": 13,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/49526/subhunt/"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "supaplex",
@@ -8109,7 +11488,19 @@
         "page": 14,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.supaplex.online/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/supaplex"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "super-street-fighter-ii-turbo",
@@ -8137,7 +11528,19 @@
         "page": 5,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/super-street-fighter-ii-turbo"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Super_Street_Fighter_II_Turbo"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "syndicate",
@@ -8160,7 +11563,19 @@
         "page": 5,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/syndicate"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Syndicate_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "system-shock",
@@ -8188,7 +11603,19 @@
         "page": 7,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/system-shock"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/System_Shock"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tank-wars",
@@ -8212,7 +11639,19 @@
         "page": 2,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/tank-wars__"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Tank_Wars"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 10 players, Turn based shared keyboard competitive"
   },
   {
     "id": "tempest-2000",
@@ -8235,7 +11674,19 @@
         "page": 6,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/tempest-2000"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Tempest_2000"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "terminal-velocity",
@@ -8264,7 +11715,23 @@
         "page": 1,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://3drealms.com/catalog/terminal-velocity_40/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/terminal-velocity"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Terminal_Velocity_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, LAN, Modem"
   },
   {
     "id": "the-terminator-rampage",
@@ -8287,7 +11754,19 @@
         "page": 2,
         "position": 2
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/terminator-rampage"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Terminator:_Rampage"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-terminator-skynet",
@@ -8315,7 +11794,19 @@
         "page": 3,
         "position": 1
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/skynet"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Skynet_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 8 players, Simultaneous deathmatch Internet IPX modem"
   },
   {
     "id": "terroid",
@@ -8339,7 +11830,19 @@
         "page": 10,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19980212212414fw_/http://www.lomaxsoft.simplenet.com/terroid/terroid.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/terroid"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tetris",
@@ -8372,7 +11875,23 @@
         "page": 5,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://vadim.oversigma.com/Tetris.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/tetris_"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Tetris"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "tetris-queen",
@@ -8401,7 +11920,15 @@
         "page": 5,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://qtetris.sourceforge.net/"
+      }
+    ],
+    "resolution": "320 × 240",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "text-world",
@@ -8425,7 +11952,9 @@
         "page": 4,
         "position": 4
       }
-    ]
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-adventures-of-maddog-williams-in-the-dungeons-of-duridian",
@@ -8448,7 +11977,23 @@
         "page": 5,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.gamecrafters.com/gamecrafters/maddog/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/adventures-of-maddog-williams-in-the-dungeons-of-duridian"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Adventures_of_Maddog_Williams_in_the_Dungeons_of_Duridian"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "black-cauldron-the",
@@ -8471,7 +12016,23 @@
         "page": 16,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://allowe.com/downloads/games.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/black-cauldron"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Black_Cauldron_(film)#Video_game"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-blues-brothers",
@@ -8494,7 +12055,19 @@
         "page": 19,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/blues-brothers"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Blues_Brothers_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-incredible-machine",
@@ -8522,7 +12095,19 @@
         "page": 5,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/incredible-machine"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Incredible_Machine_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-incredible-machine-2",
@@ -8545,7 +12130,19 @@
         "page": 20,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/incredible-machine-2"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Incredible_Machine_2"
+      }
+    ],
+    "resolution": "640 × 441",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard"
   },
   {
     "id": "the-last-eichhof",
@@ -8569,7 +12166,15 @@
         "page": 7,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/last-eichhof"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "lion-king-the",
@@ -8592,7 +12197,23 @@
         "page": 8,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19970612031516/http://www.westwood.com/games/lionking/lionking.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/lion-king"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Lion_King_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "search-for-freedom",
@@ -8616,7 +12237,15 @@
         "page": 19,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.mocagh.org/SearchForFreedom/"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-settlers",
@@ -8644,7 +12273,19 @@
         "page": 10,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/serf-city-life-is-feudal"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Settlers_(1993_video_game)"
+      }
+    ],
+    "resolution": "360 × 240",
+    "multiplayer": "Single player"
   },
   {
     "id": "the-terminator-future-shock",
@@ -8667,7 +12308,23 @@
         "page": 12,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://web.archive.org/web/19970605103423/http://www.bethsoft.com:80/html/futureshock.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/terminator-future-shock"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/The_Terminator:_Future_Shock"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "theme-hospital",
@@ -8695,7 +12352,19 @@
         "page": 3,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/theme-hospital"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Theme_Hospital"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "theme-park",
@@ -8723,7 +12392,19 @@
         "page": 6,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/theme-park"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Theme_Park_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tom-and-jerry",
@@ -8746,7 +12427,19 @@
         "page": 13,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/tom-jerry"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/List_of_Tom_and_Jerry_video_games#NES/MS-DOS_game"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tomb-raider",
@@ -8769,7 +12462,19 @@
         "page": 7,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/tomb-raider"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Tomb_Raider"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tubes",
@@ -8793,7 +12498,15 @@
         "page": 10,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/tubes"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "tyrian",
@@ -8821,7 +12534,19 @@
         "page": 1,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/tyrian"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Tyrian_(video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Simultaneous co-op shared keyboard"
   },
   {
     "id": "ultima-4-quest-of-the-avatar",
@@ -8842,7 +12567,23 @@
         "page": 4,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://www.gog.com/game/ultima_4?pp=cb7a1d775e800fd1ee4049f7dca9e041eb9ba083"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/ultima-iv-quest-of-the-avatar"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Ultima_IV:_Quest_of_the_Avatar"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "ultima-underworld-the-stygian-abyss",
@@ -8870,7 +12611,19 @@
         "page": 5,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/ultima-underworld-the-stygian-abyss"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Ultima_Underworld:_The_Stygian_Abyss"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "wacky-wheels",
@@ -8894,7 +12647,15 @@
         "page": 13,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/wacky-wheels"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Up to 2 players, Shared keyboard competitive split screen"
   },
   {
     "id": "wanderer",
@@ -8916,7 +12677,19 @@
         "page": 13,
         "position": 3
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.steveshipway.org/software/wanderer/f_wanderer.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/wanderer"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Single player"
   },
   {
     "id": "warcraft-2-tides-of-darkness",
@@ -8949,7 +12722,23 @@
         "page": 5,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://us.blizzard.com/en-us/games/legacy/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/warcraft-ii-tides-of-darkness"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Warcraft_II:_Tides_of_Darkness"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 2 players, LAN or Internet real-time deathmatch"
   },
   {
     "id": "warcraft-orcs-humans",
@@ -8972,7 +12761,23 @@
         "page": 5,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://eu.blizzard.com/en-gb/games/legacy/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/warcraft-orcs-humans"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Warcraft:_Orcs_%26_Humans"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "where-in-europe-is-carmen-sandiego",
@@ -8995,7 +12800,19 @@
         "page": 13,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/where-in-europe-is-carmen-sandiego"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Where_in_Europe_Is_Carmen_Sandiego%3F"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "where-in-the-usa-is-carmen-sandiego",
@@ -9023,7 +12840,19 @@
         "page": 10,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/where-in-the-usa-is-carmen-sandiego"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Where_in_the_U.S.A._Is_Carmen_Sandiego%3F_(1986_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "william-shatners-tekwar",
@@ -9046,7 +12875,23 @@
         "page": 18,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://corridor7.tripod.com/INTSITE/tekwar/tekwar.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/william-shatners-tekwar"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/William_Shatner%27s_TekWar"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "wolfenstein-3d",
@@ -9070,7 +12915,23 @@
         "page": 1,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://legacy.3drealms.com/wolf3d/index.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/wolfenstein-3d"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Wolfenstein_3D"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "word-rescue",
@@ -9099,7 +12960,23 @@
         "page": 2,
         "position": 4
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.redwoodgames.com/word.php"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/word-rescue"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Word_Rescue"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "worms",
@@ -9122,7 +12999,19 @@
         "page": 4,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/worms"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Worms_(1995_video_game)"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "x-com-ufo-defense",
@@ -9150,7 +13039,23 @@
         "page": 3,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/19990128133007/http://www.microprose.com/gamesdesign/gamespage/backproducts/backproductpages/xcomtufo.html"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/x-com-ufo-defense"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/UFO:_Enemy_Unknown"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "x-men-children-of-the-atom",
@@ -9173,7 +13078,19 @@
         "page": 1,
         "position": 5
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/x-men-children-of-the-atom"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/X-Men:_Children_of_the_Atom_(video_game)"
+      }
+    ],
+    "resolution": "640 × 480",
+    "multiplayer": "Up to 2 players, Simultaneous shared keyboard competitive"
   },
   {
     "id": "xargon",
@@ -9196,7 +13113,19 @@
         "page": 17,
         "position": 7
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/xargon"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Xargon"
+      }
+    ],
+    "resolution": "320 × 200",
+    "multiplayer": "Single player"
   },
   {
     "id": "xixit",
@@ -9220,7 +13149,15 @@
         "page": 10,
         "position": 8
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/xixit"
+      }
+    ],
+    "resolution": "321 × 241",
+    "multiplayer": "Single player"
   },
   {
     "id": "yendorian-tales-book-1",
@@ -9244,7 +13181,19 @@
         "page": 10,
         "position": 9
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://web.archive.org/web/20050305034832/http://www.swgames.com/BookI.htm"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/yendorian-tales-book-i"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   },
   {
     "id": "z",
@@ -9267,7 +13216,23 @@
         "page": 11,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "http://www.kavcom.co.uk/zthegame/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/z"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Z_(video_game)"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "zork-the-great-underground-empire",
@@ -9290,7 +13255,19 @@
         "page": 4,
         "position": 6
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "MobyGames Listing",
+        "url": "https://www.mobygames.com/game/dos/zork-the-great-underground-empire"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/Zork_I"
+      }
+    ],
+    "resolution": "640 × 400",
+    "multiplayer": "Single player"
   },
   {
     "id": "zzt",
@@ -9313,6 +13290,22 @@
         "page": 11,
         "position": 10
       }
-    ]
+    ],
+    "links": [
+      {
+        "label": "Official Website",
+        "url": "https://museumofzzt.com/"
+      },
+      {
+        "label": "MobyGames Listing",
+        "url": "http://www.mobygames.com/game/dos/zzt"
+      },
+      {
+        "label": "Wikipedia Article",
+        "url": "https://en.wikipedia.org/wiki/ZZT"
+      }
+    ],
+    "resolution": "640 × 350",
+    "multiplayer": "Single player"
   }
 ]

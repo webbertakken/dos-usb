@@ -82,6 +82,10 @@ normalised download popularity.
 - [ ] Sort dropdown: **Downloads (default)**, Rating, Year (new/old), A-Z - backed by tested
       comparators.
 - [ ] Group by unified category (section headers or filter) - keep virtualisation.
+- [x] Game detail modal (click a card) - screenshot, full description, facts (resolution,
+      multiplayer, licence, runs), tags, external links (official/MobyGames/Wikipedia) and a "Listed
+      on" credit. Accessible (focus trap, ESC, aria-modal). Extend to multi-source `sources[]` in
+      this phase.
 - [ ] "Listed on" credits row with links + per-source download/play options.
 - [ ] Source filter + per-source badges; licence badge.
 - [ ] Download/launch picks the best `SourceListing` (DOSBox-ready preferred).

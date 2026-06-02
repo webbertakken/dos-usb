@@ -13,6 +13,7 @@
     "**/coverage/**",
     "**/.yarn/**",
     "bin/**",
-    "**/__fixtures__/**"
+    "**/__fixtures__/**",
+    "public/catalogue.json"
   ]
 }

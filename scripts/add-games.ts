@@ -95,6 +95,9 @@ async function main(): Promise<void> {
       runExe: details.runExe,
       dgRating: details.dgRating,
       rankings: [],
+      links: meta.links.length > 0 ? meta.links : undefined,
+      resolution: meta.resolution,
+      multiplayer: meta.multiplayer,
     });
     console.log(`  added: ${meta.title} (${meta.year}) runExe=${details.runExe}`);
   }

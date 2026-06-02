@@ -1,5 +1,9 @@
-// Filter out test fixtures (raw third-party HTML we must not reformat).
-const notFixture = (files) => files.filter((file) => !file.includes("__fixtures__"));
+// Skip test fixtures (raw third-party HTML) and large generated data files.
+const skip = (file) =>
+  file.includes("__fixtures__") ||
+  file.endsWith("public/catalogue.json") ||
+  file.includes("/public/screens/");
+const notFixture = (files) => files.filter((file) => !skip(file));
 
 export default {
   "*.@(ts|tsx|mts|js|jsx|mjs|cjs)": ["oxlint --fix --quiet", "oxfmt --write"],

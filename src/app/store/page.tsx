@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGameStore } from "../../store/gameStore";
 import StoreGameCard from "../../components/StoreGameCard";
+import GameDetailModal from "../../components/GameDetailModal";
 import { DosgamesListItem } from "../../types";
 import { sortCatalogue, SortKey } from "../../domain/gameStore/ranking";
 import { columnsForWidth, rowCount, rowItems } from "../../presentation/grid/virtualGrid";
@@ -34,6 +35,7 @@ export default function StorePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sort, setSort] = useState<SortKey>("popular");
+  const [selectedGame, setSelectedGame] = useState<DosgamesListItem | null>(null);
 
   useEffect(() => {
     setupDownloadListeners();
@@ -72,6 +74,7 @@ export default function StorePage() {
 
   const handleDownload = (game: DosgamesListItem) => downloadGame(game);
   const handlePlay = (gameId: string) => launchGame(gameId);
+  const handleOpen = (game: DosgamesListItem) => setSelectedGame(game);
 
   // --- Virtualised grid ---
   const gridRef = useRef<HTMLDivElement>(null);
@@ -246,6 +249,7 @@ export default function StorePage() {
                       game={game}
                       onDownload={handleDownload}
                       onPlay={handlePlay}
+                      onOpen={handleOpen}
                       downloadStatus={downloadStatus[game.id]}
                       installed={installedIds.has(game.id)}
                     />
@@ -255,6 +259,17 @@ export default function StorePage() {
             })}
           </div>
         </div>
+      )}
+
+      {selectedGame && (
+        <GameDetailModal
+          game={selectedGame}
+          installed={installedIds.has(selectedGame.id)}
+          downloadStatus={downloadStatus[selectedGame.id]}
+          onDownload={handleDownload}
+          onPlay={handlePlay}
+          onClose={() => setSelectedGame(null)}
+        />
       )}
     </div>
   );

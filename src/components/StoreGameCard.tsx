@@ -14,6 +14,7 @@ interface StoreGameCardProps {
   game: DosgamesListItem;
   onDownload: (game: DosgamesListItem) => void;
   onPlay?: (gameId: string) => void;
+  onOpen?: (game: DosgamesListItem) => void;
   downloadStatus?: DownloadStatus;
   installed?: boolean;
 }
@@ -22,6 +23,7 @@ const StoreGameCard: React.FC<StoreGameCardProps> = ({
   game,
   onDownload,
   onPlay,
+  onOpen,
   downloadStatus,
   installed = false,
 }) => {
@@ -67,53 +69,60 @@ const StoreGameCard: React.FC<StoreGameCardProps> = ({
 
   return (
     <div className="flex flex-col bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105 focus-within:ring-2 focus-within:ring-blue-400">
-      <div className="relative h-40 w-full bg-gray-900">
-        {game.image ? (
-          <Image
-            src={game.image}
-            alt={`${game.title} screenshot`}
-            className="object-cover"
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            unoptimized
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-700">
-            <span className="text-2xl text-gray-400">No Image</span>
-          </div>
-        )}
+      <button
+        type="button"
+        onClick={() => onOpen?.(game)}
+        aria-label={`View details for ${game.title}`}
+        className="text-left focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+      >
+        <div className="relative h-40 w-full bg-gray-900">
+          {game.image ? (
+            <Image
+              src={game.image}
+              alt={`${game.title} screenshot`}
+              className="object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              unoptimized
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-700">
+              <span className="text-2xl text-gray-400">No Image</span>
+            </div>
+          )}
 
-        {game.mature && (
-          <span className="absolute top-2 right-2 bg-red-700 text-white text-xs font-bold px-2 py-1 rounded">
-            18+
-          </span>
-        )}
-        {isInstalled && (
-          <span className="absolute top-2 left-2 bg-green-700 text-white text-xs font-bold px-2 py-1 rounded inline-flex items-center">
-            <FaCheck className="mr-1" aria-hidden="true" /> Installed
-          </span>
-        )}
-      </div>
-
-      <div className="p-4 flex-grow">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-xl font-bold text-white mb-1">{game.title}</h3>
-          {typeof game.dgRating === "number" && (
-            <span
-              className="flex items-center text-yellow-400 text-sm shrink-0"
-              title={`DOSGames rating: ${game.dgRating}/5`}
-              aria-label={`Rated ${game.dgRating} out of 5`}
-            >
-              <FaStar className="mr-1" aria-hidden="true" />
-              {game.dgRating}
+          {game.mature && (
+            <span className="absolute top-2 right-2 bg-red-700 text-white text-xs font-bold px-2 py-1 rounded">
+              18+
+            </span>
+          )}
+          {isInstalled && (
+            <span className="absolute top-2 left-2 bg-green-700 text-white text-xs font-bold px-2 py-1 rounded inline-flex items-center">
+              <FaCheck className="mr-1" aria-hidden="true" /> Installed
             </span>
           )}
         </div>
-        <p className="text-gray-400 text-sm mb-2">
-          {[game.year, game.category, game.publisher].filter(Boolean).join(" • ")}
-        </p>
-        <p className="text-gray-300 text-sm mb-2 line-clamp-3">{game.description}</p>
-      </div>
+
+        <div className="p-4 flex-grow">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-xl font-bold text-white mb-1">{game.title}</h3>
+            {typeof game.dgRating === "number" && (
+              <span
+                className="flex items-center text-yellow-400 text-sm shrink-0"
+                title={`DOSGames rating: ${game.dgRating}/5`}
+                aria-label={`Rated ${game.dgRating} out of 5`}
+              >
+                <FaStar className="mr-1" aria-hidden="true" />
+                {game.dgRating}
+              </span>
+            )}
+          </div>
+          <p className="text-gray-400 text-sm mb-2">
+            {[game.year, game.category, game.publisher].filter(Boolean).join(" • ")}
+          </p>
+          <p className="text-gray-300 text-sm mb-2 line-clamp-3">{game.description}</p>
+        </div>
+      </button>
 
       <div className="p-4 pt-0">
         {isDownloading && downloadStatus?.progress !== undefined && (

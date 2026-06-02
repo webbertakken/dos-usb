@@ -10,6 +10,12 @@ export interface CatalogueRanking {
   position: number;
 }
 
+/** An external reference for a game (official site, MobyGames, Wikipedia, ...). */
+export interface ExternalLink {
+  label: string;
+  url: string;
+}
+
 export interface DosgamesListItem {
   id: string;
   title: string;
@@ -31,6 +37,12 @@ export interface DosgamesListItem {
   dgRating?: number;
   /** Which listings this game appeared in, with its rank. */
   rankings?: CatalogueRanking[];
+  /** External references (official site, MobyGames, Wikipedia, ...). */
+  links?: ExternalLink[];
+  /** Native resolution, e.g. "320 x 200". */
+  resolution?: string;
+  /** Multiplayer support, e.g. "Single player". */
+  multiplayer?: string;
 }
 
 export interface DownloadStatus {

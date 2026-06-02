@@ -23,7 +23,9 @@ import {
   BASE_URL,
   parseListingCards,
   parseGamePage,
+  parseGameMeta,
   type CatalogueCard,
+  type ExternalLink,
 } from "./catalogue/parse.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -65,6 +67,9 @@ interface CatalogueEntry {
   runExe?: string;
   dgRating?: number;
   rankings: Ranking[];
+  links?: ExternalLink[];
+  resolution?: string;
+  multiplayer?: string;
 }
 
 const args = process.argv.slice(2);
@@ -202,6 +207,9 @@ async function main(): Promise<void> {
           runExe: existing.runExe,
           description: existing.description,
           dgRating: existing.dgRating,
+          links: existing.links,
+          resolution: existing.resolution,
+          multiplayer: existing.multiplayer,
         }
       : {
           downloadUrl: "",
@@ -209,18 +217,25 @@ async function main(): Promise<void> {
           runExe: undefined,
           description: "",
           dgRating: undefined,
+          links: undefined,
+          resolution: undefined,
+          multiplayer: undefined,
         };
 
     if (needsDetails) {
       try {
         const html = await fetchText(card.gamePageUrl);
         const parsed = parseGamePage(html);
+        const meta = parseGameMeta(html);
         details = {
           downloadUrl: parsed.downloadUrl ?? "",
           fileSize: parsed.fileSize,
           runExe: parsed.runExe,
           description: parsed.description ?? card.description,
           dgRating: parsed.dgRating,
+          links: meta.links.length > 0 ? meta.links : undefined,
+          resolution: meta.resolution,
+          multiplayer: meta.multiplayer,
         };
         await sleep(200);
       } catch (error) {
@@ -265,6 +280,9 @@ async function main(): Promise<void> {
       runExe: details.runExe,
       dgRating: details.dgRating,
       rankings,
+      links: details.links,
+      resolution: details.resolution,
+      multiplayer: details.multiplayer,
     });
 
     if (processed % 20 === 0) {

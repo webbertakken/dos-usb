@@ -167,4 +167,19 @@ describe("parseGameMeta", () => {
   it("treats a kid-friendly game as not mature", () => {
     expect(meta.mature).toBe(false);
   });
+
+  it("collects external links (official site, MobyGames, Wikipedia)", () => {
+    const labels = meta.links.map((l) => l.label);
+    expect(labels).toEqual(expect.arrayContaining(["MobyGames Listing", "Wikipedia Article"]));
+    const moby = meta.links.find((l) => l.label === "MobyGames Listing");
+    expect(moby?.url).toMatch(/mobygames\.com/);
+    for (const link of meta.links) {
+      expect(link.url).toMatch(/^https?:\/\//);
+    }
+  });
+
+  it("captures resolution and multiplayer facts", () => {
+    expect(meta.resolution).toBe("320 \u00d7 200");
+    expect(meta.multiplayer).toBe("Single player");
+  });
 });
