@@ -28,7 +28,8 @@ platform equivalent). Fix bugs found along the way and make the whole experience
       userspace, on PATH)
 - [x] Confirm generated conf parses + mounts + runs autoexec on the resolved variant (verified on
       staging)
-- [ ] Launch a real game in DOSBox on Linux end-to-end (proof) - after download works
+- [x] Launch a real game in DOSBox on Linux end-to-end (DOOM rendered + playable, screenshot
+      captured)
 
 ### Phase 2 - Catalogue scraper
 
