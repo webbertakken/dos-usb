@@ -69,23 +69,33 @@ async function main() {
   window.on("pageerror", (err) => log("pageerror:", err.message));
   log("App window opened:", window.url());
 
-  // --- Store catalogue ---
+  // --- Library store (virtualised) ---
   await window.goto("http://localhost:3000/store", { waitUntil: "load" });
 
-  // Wait for cards to render (poll, with diagnostics on failure).
+  // The grid is virtualised, so assert via the "Showing X of Y games" total
+  // and that at least some cards rendered - not a fixed card count.
   try {
-    await window.waitForFunction(() => document.querySelectorAll("h3").length > 50, {
-      timeout: 25000,
-    });
+    await window.waitForFunction(
+      () => {
+        const m = document.body.innerText.match(/of ([\d,]+) games/);
+        return (
+          m && Number(m[1].replace(/,/g, "")) > 100 && document.querySelectorAll("h3").length > 0
+        );
+      },
+      { timeout: 30000 },
+    );
   } catch {
     await window.screenshot({ path: "/tmp/e2e-store-fail.png" }).catch(() => {});
     const snippet = await window.evaluate(() => document.body.innerText.slice(0, 400));
-    fail(`Store cards did not render. Body text:\n${snippet}`);
+    fail(`Library did not render. Body text:\n${snippet}`);
   }
+  const total = await window.evaluate(() =>
+    Number(document.body.innerText.match(/of ([\d,]+) games/)[1].replace(/,/g, "")),
+  );
   const cardCount = await window.evaluate(() => document.querySelectorAll("h3").length);
-  log(`Store rendered ${cardCount} game cards`);
-  if (cardCount < 100) {
-    fail(`Expected the full catalogue (>=100 cards), got ${cardCount}`);
+  log(`Library reports ${total} games; ${cardCount} cards windowed in view`);
+  if (total < 1000) {
+    fail(`Expected the aggregated library (>=1000 games), got ${total}`);
   }
 
   // Verify at least one screenshot actually loaded (naturalWidth > 0).

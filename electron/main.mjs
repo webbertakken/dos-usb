@@ -131,6 +131,31 @@ ipcMain.handle("get-store-catalogue", async () => {
   }
 });
 
+function resolveLibraryPath() {
+  const candidates = [
+    path.join(process.cwd(), "public", "library.json"),
+    path.join(__dirname, "..", "out", "library.json"),
+    path.join(__dirname, "..", "public", "library.json"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+}
+
+ipcMain.handle("get-library", async () => {
+  try {
+    const libraryPath = resolveLibraryPath();
+    if (!libraryPath) {
+      console.error("Library not found in any known location");
+      return [];
+    }
+    const data = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
+    console.log(`Loaded ${data.length} library games from ${libraryPath}`);
+    return data;
+  } catch (error) {
+    console.error("Error reading library:", error);
+    return [];
+  }
+});
+
 app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {

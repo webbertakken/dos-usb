@@ -92,6 +92,25 @@ yarn scrape --force  # re-fetch everything
 The scraper records, per game, the preferred DOSBox-ready download, file size, full description,
 rating, tags and the executable to run.
 
+### Sources, attribution and takedowns
+
+The library aggregates game metadata from multiple sources and credits each on every game ("Listed
+on ..."):
+
+- [DOSGames.com](https://www.dosgames.com) - curated metadata, screenshots and DOSBox-ready
+  downloads.
+- [Internet Archive](https://archive.org) - the MS-DOS games collection (download counts, in-browser
+  play).
+
+This repository stores **metadata, provenance and links only** - it never bundles or mirrors
+copyrighted game binaries; those are fetched on demand from the originating source. Screenshots from
+dosgames are cached locally; Internet Archive thumbnails are hotlinked.
+
+Rights holders: to request removal of a title, add its canonical id to `scripts/data/denylist.json`
+(or open an issue) and rebuild - denied games are excluded from the library.
+
+Rebuild the aggregated library with `yarn build-library`.
+
 ### End-to-end verification
 
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,

@@ -11,6 +11,7 @@ export interface Game {
 // Single source of truth for the catalogue item shape lives in the domain.
 export type { DosgamesListItem, CatalogueRanking } from "../domain/gameStore/types";
 import type { DosgamesListItem } from "../domain/gameStore/types";
+import type { CanonicalGame } from "../domain/library/types";
 
 export interface GameMetadata {
   title: string;
@@ -41,6 +42,7 @@ declare global {
       launchGame: (gamePath: string) => Promise<{ success: boolean; error?: string }>;
       getGames: () => Promise<Game[]>;
       getStoreCatalogue: () => Promise<DosgamesListItem[]>;
+      getLibrary: () => Promise<CanonicalGame[]>;
       saveGameMetadata: (
         gameId: string,
         metadata: GameMetadata,

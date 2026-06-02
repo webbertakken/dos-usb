@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("electron", {
   },
   getGames: () => ipcRenderer.invoke("get-games"),
   getStoreCatalogue: () => ipcRenderer.invoke("get-store-catalogue"),
+  getLibrary: () => ipcRenderer.invoke("get-library"),
   saveGameMetadata: (gameId, metadata) => {
     if (typeof gameId === "string" && metadata && typeof metadata === "object") {
       return ipcRenderer.invoke("save-game-metadata", { gameId, metadata });
