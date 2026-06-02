@@ -70,8 +70,18 @@ function createWindow() {
     console.error("Renderer process crashed!");
   });
 
-  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
-    console.error(`Failed to load: ${errorDescription} (${errorCode})`);
+  // In dev the Next server may not be up yet (or may restart), which yields a
+  // white screen on ERR_CONNECTION_REFUSED. Retry loading until it is ready.
+  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription, validatedUrl) => {
+    console.error(`Failed to load: ${errorDescription} (${errorCode}) ${validatedUrl ?? ""}`);
+    if (isDev && !mainWindow.isDestroyed()) {
+      setTimeout(() => {
+        if (!mainWindow.isDestroyed()) {
+          console.log("Retrying dev server load...");
+          mainWindow.loadURL(startUrl);
+        }
+      }, 1000);
+    }
   });
 
   // Handle uncaught exceptions in the main process
@@ -682,6 +692,8 @@ ipcMain.handle("get-games", async () => {
           {
             id: dir,
             path: path.join(gamesDir, dir),
+            // GameCard renders `image`; metadata stores it as `thumbnail`.
+            image: metadata.image || metadata.thumbnail || "",
           },
           metadata,
         );

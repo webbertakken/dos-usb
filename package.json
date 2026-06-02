@@ -10,7 +10,7 @@
     "dev": "node scripts/ensure-husky.mjs && next dev",
     "build": "next build",
     "start": "next start",
-    "electron-dev": "concurrently \"yarn dev\" \"electron .\"",
+    "electron-dev": "concurrently -k \"yarn dev\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-build": "yarn build && electron-builder",
     "electron-start": "electron .",
     "test": "node scripts/ensure-husky.mjs && vitest run",
