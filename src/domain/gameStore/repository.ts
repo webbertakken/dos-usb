@@ -4,6 +4,7 @@
  */
 
 import { DosgamesListItem, DownloadStatus, GameStoreRepository } from "./types";
+import { loadCatalogue } from "./catalogue";
 
 /**
  * Electron implementation of the GameStoreRepository
@@ -18,15 +19,7 @@ export class ElectronGameStoreRepository implements GameStoreRepository {
 
   async getDosgamesList(): Promise<DosgamesListItem[]> {
     try {
-      // Fetch games from the API
-      const response = await fetch("/api/games");
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch games: ${response.status} ${response.statusText}`);
-      }
-
-      const games = await response.json();
-      return games;
+      return await loadCatalogue();
     } catch (error) {
       console.error("Error fetching games list:", error);
       throw error;

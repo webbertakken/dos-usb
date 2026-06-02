@@ -80,7 +80,7 @@ export const useGameManagementStore = create<GameManagementState>((set, get) => 
 
       // Update the game in the local state
       const updatedGames = get().games.map((game) =>
-        game.id === gameId ? { ...game, ...metadata } : game,
+        game.id === gameId ? Object.assign({}, game, metadata) : game,
       );
 
       set({ games: updatedGames, loading: false, selectedGame: null });

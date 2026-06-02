@@ -8,16 +8,9 @@ export interface Game {
   path: string;
 }
 
-export interface DosgamesListItem {
-  id: string;
-  title: string;
-  description: string;
-  year: string;
-  category: string;
-  image: string;
-  downloadUrl: string;
-  fileSize?: string;
-}
+// Single source of truth for the catalogue item shape lives in the domain.
+export type { DosgamesListItem, CatalogueRanking } from "../domain/gameStore/types";
+import type { DosgamesListItem } from "../domain/gameStore/types";
 
 export interface GameMetadata {
   title: string;
@@ -47,6 +40,7 @@ declare global {
     electron: {
       launchGame: (gamePath: string) => Promise<{ success: boolean; error?: string }>;
       getGames: () => Promise<Game[]>;
+      getStoreCatalogue: () => Promise<DosgamesListItem[]>;
       saveGameMetadata: (
         gameId: string,
         metadata: GameMetadata,

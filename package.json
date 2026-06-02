@@ -14,6 +14,8 @@
     "electron-build": "yarn build && electron-builder",
     "electron-start": "electron .",
     "test": "node scripts/ensure-husky.mjs && vitest run",
+    "scrape": "tsx scripts/scrape-catalogue.ts",
+    "e2e": "node scripts/e2e/verify.mjs",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "yarn oxlint --report-unused-disable-directives",
@@ -23,14 +25,6 @@
     "typecheck:tsc": "tsc --noEmit",
     "setup:hooks": "node scripts/ensure-husky.mjs",
     "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
-      "oxlint --fix --quiet",
-      "oxfmt --write"
-    ],
-    "*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
-    ".github/workflows/*.@(yml|yaml)": "actionlint"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -67,6 +61,7 @@
     "lint-staged": "^16.4.0",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.63.0",
+    "playwright": "1.60.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^6",

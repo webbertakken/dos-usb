@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Game, DosgamesListItem, GameMetadata, DownloadStatus } from "../types";
+import { loadCatalogue } from "../domain/gameStore/catalogue";
 
 interface GameState {
   games: Game[];
@@ -66,51 +67,15 @@ export const useGameStore = create<GameState>((set, get) => {
       try {
         set({ loading: true, error: null });
 
-        let games = [];
-        try {
-          // Try to fetch from API endpoint
-          const response = await fetch("/api/games");
-          if (!response.ok) {
-            throw new Error(`API returned status: ${response.status}`);
-          }
-          games = await response.json();
-          console.log("Successfully fetched games from API");
-        } catch (apiError) {
-          console.error("Error fetching from API:", apiError);
-
-          // Fallback data for development - this helps when API has issues
-          console.log("Using fallback game data for development");
-          games = [
-            {
-              id: "commander-keen-1",
-              title: "Commander Keen 1: Marooned on Mars",
-              description: "The first episode in the Commander Keen series",
-              year: "1990",
-              category: "Platformer",
-              image: "https://www.dosgames.com/screens/keen1.gif",
-              downloadUrl: "https://www.dosgames.com/game/commander-keen-1-marooned-on-mars",
-              fileSize: "334k",
-            },
-            {
-              id: "commander-keen-2",
-              title: "Commander Keen 2: The Earth Explodes",
-              description: "The second episode in the Commander Keen series",
-              year: "1990",
-              category: "Platformer",
-              image: "https://www.dosgames.com/screens/keen2.gif",
-              downloadUrl: "https://www.dosgames.com/game/commander-keen-2-the-earth-explodes",
-              fileSize: "496k",
-            },
-          ];
-        }
-
+        const games = await loadCatalogue();
+        console.log(`Loaded ${games.length} games into the store`);
         set({ dosgamesList: games, loading: false });
       } catch (error) {
         console.error("Error fetching dosgames list:", error);
         set({
-          error: "Failed to fetch games list",
+          error: "Failed to load the game catalogue",
           loading: false,
-          dosgamesList: [], // Ensure we have an empty array at minimum
+          dosgamesList: [],
         });
       }
     },
@@ -238,7 +203,7 @@ export const useGameStore = create<GameState>((set, get) => {
           // Update the local games list
           const { games } = get();
           const updatedGames = games.map((game) =>
-            game.id === gameId ? { ...game, ...metadata } : game,
+            game.id === gameId ? Object.assign({}, game, metadata) : game,
           );
 
           set({ games: updatedGames, loading: false });
