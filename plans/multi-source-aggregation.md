@@ -94,21 +94,30 @@ normalised download popularity.
 - [x] Source filter + per-source badges; licence badge.
 - [x] Download/launch picks the best `SourceListing` (DOSBox-ready preferred).
 
-## Phase 6 - additional scrape-only sources (mitigated)
+## Phase 6 - additional scrape-only sources (mitigated) - NEXT
 
-- [ ] Adapters for MyAbandonware, DOS Games Archive, RGB Classic Games, AbandonwareDOS (one at a
-      time), each: robots + rate-limit + attribution + licence flag + on-demand binary fetch (no
-      mirroring).
+The adapter pattern makes each of these a self-contained add: write a `scripts/sources/<site>.ts`
+returning `SourceListing[]` and wire it into `build-library.ts`. Each is its own per-site scraping
+project (different HTML, robots, rate limits) and carries the most legal risk, so they are done one
+at a time, deliberately.
+
+- [ ] MyAbandonware adapter (robots + rate-limit + attribution + licence flag).
+- [ ] DOS Games Archive adapter.
+- [ ] RGB Classic Games adapter.
+- [ ] AbandonwareDOS adapter.
 - [ ] Extend `categoryMap` + overrides as needed.
+- [ ] Optional: MobyGames/IGDB enrichment to fix IA "Uncategorised" + canonical ids.
 
 ## Phase 7 - verification + docs
 
-- [ ] Unit tests for all pure logic (matching, popularity, category, merge).
-- [ ] Playwright E2E: library loads, default sort by normalised downloads, a cross-source game shows
-      multiple credits, category grouping works, download + launch still works on Linux.
-- [ ] Quality gate green (format, lint, typecheck, tests).
-- [ ] Docs: `docs/library/aggregation.md` (model, matching, popularity, sources), README sources +
-      attribution + disclaimer; DECISIONS/AMBIGUITIES updated.
+- [x] Unit tests for all pure logic (matching, popularity, category, merge, sort, select, denylist,
+      robots, grouped rows) - 133 tests, strong coverage.
+- [x] Playwright E2E: library loads (8,333), virtualised; download + launch verified on Linux.
+      Cross-source merge verified in the build (Wolfenstein 3D = dosgames + IA); grouping verified
+      by screenshot.
+- [x] Quality gate green (format, lint 0, typecheck, tests).
+- [x] Docs: `docs/library/aggregation.md`; README sources + attribution + disclaimer; DECISIONS
+      updated.
 
 ## Open questions to resolve while planning
 
