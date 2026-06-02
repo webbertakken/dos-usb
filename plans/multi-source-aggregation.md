@@ -1,0 +1,111 @@
+# Multi-source DOS game aggregation
+
+Aggregate DOS games across multiple online libraries into one canonical catalogue, crediting every
+source ("Listed on ..."), with multi-criteria sorting, category grouping, and a default sort by
+normalised download popularity.
+
+## Decisions (locked)
+
+- Sources first: **Internet Archive** + **dosgames.com**; architecture must make adding more sources
+  cheap. Later: MyAbandonware, DOS Games Archive, RGB Classic Games, AbandonwareDOS (scrape-only).
+- Matching: **heuristic** (normalised title + year) with a manual override list.
+- Default popularity: **normalised rank** per source, then combined (not raw sums).
+- Posture: include scrape-only sources too, but with safety mitigations below.
+
+## Safety / legal guardrails (apply to every source)
+
+- [ ] Repo stores **metadata + provenance + links only**. Never commit or mirror copyrighted game
+      binaries; fetch on demand from the originating source.
+- [ ] Respect `robots.txt`; descriptive User-Agent; per-source rate limit + retries.
+- [ ] Cache screenshots locally (no hotlinking); keep per-source attribution.
+- [ ] Per-source `license` flag (freeware/shareware/commercial/unknown).
+- [ ] `denylist.json` (by canonical id) honoured at build + render time; README disclaimer +
+      takedown instructions.
+
+## Domain model (canonical + provenance)
+
+- [ ] `CanonicalGame`: `id` (stable slug from normalised title+year), `title`, `year`, `developer?`,
+      `publisher?`, `category` (unified), `description` (best), `image` (local), `tags[]`, `mature`,
+      `popularity` (0..1), `ratings?`, `sources: SourceListing[]`.
+- [ ] `SourceListing`: `site`, `siteName`, `url`, `downloadUrl?`, `playUrl?`, `fileSize?`,
+      `runExe?`, `license?`, `metrics: { downloads?, views?, rating? }`, `rawPopularity?`,
+      `normalisedPopularity?`.
+- [ ] Unified category taxonomy + `categoryMap` per source (each site differs).
+
+## Phase 0 - schema + safety (TDD)
+
+- [ ] Define types in `src/domain/library/types.ts` (CanonicalGame, SourceListing, SiteId, unified
+      Category).
+- [ ] `robots`/rate-limit fetch helper (`scripts/lib/fetcher.ts`) with UA, retry, politeness;
+      unit-tested for backoff + robots respect.
+- [ ] Denylist loader + filter (pure, tested).
+
+## Phase 1 - matching + popularity (pure, TDD)
+
+- [ ] `normaliseTitle(title)` - lowercase, strip punctuation, leading articles, edition suffixes;
+      normalise roman numerals <-> digits. Tests.
+- [ ] `matchKey(title, year)` and `sameGame(a, b)` with year tolerance (+/-1). Tests.
+- [ ] `overrides.json` alias map (manual fixes) + loader. Tests.
+- [ ] `mergeCanonical(listings[])` - pick best description (longest clean), best image, union tags,
+      collect `sources[]`, OR of mature. Tests.
+- [ ] `percentileRank(values)` and `combinePopularity(perSource)` (e.g. max of source percentiles,
+      tie-break by count of sources). Tests.
+- [ ] `unifyCategory(site, raw)` via `categoryMap`. Tests.
+
+## Phase 2 - Internet Archive adapter
+
+- [ ] `scripts/sources/internetArchive.ts` - paginate `advancedsearch` over
+      `collection:softwarelibrary_msdos_games` (+ related collections), fields: identifier, title,
+      year, downloads, subject.
+- [ ] Per-item `metadata` API for description, screenshot, zip file + size, licence. Resumable +
+      polite.
+- [ ] Parsers pure + tested against saved fixtures (search JSON + item JSON).
+- [ ] Emit `SourceListing[]` (site = `archive.org`, metrics.downloads).
+
+## Phase 3 - dosgames adapter (refactor existing)
+
+- [ ] Wrap the current scraper output as a `SourceListing[]` producer (site = `dosgames.com`,
+      metrics.views).
+- [ ] Keep `parse.ts` parsers; map listing/game data into the new shape.
+
+## Phase 4 - ingestion + merge pipeline
+
+- [ ] `scripts/build-library.ts` - run enabled source adapters, normalise popularity per source,
+      match + merge into `CanonicalGame[]`, download images, apply denylist, write
+      `public/library.json`. Incremental + resumable.
+- [ ] Provenance retained; raw + normalised metrics kept for transparency.
+- [ ] Verify a known cross-source title (e.g. Wolfenstein 3D) merges to ONE entry with 2+ sources.
+
+## Phase 5 - store UI
+
+- [ ] Load `library.json`; adapt store to `CanonicalGame`.
+- [ ] Sort dropdown: **Downloads (default)**, Rating, Year (new/old), A-Z - backed by tested
+      comparators.
+- [ ] Group by unified category (section headers or filter) - keep virtualisation.
+- [ ] "Listed on" credits row with links + per-source download/play options.
+- [ ] Source filter + per-source badges; licence badge.
+- [ ] Download/launch picks the best `SourceListing` (DOSBox-ready preferred).
+
+## Phase 6 - additional scrape-only sources (mitigated)
+
+- [ ] Adapters for MyAbandonware, DOS Games Archive, RGB Classic Games, AbandonwareDOS (one at a
+      time), each: robots + rate-limit + attribution + licence flag + on-demand binary fetch (no
+      mirroring).
+- [ ] Extend `categoryMap` + overrides as needed.
+
+## Phase 7 - verification + docs
+
+- [ ] Unit tests for all pure logic (matching, popularity, category, merge).
+- [ ] Playwright E2E: library loads, default sort by normalised downloads, a cross-source game shows
+      multiple credits, category grouping works, download + launch still works on Linux.
+- [ ] Quality gate green (format, lint, typecheck, tests).
+- [ ] Docs: `docs/library/aggregation.md` (model, matching, popularity, sources), README sources +
+      attribution + disclaimer; DECISIONS/AMBIGUITIES updated.
+
+## Open questions to resolve while planning
+
+- [ ] Which extra IA collections beyond `softwarelibrary_msdos_games` to include (e.g.
+      `softwarelibrary_msdos`, `classicpcgames`)?
+- [ ] Popularity combine: max-of-percentiles vs weighted mean (weight by source size/credibility)?
+- [ ] Category grouping UX: hard sections vs a "group by category" toggle on top of the virtualised
+      grid.
