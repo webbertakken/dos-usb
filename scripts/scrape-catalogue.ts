@@ -233,7 +233,8 @@ async function main(): Promise<void> {
     const imageFile = `${id}.${ext}`;
     const imageDest = path.join(screensDir, imageFile);
     const localImage = `/screens/${imageFile}`;
-    if (force || !fs.existsSync(imageDest)) {
+    // Screenshots are immutable; only fetch when missing, even with --force.
+    if (!fs.existsSync(imageDest)) {
       const ok = await downloadImage(card.image, imageDest);
       if (!ok) {
         console.warn(`  image missing for ${id}, keeping remote URL`);

@@ -15,6 +15,7 @@
     "electron-start": "electron .",
     "test": "node scripts/ensure-husky.mjs && vitest run",
     "scrape": "tsx scripts/scrape-catalogue.ts",
+    "add-games": "tsx scripts/add-games.ts",
     "e2e": "node scripts/e2e/verify.mjs",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",

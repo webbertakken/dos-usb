@@ -36,6 +36,17 @@ export interface GamePageDetails {
   dgRating?: number;
 }
 
+export interface GameMeta {
+  title: string;
+  year: string;
+  image: string;
+  category: string;
+  publisher?: string;
+  license?: string;
+  tags: string[];
+  mature: boolean;
+}
+
 /** Resolve a possibly-relative dosgames.com URL to an absolute one. */
 export function absoluteUrl(href: string, base: string = BASE_URL): string {
   if (/^https?:\/\//i.test(href)) {
@@ -133,6 +144,48 @@ export function pickDownloadUrl(urls: string[]): string | null {
   return dosbox ?? urls[0];
 }
 
+/**
+ * Extract card-equivalent metadata (title, year, category, etc.) from a single
+ * `/game/<slug>/` page. Lets us add games that are not in the scraped listings.
+ */
+export function parseGameMeta(html: string, base: string = BASE_URL): GameMeta {
+  const $ = cheerio.load(html);
+
+  // Label -> value map from the details table (`.d-table-row` of two cells).
+  const details: Record<string, string> = {};
+  $(".d-table-row").each((_, row) => {
+    const cells = $(row).find(".d-table-cell");
+    if (cells.length >= 2) {
+      const label = cells.eq(0).text().replace(/\s+/g, " ").replace(/:\s*$/, "").trim();
+      const value = cells.eq(1).text().replace(/\s+/g, " ").trim();
+      if (label && !details[label]) {
+        details[label] = value;
+      }
+    }
+  });
+
+  const yearText = $(".pageHeader-year").first().text().trim();
+  const yearMatch = yearText.match(/(19|20)\d{2}/);
+  const ogImage = $('meta[property="og:image"]').attr("content") ?? "";
+  const tags = (details["Tags"] ?? "")
+    .split(/\s+/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const mature =
+    $("#ageCheckButton").length > 0 || /mature content warning/i.test($("body").text());
+
+  return {
+    title: $("h1").first().text().trim(),
+    year: yearMatch ? yearMatch[0] : "",
+    image: ogImage ? absoluteUrl(ogImage, base) : "",
+    category: details["Category"] ?? "",
+    publisher: details["Author"] || undefined,
+    license: details["License"] || undefined,
+    tags,
+    mature,
+  };
+}
+
 /** Extract download + metadata details from a single `/game/<slug>/` page. */
 export function parseGamePage(html: string, base: string = BASE_URL): GamePageDetails {
   const $ = cheerio.load(html);
@@ -172,12 +225,12 @@ export function parseGamePage(html: string, base: string = BASE_URL): GamePageDe
       .text()
       .replace(/\s+/g, " ")
       .trim();
-    const ratingMatch = cleaned.match(/Rating:\s*(\d+)/i);
+    const ratingMatch = cleaned.match(/Rating:\s*(\d+(?:\.\d+)?)/i);
     if (ratingMatch) {
       dgRating = Number(ratingMatch[1]);
     }
-    // Strip the "...Review: Rating: N" preamble, keep the prose.
-    description = cleaned.replace(/^.*?Rating:\s*\d+\s*/i, "").trim() || undefined;
+    // Strip the "...Review: Rating: N(.N)" preamble, keep the prose.
+    description = cleaned.replace(/^.*?Rating:\s*[\d.]+\s*/i, "").trim() || undefined;
   }
   if (!description) {
     const meta = $('meta[name="description"]').attr("content");

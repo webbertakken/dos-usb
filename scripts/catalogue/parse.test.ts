@@ -2,11 +2,18 @@ import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { parseListingCards, parseGamePage, pickDownloadUrl, absoluteUrl } from "./parse.js";
+import {
+  parseListingCards,
+  parseGamePage,
+  parseGameMeta,
+  pickDownloadUrl,
+  absoluteUrl,
+} from "./parse.js";
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "__fixtures__");
 const listingHtml = fs.readFileSync(path.join(fixturesDir, "listing-popular-1.html"), "utf8");
 const gameHtml = fs.readFileSync(path.join(fixturesDir, "game-doom.html"), "utf8");
+const innerWorldsHtml = fs.readFileSync(path.join(fixturesDir, "game-inner-worlds.html"), "utf8");
 
 describe("absoluteUrl", () => {
   it("keeps absolute URLs untouched", () => {
@@ -105,6 +112,16 @@ describe("parseGamePage", () => {
     expect(page.dgRating).toBe(5);
   });
 
+  it("handles half-star ratings without leaking the decimal into the description", () => {
+    const halfStar =
+      '<html><body><div class="review">Screenshot DOSGames.com Review: Rating: 4.5 ' +
+      "An enchanting platform game.</div>" +
+      '<a href="/files/iw.zip">DOWNLOAD THE GAME FREE</a></body></html>';
+    const details = parseGamePage(halfStar);
+    expect(details.dgRating).toBe(4.5);
+    expect(details.description).toBe("An enchanting platform game.");
+  });
+
   it("yields no description when neither prose nor meta is available", () => {
     const ratingOnly =
       '<html><body><div class="review">Review: Rating: 4</div>' +
@@ -123,5 +140,31 @@ describe("parseGamePage", () => {
     expect(details.description).toBe("A tiny game.");
     expect(details.dgRating).toBeUndefined();
     expect(details.downloadUrl).toBe("https://www.dosgames.com/files/tiny.zip");
+  });
+});
+
+describe("parseGameMeta", () => {
+  const meta = parseGameMeta(innerWorldsHtml);
+
+  it("extracts the title, year and absolute image", () => {
+    expect(meta.title).toBe("Inner Worlds");
+    expect(meta.year).toBe("1996");
+    expect(meta.image).toBe("https://www.dosgames.com/screens/iw.gif");
+  });
+
+  it("reads category, publisher and license from the details table", () => {
+    expect(meta.category).toBe("Sidescrolling");
+    expect(meta.publisher).toBe("Sleepless Software");
+    expect(meta.license).toBe("Full version");
+  });
+
+  it("parses the tag list", () => {
+    expect(meta.tags).toEqual(
+      expect.arrayContaining(["sidescrolling", "platformer", "fantasy", "action"]),
+    );
+  });
+
+  it("treats a kid-friendly game as not mature", () => {
+    expect(meta.mature).toBe(false);
   });
 });
