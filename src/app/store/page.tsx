@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGameStore } from "../../store/gameStore";
 import StoreGameCard from "../../components/StoreGameCard";
 import { DosgamesListItem } from "../../types";
 import { sortCatalogue, SortKey } from "../../domain/gameStore/ranking";
+import { columnsForWidth, rowCount, rowItems } from "../../presentation/grid/virtualGrid";
 import { FaSearch, FaExclamationCircle } from "react-icons/fa";
 
 const SORT_TABS: { key: SortKey; label: string }[] = [
@@ -70,6 +72,42 @@ export default function StorePage() {
 
   const handleDownload = (game: DosgamesListItem) => downloadGame(game);
   const handlePlay = (gameId: string) => launchGame(gameId);
+
+  // --- Virtualised grid ---
+  const gridRef = useRef<HTMLDivElement>(null);
+  const scrollElRef = useRef<HTMLElement | null>(null);
+  const [columns, setColumns] = useState(4);
+  const [scrollMargin, setScrollMargin] = useState(0);
+
+  const rows = rowCount(filteredGames.length, columns);
+  const ROW_HEIGHT = 454; // estimated card height + gap-6; measured dynamically too
+
+  // Track column count and the grid's offset within the scroll container.
+  useEffect(() => {
+    const measure = () => {
+      setColumns(columnsForWidth(window.innerWidth));
+      const scrollEl = scrollElRef.current ?? gridRef.current?.closest("main") ?? null;
+      scrollElRef.current = scrollEl;
+      if (gridRef.current && scrollEl) {
+        setScrollMargin(
+          gridRef.current.getBoundingClientRect().top -
+            scrollEl.getBoundingClientRect().top +
+            scrollEl.scrollTop,
+        );
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [filteredGames.length, columns]);
+
+  const virtualizer = useVirtualizer({
+    count: rows,
+    getScrollElement: () => scrollElRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 3,
+    scrollMargin,
+  });
 
   const isInitialLoading = loading && dosgamesList.length === 0;
   // Only treat an error as fatal for the store when the catalogue itself failed
@@ -184,17 +222,38 @@ export default function StorePage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredGames.map((game) => (
-            <StoreGameCard
-              key={game.id}
-              game={game}
-              onDownload={handleDownload}
-              onPlay={handlePlay}
-              downloadStatus={downloadStatus[game.id]}
-              installed={installedIds.has(game.id)}
-            />
-          ))}
+        <div ref={gridRef}>
+          <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const cells = rowItems(filteredGames, virtualRow.index, columns);
+              return (
+                <div
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+                  }}
+                >
+                  {cells.map((game) => (
+                    <StoreGameCard
+                      key={game.id}
+                      game={game}
+                      onDownload={handleDownload}
+                      onPlay={handlePlay}
+                      downloadStatus={downloadStatus[game.id]}
+                      installed={installedIds.has(game.id)}
+                    />
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

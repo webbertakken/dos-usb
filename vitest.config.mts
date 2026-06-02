@@ -17,7 +17,12 @@ export default defineConfig({
     coverage: {
       provider: "istanbul",
       reporter: ["text", "html", "lcov"],
-      include: ["src/domain/**/*.ts", "electron/dosbox/**/*.mjs", "scripts/catalogue/**/*.ts"],
+      include: [
+        "src/domain/**/*.ts",
+        "src/presentation/grid/**/*.ts",
+        "electron/dosbox/**/*.mjs",
+        "scripts/catalogue/**/*.ts",
+      ],
       exclude: [
         "src/**/*.test.ts",
         "src/**/*.test.tsx",

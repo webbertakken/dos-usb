@@ -2080,6 +2080,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-virtual@npm:^3.14.1":
+  version: 3.14.1
+  resolution: "@tanstack/react-virtual@npm:3.14.1"
+  dependencies:
+    "@tanstack/virtual-core": "npm:3.16.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/240986a3e797afc1acb24d0640a36ce1534db851630ccd6d1139a6646109f9f0b9d59dfe2ff844d16e4465dc3f0cbf16435330345c108d9e486a0a304f815dcf
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.16.1":
+  version: 3.16.1
+  resolution: "@tanstack/virtual-core@npm:3.16.1"
+  checksum: 10c0/77271593ef47815663092b0f80a8d6f0460306d9fada9981c2ff4564ed2c5af7dd7d651532d6546f61c25b9c7dd799c6e7b413a6f13b9d9d242572230d430042
+  languageName: node
+  linkType: hard
+
 "@testing-library/jest-dom@npm:^6.9.1":
   version: 6.9.1
   resolution: "@testing-library/jest-dom@npm:6.9.1"
@@ -3792,6 +3811,7 @@ __metadata:
   resolution: "dos-usb@workspace:."
   dependencies:
     "@tailwindcss/postcss": "npm:^4"
+    "@tanstack/react-virtual": "npm:^3.14.1"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@testing-library/user-event": "npm:^14.6.1"
