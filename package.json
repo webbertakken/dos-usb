@@ -17,6 +17,7 @@
     "scrape": "tsx scripts/scrape-catalogue.ts",
     "add-games": "tsx scripts/add-games.ts",
     "build-library": "tsx scripts/build-library.ts",
+    "ingest": "tsx scripts/ingest-source.ts",
     "e2e": "node scripts/e2e/verify.mjs",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",

@@ -18,6 +18,7 @@ import type { SourceListing } from "../src/domain/library/types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, "..");
+const cacheDir = path.join(__dirname, "data", "cache");
 const cataloguePath = path.join(repoRoot, "public", "catalogue.json");
 const libraryPath = path.join(repoRoot, "public", "library.json");
 const overridesPath = path.join(__dirname, "data", "overrides.json");
@@ -50,6 +51,15 @@ async function main(): Promise<void> {
     const ia = await fetchInternetArchiveListings(fetcher, { limit: iaLimit });
     console.log(`[archive.org] ${ia.length} listings`);
     listings.push(...ia);
+  }
+
+  // Cached scrape-only sources (produced by `tsx scripts/ingest-source.ts`).
+  if (fs.existsSync(cacheDir)) {
+    for (const file of fs.readdirSync(cacheDir).filter((f) => f.endsWith(".json"))) {
+      const cached = readJson<SourceListing[]>(path.join(cacheDir, file), []);
+      console.log(`[${file.replace(/\.json$/, "")}] ${cached.length} cached listings`);
+      listings.push(...cached);
+    }
   }
 
   // Merge.

@@ -3,6 +3,7 @@ const skip = (file) =>
   file.includes("__fixtures__") ||
   file.endsWith("public/catalogue.json") ||
   file.endsWith("public/library.json") ||
+  file.includes("/scripts/data/cache/") ||
   file.includes("/public/screens/");
 const notFixture = (files) => files.filter((file) => !skip(file));
 

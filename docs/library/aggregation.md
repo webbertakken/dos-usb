@@ -18,9 +18,18 @@ Each source is an adapter that emits `SourceListing[]`:
   per-item calls); IA thumbnails are hotlinked.
 - `scripts/sources/dosgames.ts` - reuses the local `catalogue.json` (rich metadata, screenshots,
   DOSBox-ready downloads). Popularity derived from its best listing rank.
+- `scripts/sources/abandonwareDos.ts` - Abandonware DOS (~3k games): games XML feed -> game pages ->
+  title, year, screenshot, description, genre (JSON-LD breadcrumb), rating, download. Ingested once
+  via `tsx scripts/ingest-source.ts abandonwaredos` into `scripts/data/cache/abandonwaredos.json`,
+  which `build-library` reads.
 
-Adding a source = add an adapter that returns `SourceListing[]` and wire it into
-`scripts/build-library.ts`.
+Adding a source = add an adapter returning `SourceListing[]` and either fetch it live in
+`build-library` (like IA) or cache it via `ingest-source` (like Abandonware DOS). Deferred:
+MyAbandonware (Cloudflare blocks bots), DOS Games Archive (JS/form downloads), RGB Classic Games
+(thin pages) - see `plans/multi-source-aggregation.md`.
+
+Current build: ~12.2k listings -> ~9.6k canonical games across 3 sources, ~2.2k multi-source (e.g.
+Wolfenstein 3D listed on all three).
 
 ## Matching (heuristic)
 

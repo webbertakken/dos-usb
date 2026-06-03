@@ -101,10 +101,16 @@ returning `SourceListing[]` and wire it into `build-library.ts`. Each is its own
 project (different HTML, robots, rate limits) and carries the most legal risk, so they are done one
 at a time, deliberately.
 
-- [ ] MyAbandonware adapter (robots + rate-limit + attribution + licence flag).
-- [ ] DOS Games Archive adapter.
-- [ ] RGB Classic Games adapter.
-- [ ] AbandonwareDOS adapter.
+- [x] **Abandonware DOS** adapter (`scripts/sources/abandonwareDos.ts`, TDD): games XML feed -> game
+      pages -> title, year, screenshot, description, genre (JSON-LD breadcrumb), rating, download.
+      Ingested via `scripts/ingest-source.ts` (robots-respecting, rate-limited) into a cache that
+      `build-library` reads.
+- [~] **MyAbandonware** - deferred: Cloudflare actively blocks bots (robots request returns 000).
+  Respecting their block.
+- [~] **DOS Games Archive** - deferred: downloads are JS/form-driven (no clean file URL) and
+  per-game metadata not in og/meta tags; high overlap with IA.
+- [~] **RGB Classic Games** - deferred: thin pages (no parseable year/genre/description), mixed
+  DOS+Windows; low matching value.
 - [ ] Extend `categoryMap` + overrides as needed.
 - [ ] Optional: MobyGames/IGDB enrichment to fix IA "Uncategorised" + canonical ids.
 

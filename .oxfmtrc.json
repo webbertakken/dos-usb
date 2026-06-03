@@ -15,6 +15,7 @@
     "bin/**",
     "**/__fixtures__/**",
     "public/catalogue.json",
-    "public/library.json"
+    "public/library.json",
+    "scripts/data/cache/**"
   ]
 }
