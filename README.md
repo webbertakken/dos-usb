@@ -102,9 +102,12 @@ on ..."):
 - [Internet Archive](https://archive.org) - the MS-DOS games collection (download counts, in-browser
   play).
 - [Abandonware DOS](https://www.abandonwaredos.com) - curated metadata, screenshots and ratings.
+- [DOS Games Archive](https://www.dosgamesarchive.com) - curated metadata, screenshots and direct
+  DOSBox-ready downloads.
 
-The build currently yields ~9,600 games across these three sources (~2,200 listed on more than one).
-Refresh a scrape-only source with `yarn ingest abandonwaredos`, then `yarn build-library`.
+The build currently yields ~10,400 games across these four sources (~2,700 listed on more than one).
+Refresh a scrape-only source with `yarn ingest <abandonwaredos|dosgamesarchive>`, then
+`yarn build-library`.
 
 This repository stores **metadata, provenance and links only** - it never bundles or mirrors
 copyrighted game binaries; those are fetched on demand from the originating source. Screenshots from

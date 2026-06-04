@@ -12,6 +12,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { PoliteFetcher } from "./lib/fetcher.js";
 import { fetchAbandonwareDosListings } from "./sources/abandonwareDos.js";
+import { fetchDosgamesArchiveListings } from "./sources/dosgamesArchive.js";
 import type { SourceListing } from "../src/domain/library/types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,6 +23,7 @@ const FETCHERS: Record<
   (fetcher: PoliteFetcher, opts: { limit?: number }) => Promise<SourceListing[]>
 > = {
   abandonwaredos: fetchAbandonwareDosListings,
+  dosgamesarchive: fetchDosgamesArchiveListings,
 };
 
 async function main(): Promise<void> {

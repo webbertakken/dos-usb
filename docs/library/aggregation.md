@@ -23,13 +23,17 @@ Each source is an adapter that emits `SourceListing[]`:
   via `tsx scripts/ingest-source.ts abandonwaredos` into `scripts/data/cache/abandonwaredos.json`,
   which `build-library` reads.
 
-Adding a source = add an adapter returning `SourceListing[]` and either fetch it live in
-`build-library` (like IA) or cache it via `ingest-source` (like Abandonware DOS). Deferred:
-MyAbandonware (Cloudflare blocks bots), DOS Games Archive (JS/form downloads), RGB Classic Games
-(thin pages) - see `plans/multi-source-aggregation.md`.
+- `scripts/sources/dosgamesArchive.ts` - DOS Games Archive (~1.6k games): sitemap -> download pages
+  -> title, year, category, publisher, screenshot, description, runExe and a direct zip URL
+  (`image.dosgamesarchive.com/games/<file>.zip`). Ingested via `ingest-source dosgamesarchive`.
 
-Current build: ~12.2k listings -> ~9.6k canonical games across 3 sources, ~2.2k multi-source (e.g.
-Wolfenstein 3D listed on all three).
+Adding a source = add an adapter returning `SourceListing[]` and either fetch it live in
+`build-library` (like IA) or cache it via `ingest-source` (like Abandonware DOS / DOS Games
+Archive). Deferred: MyAbandonware (Cloudflare blocks bots), RGB Classic Games (thin pages) - see
+`plans/multi-source-aggregation.md`.
+
+Current build: ~13.9k listings -> ~10.4k canonical games across 4 sources, ~2.7k multi-source (e.g.
+Wolfenstein 3D listed on all four).
 
 ## Matching (heuristic)
 

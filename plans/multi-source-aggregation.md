@@ -107,8 +107,11 @@ at a time, deliberately.
       `build-library` reads.
 - [~] **MyAbandonware** - deferred: Cloudflare actively blocks bots (robots request returns 000).
   Respecting their block.
-- [~] **DOS Games Archive** - deferred: downloads are JS/form-driven (no clean file URL) and
-  per-game metadata not in og/meta tags; high overlap with IA.
+- [x] **DOS Games Archive** adapter (`scripts/sources/dosgamesArchive.ts`, TDD): sitemap -> download
+      pages -> title, year, category, publisher, screenshot, description, runExe, and a direct zip
+      URL (`image.dosgamesarchive.com/games/<file>.zip`). Ingested 1,647 games; download + launch
+      verified on Linux (ghini-run-2002). The download chain (download page -> /file/ -> /file.php)
+      was earlier mistaken for JS-driven; it resolves to a clean static zip URL.
 - [~] **RGB Classic Games** - deferred: thin pages (no parseable year/genre/description), mixed
   DOS+Windows; low matching value.
 - [ ] Extend `categoryMap` + overrides as needed.
