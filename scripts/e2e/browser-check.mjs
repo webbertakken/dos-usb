@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const p = await b.newPage();
+p.on("console", (m) => console.log("page:", m.text()));
+p.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
+await p.goto("http://localhost:3000/store", { waitUntil: "load" });
+await p.waitForTimeout(6000);
+const count = await p.evaluate(() => document.querySelectorAll("h3").length);
+const body = await p.evaluate(() => document.body.innerText.slice(0, 200));
+console.log("CARD_COUNT=", count);
+console.log("BODY:", body.replace(/\n/g, " | "));
+await b.close();

@@ -1,0 +1,13 @@
+title = "dos-usb gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test fixtures (saved third-party HTML) and large generated data files - no project secrets live here."
+paths = [
+  '''.*__fixtures__.*''',
+  '''public/catalogue\.json''',
+  '''public/library\.json''',
+  '''scripts/data/cache/.*''',
+]

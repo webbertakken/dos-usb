@@ -10,10 +10,15 @@
     "dev": "node scripts/ensure-husky.mjs && next dev",
     "build": "next build",
     "start": "next start",
-    "electron-dev": "concurrently \"yarn dev\" \"electron .\"",
+    "electron-dev": "concurrently -k \"yarn dev\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-build": "yarn build && electron-builder",
     "electron-start": "electron .",
     "test": "node scripts/ensure-husky.mjs && vitest run",
+    "scrape": "tsx scripts/scrape-catalogue.ts",
+    "add-games": "tsx scripts/add-games.ts",
+    "build-library": "tsx scripts/build-library.ts",
+    "ingest": "tsx scripts/ingest-source.ts",
+    "e2e": "node scripts/e2e/verify.mjs",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "yarn oxlint --report-unused-disable-directives",
@@ -24,15 +29,8 @@
     "setup:hooks": "node scripts/ensure-husky.mjs",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
-      "oxlint --fix --quiet",
-      "oxfmt --write"
-    ],
-    "*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
-    ".github/workflows/*.@(yml|yaml)": "actionlint"
-  },
   "dependencies": {
+    "@tanstack/react-virtual": "^3.14.1",
     "axios": "^1.8.4",
     "cheerio": "^1.0.0",
     "electron-is-dev": "^3.0.1",
@@ -67,6 +65,7 @@
     "lint-staged": "^16.4.0",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.63.0",
+    "playwright": "1.60.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^6",

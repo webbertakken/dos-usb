@@ -1,144 +1,299 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGameStore } from "../../store/gameStore";
-import StoreGameCard from "../../components/StoreGameCard";
+import LibraryCard from "../../components/LibraryCard";
+import LibraryDetailModal from "../../components/LibraryDetailModal";
 import { DosgamesListItem } from "../../types";
+import { CanonicalGame } from "../../domain/library/types";
+import { loadLibrary } from "../../domain/library/loadLibrary";
+import { sortGames, LIBRARY_SORTS, LibrarySortKey } from "../../domain/library/sort";
+import { buildDownloadPayload, SITE_NAMES } from "../../domain/library/select";
+import { columnsForWidth } from "../../presentation/grid/virtualGrid";
+import { buildDisplayItems } from "../../presentation/grid/groupedRows";
 import { FaSearch, FaExclamationCircle } from "react-icons/fa";
 
 export default function StorePage() {
   const {
-    dosgamesList,
-    loading,
-    error,
-    fetchDosgamesList,
-    downloadGame,
+    games,
     downloadStatus,
+    fetchGames,
+    downloadGame,
+    launchGame,
     setupDownloadListeners,
     cleanupDownloadListeners,
   } = useGameStore();
 
+  const [library, setLibrary] = useState<CanonicalGame[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [filteredGames, setFilteredGames] = useState<DosgamesListItem[]>([]);
+  const [sourceFilter, setSourceFilter] = useState("");
+  const [sort, setSort] = useState<LibrarySortKey>("popular");
+  const [grouped, setGrouped] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<CanonicalGame | null>(null);
 
-  // Set up download status listeners
   useEffect(() => {
     setupDownloadListeners();
-
-    // Clean up listeners when component unmounts
-    return () => {
-      cleanupDownloadListeners();
-    };
+    return () => cleanupDownloadListeners();
   }, [setupDownloadListeners, cleanupDownloadListeners]);
 
   useEffect(() => {
-    fetchDosgamesList();
-  }, [fetchDosgamesList]);
+    fetchGames();
+    loadLibrary()
+      .then((games) => {
+        setLibrary(games);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.error("Error loading library:", e);
+        setError("Failed to load the game library");
+        setLoading(false);
+      });
+  }, [fetchGames]);
+
+  const installedIds = useMemo(() => new Set(games.map((g) => g.id)), [games]);
+
+  const categories = useMemo(() => {
+    const set = [...new Set(library.map((g) => g.category))].filter(Boolean);
+    return set.sort((a, b) =>
+      a === "Uncategorised" ? 1 : b === "Uncategorised" ? -1 : a.localeCompare(b),
+    );
+  }, [library]);
+
+  const sources = useMemo(() => {
+    const set = new Set<string>();
+    library.forEach((g) => g.sources.forEach((s) => set.add(s.site)));
+    return [...set];
+  }, [library]);
+
+  const filtered = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    const matches = library.filter((g) => {
+      const matchesSearch =
+        !term ||
+        g.title.toLowerCase().includes(term) ||
+        (g.description ?? "").toLowerCase().includes(term) ||
+        g.tags.some((t) => t.toLowerCase().includes(term));
+      const matchesCategory = !categoryFilter || g.category === categoryFilter;
+      const matchesSource = !sourceFilter || g.sources.some((s) => s.site === sourceFilter);
+      return matchesSearch && matchesCategory && matchesSource;
+    });
+    return sortGames(matches, sort);
+  }, [library, searchTerm, categoryFilter, sourceFilter, sort]);
+
+  // --- Virtualised, optionally grouped grid ---
+  const gridRef = useRef<HTMLDivElement>(null);
+  const scrollElRef = useRef<HTMLElement | null>(null);
+  const [columns, setColumns] = useState(4);
+  const [scrollMargin, setScrollMargin] = useState(0);
+
+  const displayItems = useMemo(
+    () => buildDisplayItems(filtered, columns, grouped ? (g) => g.category : undefined),
+    [filtered, columns, grouped],
+  );
 
   useEffect(() => {
-    if (dosgamesList) {
-      setFilteredGames(
-        dosgamesList.filter((game) => {
-          const matchesSearch =
-            game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            game.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const measure = () => {
+      setColumns(columnsForWidth(window.innerWidth));
+      const scrollEl = scrollElRef.current ?? gridRef.current?.closest("main") ?? null;
+      scrollElRef.current = scrollEl;
+      if (gridRef.current && scrollEl) {
+        setScrollMargin(
+          gridRef.current.getBoundingClientRect().top -
+            scrollEl.getBoundingClientRect().top +
+            scrollEl.scrollTop,
+        );
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [filtered.length, columns, grouped]);
 
-          const matchesCategory = !categoryFilter || game.category === categoryFilter;
+  const virtualizer = useVirtualizer({
+    count: displayItems.length,
+    getScrollElement: () => scrollElRef.current,
+    estimateSize: (i) => (displayItems[i]?.kind === "header" ? 52 : 454),
+    overscan: 4,
+    scrollMargin,
+  });
 
-          return matchesSearch && matchesCategory;
-        }),
-      );
+  const handleDownload = (game: CanonicalGame) => {
+    const payload = buildDownloadPayload(game);
+    if (payload) {
+      downloadGame(payload as unknown as DosgamesListItem);
     }
-  }, [dosgamesList, searchTerm, categoryFilter]);
-
-  const handleDownload = (game: DosgamesListItem) => {
-    downloadGame(game);
   };
-
-  // Get unique categories from the games list
-  const categories = dosgamesList
-    ? [...new Set(dosgamesList.map((game) => game.category))].sort()
-    : [];
+  const handlePlay = (gameId: string) => launchGame(gameId);
 
   return (
     <div className="p-6 h-full">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Game Store</h1>
-        <p className="text-gray-400">Download classic DOS games to your collection</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Game library</h1>
+        <p className="text-gray-400">
+          {library.length > 0
+            ? `${library.length.toLocaleString()} DOS games aggregated from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(" and ")}`
+            : "Browse and download classic DOS games"}
+        </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row gap-3 mb-4">
         <div className="relative flex-grow">
+          <label htmlFor="library-search" className="sr-only">
+            Search games
+          </label>
           <input
+            id="library-search"
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search games..."
+            placeholder="Search by title, description or tag..."
             className="w-full p-3 pl-10 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <FaSearch
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            aria-hidden="true"
+          />
         </div>
 
+        <label htmlFor="library-sort" className="sr-only">
+          Sort
+        </label>
         <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 md:w-48"
+          id="library-sort"
+          value={sort}
+          onChange={(e) => setSort(e.target.value as LibrarySortKey)}
+          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
+          {LIBRARY_SORTS.map((s) => (
+            <option key={s.key} value={s.key}>
+              {s.label}
             </option>
           ))}
         </select>
+
+        <label htmlFor="library-category" className="sr-only">
+          Category
+        </label>
+        <select
+          id="library-category"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All categories</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+
+        <label htmlFor="library-source" className="sr-only">
+          Source
+        </label>
+        <select
+          id="library-source"
+          value={sourceFilter}
+          onChange={(e) => setSourceFilter(e.target.value)}
+          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All sources</option>
+          {sources.map((s) => (
+            <option key={s} value={s}>
+              {SITE_NAMES[s as keyof typeof SITE_NAMES]}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={() => setGrouped((g) => !g)}
+          aria-pressed={grouped}
+          className={`px-4 py-3 rounded-md text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+            grouped ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+          }`}
+        >
+          Group by category
+        </button>
       </div>
 
-      {loading && Object.keys(downloadStatus).length === 0 ? (
+      {!loading && !error && (
+        <p className="text-gray-500 text-sm mb-4" aria-live="polite">
+          Showing {filtered.length.toLocaleString()} of {library.length.toLocaleString()} games
+        </p>
+      )}
+
+      {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <FaExclamationCircle className="text-red-500 text-4xl mb-4" />
+          <FaExclamationCircle className="text-red-500 text-4xl mb-4" aria-hidden="true" />
           <p className="text-red-400 mb-2">{error}</p>
-          <button
-            onClick={() => fetchDosgamesList()}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
-          >
-            Try Again
-          </button>
         </div>
-      ) : filteredGames.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <p className="text-gray-400">
-            {searchTerm || categoryFilter
-              ? "No games found matching your search criteria."
-              : "No games available in the store at the moment."}
-          </p>
-          {(searchTerm || categoryFilter) && (
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setCategoryFilter("");
-              }}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
-            >
-              Clear Filters
-            </button>
-          )}
+          <p className="text-gray-400">No games match your search.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredGames.map((game) => (
-            <StoreGameCard
-              key={game.id}
-              game={game}
-              onDownload={handleDownload}
-              downloadStatus={downloadStatus[game.id]}
-            />
-          ))}
+        <div ref={gridRef}>
+          <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+            {virtualizer.getVirtualItems().map((vItem) => {
+              const item = displayItems[vItem.index];
+              return (
+                <div
+                  key={vItem.key}
+                  data-index={vItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${vItem.start - virtualizer.options.scrollMargin}px)`,
+                  }}
+                >
+                  {item.kind === "header" ? (
+                    <h2 className="text-xl font-bold text-white pt-4 pb-3">
+                      {item.label}{" "}
+                      <span className="text-gray-500 text-sm font-normal">({item.count})</span>
+                    </h2>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
+                      {item.items.map((game) => (
+                        <LibraryCard
+                          key={game.id}
+                          game={game}
+                          installed={installedIds.has(game.id)}
+                          downloadStatus={downloadStatus[game.id]}
+                          onDownload={handleDownload}
+                          onPlay={handlePlay}
+                          onOpen={setSelectedGame}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
+      )}
+
+      {selectedGame && (
+        <LibraryDetailModal
+          game={selectedGame}
+          installed={installedIds.has(selectedGame.id)}
+          downloadStatus={downloadStatus[selectedGame.id]}
+          onDownload={handleDownload}
+          onPlay={handlePlay}
+          onClose={() => setSelectedGame(null)}
+        />
       )}
     </div>
   );

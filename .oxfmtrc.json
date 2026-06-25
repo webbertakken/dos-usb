@@ -12,6 +12,10 @@
     "**/dist/**",
     "**/coverage/**",
     "**/.yarn/**",
-    "bin/**"
+    "bin/**",
+    "**/__fixtures__/**",
+    "public/catalogue.json",
+    "public/library.json",
+    "scripts/data/cache/**"
   ]
 }

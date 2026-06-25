@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useGameStore } from "../store/gameStore";
 import GameCard from "../components/GameCard";
 import GameEditModal from "../components/GameEditModal";
@@ -94,12 +95,12 @@ export default function Home() {
               : "No games installed yet. Visit the Game Store to download games."}
           </p>
           {!searchTerm && (
-            <a
+            <Link
               href="/store"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               Go to Game Store
-            </a>
+            </Link>
           )}
         </div>
       ) : (

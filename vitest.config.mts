@@ -7,13 +7,29 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: ["./src/test/setup.ts"],
     globals: false,
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "electron/**/*.test.mjs",
+      "scripts/**/*.test.ts",
+    ],
     exclude: ["**/node_modules/**", "**/.next/**", "**/out/**"],
     coverage: {
       provider: "istanbul",
       reporter: ["text", "html", "lcov"],
-      include: ["src/domain/**/*.ts"],
-      exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/types.ts", "src/**/index.ts"],
+      include: [
+        "src/domain/**/*.ts",
+        "src/presentation/grid/**/*.ts",
+        "electron/dosbox/**/*.mjs",
+        "scripts/catalogue/**/*.ts",
+      ],
+      exclude: [
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
+        "src/**/types.ts",
+        "src/**/index.ts",
+        "electron/**/*.test.mjs",
+      ],
     },
   },
   resolve: {

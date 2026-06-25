@@ -4,11 +4,22 @@ import { fileURLToPath } from "url";
 import isDev from "electron-is-dev";
 import { execFile } from "child_process";
 import fs from "fs";
+import http from "http";
 import https from "https";
 import { createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import extract from "extract-zip";
 import electron from "electron";
+import {
+  resolveDosbox,
+  findOnPath,
+  getDosboxDataDir,
+  buildTerminationCommand,
+} from "./dosbox/platform.mjs";
+import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+
+// Tracks the DOSBox process we spawned so it can be terminated cross-platform.
+let activeDosboxChild = null;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,8 +70,18 @@ function createWindow() {
     console.error("Renderer process crashed!");
   });
 
-  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
-    console.error(`Failed to load: ${errorDescription} (${errorCode})`);
+  // In dev the Next server may not be up yet (or may restart), which yields a
+  // white screen on ERR_CONNECTION_REFUSED. Retry loading until it is ready.
+  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription, validatedUrl) => {
+    console.error(`Failed to load: ${errorDescription} (${errorCode}) ${validatedUrl ?? ""}`);
+    if (isDev && !mainWindow.isDestroyed()) {
+      setTimeout(() => {
+        if (!mainWindow.isDestroyed()) {
+          console.log("Retrying dev server load...");
+          mainWindow.loadURL(startUrl);
+        }
+      }, 1000);
+    }
   });
 
   // Handle uncaught exceptions in the main process
@@ -83,6 +104,58 @@ ipcMain.handle("log-error", async (event, errorData) => {
   return { received: true };
 });
 
+// Resolve the bundled store catalogue. Works in dev (public/) and in the
+// packaged app (out/), avoiding fetch() which is unreliable under file://.
+function resolveCataloguePath() {
+  const candidates = [
+    path.join(process.cwd(), "public", "catalogue.json"),
+    path.join(__dirname, "..", "out", "catalogue.json"),
+    path.join(__dirname, "..", "public", "catalogue.json"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+}
+
+ipcMain.handle("get-store-catalogue", async () => {
+  try {
+    const cataloguePath = resolveCataloguePath();
+    if (!cataloguePath) {
+      console.error("Store catalogue not found in any known location");
+      return [];
+    }
+    const data = JSON.parse(fs.readFileSync(cataloguePath, "utf8"));
+    console.log(`Loaded ${data.length} catalogue entries from ${cataloguePath}`);
+    return data;
+  } catch (error) {
+    console.error("Error reading store catalogue:", error);
+    return [];
+  }
+});
+
+function resolveLibraryPath() {
+  const candidates = [
+    path.join(process.cwd(), "public", "library.json"),
+    path.join(__dirname, "..", "out", "library.json"),
+    path.join(__dirname, "..", "public", "library.json"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+}
+
+ipcMain.handle("get-library", async () => {
+  try {
+    const libraryPath = resolveLibraryPath();
+    if (!libraryPath) {
+      console.error("Library not found in any known location");
+      return [];
+    }
+    const data = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
+    console.log(`Loaded ${data.length} library games from ${libraryPath}`);
+    return data;
+  } catch (error) {
+    console.error("Error reading library:", error);
+    return [];
+  }
+});
+
 app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
@@ -97,12 +170,32 @@ app.on("activate", () => {
   }
 });
 
-// Add a function to ensure DOSBox is fully terminated before starting a new instance
+// Ensure DOSBox is fully terminated before starting a new instance.
+// On Windows the portable launcher detaches a `DOSBox.exe`, so we kill by
+// image name. On other platforms DOSBox is our direct child, so we signal it.
 async function ensureDOSBoxClosed() {
   return new Promise((resolve) => {
+    const termination = buildTerminationCommand(process.platform);
+
+    if (!termination) {
+      if (activeDosboxChild && !activeDosboxChild.killed) {
+        console.log(`Terminating tracked DOSBox process (PID ${activeDosboxChild.pid})`);
+        try {
+          activeDosboxChild.kill("SIGTERM");
+        } catch (error) {
+          console.log("Could not terminate tracked DOSBox process:", error.message);
+        }
+      } else {
+        console.log("No tracked DOSBox process to terminate");
+      }
+      activeDosboxChild = null;
+      setTimeout(resolve, 200);
+      return;
+    }
+
     try {
       console.log("Ensuring no DOSBox instances are running before starting a new one");
-      const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+      const cleanup = execFile(termination.command, termination.args, {
         windowsHide: true,
         shell: true,
       });
@@ -141,19 +234,31 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
     console.log(`Primary screen dimensions: ${width}x${height}`);
     console.log(`Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`);
 
-    // Path to DOSBoxPortable executable
-    const dosboxPortablePath = path.join(
-      process.cwd(),
-      "bin",
-      "DOSBoxPortable",
-      "DOSBoxPortable.exe",
-    );
+    // Resolve the DOSBox executable for the current platform:
+    // bundled portable build on Windows, a PATH binary elsewhere.
+    const baseDir = process.cwd();
+    const resolved = resolveDosbox({
+      platform: process.platform,
+      baseDir,
+      fileExists: (candidate) => fs.existsSync(candidate),
+      canRunFromPath: (command) =>
+        findOnPath({
+          command,
+          platform: process.platform,
+          env: process.env,
+          fileExists: (candidate) => fs.existsSync(candidate),
+        }) !== null,
+    });
 
-    if (fs.existsSync(dosboxPortablePath)) {
-      console.log(`Using DOSBoxPortable at: ${dosboxPortablePath}`);
+    if (resolved) {
+      console.log(`Using DOSBox (${resolved.source}) at: ${resolved.command}`);
 
       // Directory for DOSBox configuration
-      const dosboxDataDir = path.join(process.cwd(), "bin", "DOSBoxPortable", "Data");
+      const dosboxDataDir = getDosboxDataDir({
+        source: resolved.source,
+        baseDir,
+        userDataDir: app.getPath("userData"),
+      });
 
       // Ensure the Data directory exists
       if (!fs.existsSync(dosboxDataDir)) {
@@ -385,36 +490,14 @@ cycles=${cycles}
         }
       }
 
-      // Determine if this is a batch file
-      const isBatFile = gameExe.toLowerCase().endsWith(".bat");
-
       // Check if we need special handling for START.EXE (common for some games)
       const isStartExe = gameExe.toLowerCase() === "start.exe";
 
-      // Create a universal autoexec section that handles common cases
+      // Build the autoexec that mounts the game and runs it (cross-platform,
+      // uses `call` for .bat so control returns to the script).
       const autoexecSection = `
 [autoexec]
-@echo off
-echo DOS-USB Game Launcher
-echo --------------------
-mount c "${gameDir.replace(/\\/g, "/")}"
-c:
-cls
-echo Loading game: ${gameId}
-echo.
-${isBatFile ? "echo Running batch file..." : "echo Executing: " + gameExe}
-echo.
-echo Available files:
-dir *.exe
-echo.
-${gameExe}
-echo.
-echo If the game closed or didn't start properly:
-echo - For games that need a START command, type: START
-echo - For other games, try running the executable directly
-echo.
-echo Type 'EXIT' when done to return to Windows.
-`;
+${buildAutoexec({ gameDir, executable: gameExe })}`;
 
       newConfig += autoexecSection;
 
@@ -423,26 +506,27 @@ echo Type 'EXIT' when done to return to Windows.
       fs.writeFileSync(customConfigPath, newConfig);
       console.log(`Created custom DOSBox config at: ${customConfigPath}`);
 
-      // Launch DOSBoxPortable with the custom config
-      const child = execFile(dosboxPortablePath, ["-conf", customConfigPath], {
+      // Launch DOSBox with the custom config
+      const child = execFile(resolved.command, ["-conf", customConfigPath], {
         windowsHide: false,
       });
+      activeDosboxChild = child;
 
       // Store the child process ID for logging
       const childPid = child.pid;
-      console.log(`DOSBoxPortable started with PID: ${childPid}`);
+      console.log(`DOSBox started with PID: ${childPid}`);
 
       // Set up child process event listeners
-      child.stdout.on("data", (data) => {
-        console.log(`DOSBoxPortable output: ${data}`);
+      child.stdout?.on("data", (data) => {
+        console.log(`DOSBox output: ${data}`);
       });
 
-      child.stderr.on("data", (data) => {
-        console.error(`DOSBoxPortable error: ${data}`);
+      child.stderr?.on("data", (data) => {
+        console.error(`DOSBox error: ${data}`);
       });
 
       child.on("error", (err) => {
-        console.error("Failed to start DOSBoxPortable:", err);
+        console.error("Failed to start DOSBox:", err);
         return { success: false, error: err.message };
       });
 
@@ -454,18 +538,24 @@ echo Type 'EXIT' when done to return to Windows.
       }
 
       child.on("close", (code) => {
-        console.log(`DOSBoxPortable process exited with code ${code}`);
+        console.log(`DOSBox process exited with code ${code}`);
+        if (activeDosboxChild === child) {
+          activeDosboxChild = null;
+        }
 
-        // Clean up any leftover processes - always clean up to be safe
+        // Clean up any leftover detached processes (Windows portable launcher).
+        const termination = buildTerminationCommand(process.platform);
+        if (!termination) {
+          return;
+        }
         try {
-          // On Windows, use taskkill to clean up
-          const cleanup = execFile("taskkill", ["/F", "/IM", "DOSBox.exe"], {
+          const cleanup = execFile(termination.command, termination.args, {
             windowsHide: true,
             shell: true,
           });
 
-          cleanup.on("close", (code) => {
-            console.log(`DOSBox cleanup exited with code ${code}`);
+          cleanup.on("close", (cleanupCode) => {
+            console.log(`DOSBox cleanup exited with code ${cleanupCode}`);
           });
         } catch (cleanupError) {
           console.error("Error during DOSBox cleanup:", cleanupError);
@@ -477,10 +567,52 @@ echo Type 'EXIT' when done to return to Windows.
 
       return { success: true };
     }
+
+    const installHint =
+      process.platform === "darwin"
+        ? "Install it with: brew install dosbox-staging"
+        : process.platform === "win32"
+          ? "The bundled DOSBox could not be found; reinstall the app or install DOSBox and add it to PATH."
+          : "Install it with your package manager, e.g. sudo apt install dosbox-staging (or dosbox).";
+    const message = `DOSBox was not found. ${installHint}`;
+    console.error(message);
+    return { success: false, error: message };
   } catch (error) {
     console.error("Error setting up DOSBox:", error);
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Resolve which executable to run and the directory it lives in.
+ * Looks at the game root first, then one level of subdirectories (some zips
+ * extract into a folder). Returns { dir, executable } or null.
+ */
+function resolveGameLaunch(gamePath, gameId, runExe) {
+  const rootFiles = fs.readdirSync(gamePath);
+  const rootExe = selectExecutable(rootFiles, { gameId, runExe });
+  if (rootExe) {
+    return { dir: gamePath, executable: rootExe };
+  }
+
+  // Search immediate subdirectories.
+  const subdirs = rootFiles.filter((entry) => {
+    try {
+      return fs.statSync(path.join(gamePath, entry)).isDirectory();
+    } catch {
+      return false;
+    }
+  });
+  for (const subdir of subdirs) {
+    const subPath = path.join(gamePath, subdir);
+    const subFiles = fs.readdirSync(subPath);
+    const subExe = selectExecutable(subFiles, { gameId, runExe });
+    if (subExe) {
+      return { dir: subPath, executable: subExe };
+    }
+  }
+
+  return null;
 }
 
 // Update the launchGame function to use our new setupDOSBox function
@@ -495,69 +627,26 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
   console.log(`Game ID: ${gameId}`);
 
   try {
-    // Get all files in the game directory
-    const gameFiles = fs.readdirSync(gamePath);
-    console.log("Game files found:", gameFiles);
-
-    // Common executable mappings for popular games - only keeps most essential ones
-    const commonGameExes = {
-      "commander-keen-dreams": "START.EXE", // Special case: Keen Dreams needs START.EXE
-      doom: "DOOM.EXE",
-      wolf3d: "WOLF3D.EXE",
-    };
-
-    // Determine the executable to run
-    let executableFile;
-
-    // 1. First check for game.bat (our mock game setup)
-    if (gameFiles.includes("game.bat")) {
-      executableFile = "game.bat";
-      console.log(`Using game.bat for ${gameId}`);
-    }
-    // 2. Check for game-specific mapping
-    else if (commonGameExes[gameId] && gameFiles.includes(commonGameExes[gameId])) {
-      executableFile = commonGameExes[gameId];
-      console.log(`Using known executable for ${gameId}: ${executableFile}`);
-    }
-    // 3. Look for START.EXE or START.BAT (common launchers)
-    else if (gameFiles.includes("START.EXE")) {
-      executableFile = "START.EXE";
-      console.log(`Using START.EXE launcher for ${gameId}`);
-    } else if (gameFiles.includes("START.BAT")) {
-      executableFile = "START.BAT";
-      console.log(`Using START.BAT launcher for ${gameId}`);
-    }
-    // 4. Look for game ID matching executable
-    else {
-      // Try finding an executable by common patterns
-      const patterns = [
-        // Exact match for game ID (e.g., DOOM.EXE for doom)
-        new RegExp(`^${gameId.replace(/-/g, "")}\\.exe$`, "i"),
-        // Any EXE file
-        /\.exe$/i,
-        // Any COM file
-        /\.com$/i,
-        // Any BAT file
-        /\.bat$/i,
-      ];
-
-      // Try each pattern until we find a match
-      for (const pattern of patterns) {
-        const match = gameFiles.find((file) => pattern.test(file));
-        if (match) {
-          executableFile = match;
-          break;
-        }
+    // Read the catalogue-provided run executable, if we stored it on download.
+    let runExe;
+    const metadataPath = path.join(gamePath, "metadata.json");
+    if (fs.existsSync(metadataPath)) {
+      try {
+        runExe = JSON.parse(fs.readFileSync(metadataPath, "utf8")).runExe;
+      } catch (metaError) {
+        console.warn("Could not read game metadata:", metaError.message);
       }
     }
 
-    // If we found an executable, launch it
-    if (executableFile) {
-      console.log(`Will execute: ${executableFile} for ${gameId}`);
-      const gameDirPath = path.resolve(gamePath);
+    // Resolve the executable and the directory it lives in (zips sometimes
+    // extract into a subfolder), then launch.
+    const resolved = resolveGameLaunch(gamePath, gameId, runExe);
 
-      return await setupDOSBox(gameId, gameDirPath, executableFile);
+    if (resolved) {
+      console.log(`Will execute: ${resolved.executable} in ${resolved.dir} for ${gameId}`);
+      return await setupDOSBox(gameId, path.resolve(resolved.dir), resolved.executable);
     } else {
+      const gameFiles = fs.readdirSync(gamePath);
       console.error(`No suitable executable found for ${gameId}`);
 
       // Create a basic game.bat file to use as fallback
@@ -628,6 +717,8 @@ ipcMain.handle("get-games", async () => {
           {
             id: dir,
             path: path.join(gamesDir, dir),
+            // GameCard renders `image`; metadata stores it as `thumbnail`.
+            image: metadata.image || metadata.thumbnail || "",
           },
           metadata,
         );
@@ -690,10 +781,10 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
         const { JSDOM } = await import("jsdom");
 
         // Check if the URL points to a game page or directly to a file
+        // (case-insensitive: catalogue URLs use .ZIP).
+        const lowerUrl = gameInfo.downloadUrl.toLowerCase();
         const isDirectFileLink =
-          gameInfo.downloadUrl.endsWith(".zip") ||
-          gameInfo.downloadUrl.endsWith(".exe") ||
-          gameInfo.downloadUrl.includes("file=");
+          lowerUrl.endsWith(".zip") || lowerUrl.endsWith(".exe") || lowerUrl.includes("file=");
 
         let downloadUrl = "";
 
@@ -996,6 +1087,7 @@ echo Running ${gameInfo.title}
                 category: gameInfo.category,
                 thumbnail: gameInfo.thumbnail || gameInfo.image,
                 downloadUrl: gameInfo.downloadUrl,
+                runExe: gameInfo.runExe,
               },
               null,
               2,
@@ -1082,74 +1174,85 @@ async function downloadFile(url, dest, progressCallback) {
   return new Promise((resolve, reject) => {
     console.log(`Attempting to download from: ${url}`);
 
-    // Create the file stream
     const fileStream = createWriteStream(dest);
-
-    const request = https.get(url, (response) => {
-      if (response.statusCode !== 200) {
-        // Close the file stream to prevent it from hanging
-        fileStream.close();
-
-        // Log the error details
-        console.error(
-          `Download failed with status: ${response.statusCode} ${response.statusMessage}`,
-        );
-        console.error(`URL: ${url}`);
-
-        // Reject with detailed error
-        reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
-        return;
-      }
-
-      const totalSize = parseInt(response.headers["content-length"], 10);
-      let downloadedSize = 0;
-
-      // Handle progress reporting
-      response.on("data", (chunk) => {
-        downloadedSize += chunk.length;
-
-        if (totalSize) {
-          const progress = Math.floor((downloadedSize / totalSize) * 100);
-          progressCallback(progress);
-        } else {
-          // If we can't determine size, just update based on chunks received
-          const fakeProgress = Math.min(downloadedSize / 1000000, 95); // Estimate based on MB
-          progressCallback(Math.floor(fakeProgress));
-        }
-      });
-
-      // Pipe the response to the file
-      response.pipe(fileStream);
-
-      fileStream.on("finish", () => {
-        fileStream.close();
-        resolve();
-      });
-    });
-
-    // Handle errors
-    request.on("error", (err) => {
-      console.error(`Network error during download: ${err.message}`);
-      fileStream.close(); // Close the stream
-      fs.unlink(dest, () => {}); // Delete the file if there's an error
+    let settled = false;
+    const fail = (err) => {
+      if (settled) return;
+      settled = true;
+      fileStream.close();
+      fs.unlink(dest, () => {});
       reject(err);
-    });
+    };
+
+    // Follow up to 5 redirects (dosgames/Cloudflare may redirect to a CDN).
+    const get = (currentUrl, redirectsLeft) => {
+      const client = currentUrl.startsWith("http://") ? http : https;
+      const request = client.get(
+        currentUrl,
+        { headers: { "User-Agent": "Mozilla/5.0" } },
+        (response) => {
+          const status = response.statusCode ?? 0;
+
+          // Redirect handling.
+          if (status >= 300 && status < 400 && response.headers.location) {
+            response.resume(); // discard body
+            if (redirectsLeft <= 0) {
+              fail(new Error("Too many redirects"));
+              return;
+            }
+            const next = new URL(response.headers.location, currentUrl).toString();
+            console.log(`Redirect ${status} -> ${next}`);
+            get(next, redirectsLeft - 1);
+            return;
+          }
+
+          if (status !== 200) {
+            console.error(`Download failed with status: ${status} ${response.statusMessage}`);
+            console.error(`URL: ${currentUrl}`);
+            response.resume();
+            fail(new Error(`Failed to download: ${status} ${response.statusMessage}`));
+            return;
+          }
+
+          const totalSize = parseInt(response.headers["content-length"], 10);
+          let downloadedSize = 0;
+          response.on("data", (chunk) => {
+            downloadedSize += chunk.length;
+            if (totalSize) {
+              progressCallback(Math.floor((downloadedSize / totalSize) * 100));
+            } else {
+              progressCallback(Math.floor(Math.min(downloadedSize / 1000000, 95)));
+            }
+          });
+
+          response.pipe(fileStream);
+          fileStream.on("finish", () => {
+            if (settled) return;
+            settled = true;
+            fileStream.close();
+            resolve();
+          });
+        },
+      );
+
+      request.on("error", (err) => {
+        console.error(`Network error during download: ${err.message}`);
+        fail(err);
+      });
+
+      request.setTimeout(30000, () => {
+        console.error("Download request timed out");
+        request.destroy();
+        fail(new Error("Download request timed out"));
+      });
+    };
 
     fileStream.on("error", (err) => {
       console.error(`File system error during download: ${err.message}`);
-      fileStream.close(); // Close the stream
-      fs.unlink(dest, () => {}); // Delete the file if there's an error
-      reject(err);
+      fail(err);
     });
 
-    // Set a timeout for the request
-    request.setTimeout(30000, () => {
-      console.error("Download request timed out");
-      request.destroy();
-      fileStream.close();
-      fs.unlink(dest, () => {});
-      reject(new Error("Download request timed out"));
-    });
+    get(url, 5);
   });
 }
 
