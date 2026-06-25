@@ -1,33 +1,38 @@
 # DOS USB
 
-A modern UI for playing DOS games from a USB stick. This application allows you to download, manage,
-and play classic DOS games using a sleek, modern interface.
+**Your entire MS-DOS childhood, in one app. Browse a library of 10,000+ classic games, click once,
+and you are back in 1994.** 🕹️
 
-## Architecture
+DOS USB is a modern, good-looking launcher for the golden age of PC gaming. It pulls together a huge
+catalogue of DOS games from across the web, hands you a clean store to browse them, and plays them
+instantly in DOSBox - no manual config, no fiddling with mount commands, no rabbit holes. Pop it on
+a USB stick and carry your collection between machines.
 
-This project follows Domain-Driven Design principles to create a maintainable and scalable codebase.
-See [DDD-ARCHITECTURE.md](./DDD-ARCHITECTURE.md) for detailed information about the architecture.
+> 🎮 **Runs on Windows, Linux, and macOS.** Same app, same library, everywhere.
 
-### Key Architecture Layers
+## Why you'll like it
 
-- **Domain Layer**: Core business logic organized into bounded contexts
-- **Application Layer**: Orchestrates domain operations and provides state management
-- **Presentation Layer**: UI components and user interaction
-- **Infrastructure Layer**: External concerns like file system access and DOSBox integration
+- **10,000+ games at your fingertips** - aggregated from four trusted DOS archives, deduplicated,
+  and searchable.
+- **One-click play** - pick a game, hit play, and DOSBox is launched and configured for you.
+- **A store that feels good** - sort by most popular, top rated or A-Z, filter by category, and skim
+  screenshots, ratings, sizes and publishers at a glance.
+- **Truly portable** - designed to live on a USB stick and travel with you.
+- **Respects the originals** - this app ships _metadata and links only_; games are fetched on demand
+  from their source, never mirrored here.
+- **Fast and modern** - a virtualised grid keeps thousands of titles buttery smooth.
 
-## Features
+## Quick start
 
-- **Modern UI**: Clean, responsive interface for browsing and playing your DOS games
-- **Portable**: Designed to run from a USB stick
-- **Game Store**: Download classic DOS games directly from dosgames.com
-- **Game Management**: Organize and manage your DOS game collection
-- **DOSBox Integration**: Seamlessly launches games in DOSBox
+1. Grab the latest build from the [Releases page](https://github.com/webbertakken/dos-usb/releases).
+2. Make sure DOSBox is available (see below - one line on each OS).
+3. Open the app, browse the store, click a game, and play. That's it.
 
 ## Getting Started
 
 ### Prerequisites
 
-The app runs on Windows, Linux, and macOS. It locates DOSBox per platform:
+The app runs on **Windows, Linux, and macOS**. It locates DOSBox per platform:
 
 - **Windows**: uses the bundled portable DOSBox (`bin/DOSBoxPortable`), or any `dosbox` on `PATH` as
   a fallback.
@@ -44,20 +49,19 @@ launching a game reports a clear error with an install hint instead of failing s
 
 1. Download the latest release from the
    [Releases page](https://github.com/webbertakken/dos-usb/releases)
-2. Extract the contents to your USB drive
-3. Run `DOSGamesPortable.exe` from your USB drive
+2. Extract the contents to your USB drive (or anywhere you like)
+3. Launch the app:
+   - **Windows**: run `DOSGamesPortable.exe`
+   - **Linux / macOS**: run the bundled app for your platform
 
 #### For Developers
 
-1. Clone this repository
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Run the development server:
-   ```
-   npm run electron-dev
-   ```
+The project uses Yarn (via [mise](https://mise.jdx.dev)). Clone and run:
+
+```bash
+yarn install
+yarn electron-dev   # Next.js dev server + Electron, hot-reloaded
+```
 
 ## Usage
 
@@ -71,12 +75,13 @@ The home screen displays all your installed DOS games. You can:
 
 ### Game Store
 
-The Store tab lets you browse and download classic DOS games from a catalogue of 379 titles sourced
-from dosgames.com (most popular, highest rated, and DOSGames picks):
+The Store tab lets you browse and download from a library of **10,000+ classic DOS games**,
+aggregated and deduplicated across four archives:
 
-- Sort by Most popular / Top rated / DOSGames picks / A-Z
+- Sort by Most popular / Top rated / A-Z
 - Filter by category and search by title, description, or tag
-- See the DOSGames rating, file size, publisher, and a screenshot
+- See ratings, file size, publisher, and a screenshot
+- Open a game's detail view for the full description and provenance
 - Download games directly to your collection, then play them in place
 
 #### Rebuilding the catalogue
@@ -149,6 +154,16 @@ This application is built with:
 - [Electron](https://www.electronjs.org/) - Desktop application framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [Zustand](https://github.com/pmndrs/zustand) - State management
+
+## Architecture
+
+Built with Domain-Driven Design for a maintainable, scalable codebase. See
+[DDD-ARCHITECTURE.md](./DDD-ARCHITECTURE.md) for the full picture.
+
+- **Domain Layer** - core business logic in bounded contexts
+- **Application Layer** - orchestration and state management
+- **Presentation Layer** - UI components and interaction
+- **Infrastructure Layer** - file system access and DOSBox integration
 
 ## License
 
