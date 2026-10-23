@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { displayImageUrl } from "../presentation/images/displayImageUrl";
 import { FaPlay, FaEdit } from "react-icons/fa";
 import { Game } from "../types";
 
@@ -15,7 +16,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit }) => {
       <div className="relative h-40 w-full">
         {game.image ? (
           <Image
-            src={game.image}
+            src={displayImageUrl(game.image)}
             alt={game.title}
             className="object-cover"
             fill

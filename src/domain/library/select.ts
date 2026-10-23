@@ -78,7 +78,7 @@ export function buildDownloadPayload(game: CanonicalGame): DownloadPayload | nul
     description: game.description ?? "",
     year: game.year,
     category: game.category,
-    image: game.image ?? source.image ?? "",
+    image: game.image ?? "",
     downloadUrl: source.downloadUrl,
     runExe: source.runExe,
   };

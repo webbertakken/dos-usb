@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mapIaItem } from "./internetArchive.js";
+import { IA_DESCRIPTION_LIMIT, mapIaItem } from "./internetArchive.js";
 
 describe("mapIaItem", () => {
   const item = {
@@ -33,6 +33,27 @@ describe("mapIaItem", () => {
     expect(listing.metrics.downloads).toBeUndefined();
     expect(listing.tags).toEqual([]);
     expect(listing.category).toBeUndefined();
+  });
+
+  it("keeps the description as plain text", () => {
+    const listing = mapIaItem({
+      identifier: "x",
+      title: "X",
+      description: ["<p>A <b>platformer</b>&nbsp;starring", "a rabbit.</p>"],
+    });
+    expect(listing.description).toBe("A platformer starring a rabbit.");
+  });
+
+  it("caps a long description on a word boundary", () => {
+    const listing = mapIaItem({ identifier: "x", title: "X", description: "word ".repeat(400) });
+    expect(listing.description!.length).toBeLessThanOrEqual(IA_DESCRIPTION_LIMIT + 1);
+    expect(listing.description).toMatch(/word…$/);
+  });
+
+  it("leaves the description out when IA has none", () => {
+    expect(
+      mapIaItem({ identifier: "x", title: "X", description: "  " }).description,
+    ).toBeUndefined();
   });
 
   it("normalises a string subject into a single-item tag list", () => {

@@ -1,6 +1,7 @@
 /**
  * Build the aggregated library by combining every enabled source adapter,
- * merging duplicates into canonical games, applying the denylist, and writing
+ * dropping non-games, merging duplicates into canonical games, enriching them
+ * from reference catalogues, applying the denylist, and writing
  * `public/library.json`.
  *
  * Run:  tsx scripts/build-library.ts [--no-ia] [--ia-limit=N]
@@ -14,7 +15,10 @@ import { readDosgamesListings } from "./sources/dosgames.js";
 import { fetchInternetArchiveListings } from "./sources/internetArchive.js";
 import { mergeListings } from "../src/domain/library/merge.js";
 import { filterDenied } from "../src/domain/library/denylist.js";
-import type { SourceListing } from "../src/domain/library/types.js";
+import { enrichGames } from "../src/domain/library/enrich.js";
+import { isNonGame } from "../src/domain/library/nonGames.js";
+import { toPublishedGame } from "../src/domain/library/publish.js";
+import type { CanonicalGame, GameReference, SourceListing } from "../src/domain/library/types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, "..");
@@ -23,6 +27,7 @@ const cataloguePath = path.join(repoRoot, "public", "catalogue.json");
 const libraryPath = path.join(repoRoot, "public", "library.json");
 const overridesPath = path.join(__dirname, "data", "overrides.json");
 const denylistPath = path.join(__dirname, "data", "denylist.json");
+const wikidataPath = path.join(__dirname, "data", "references", "wikidata.json");
 
 const args = process.argv.slice(2);
 const noIa = args.includes("--no-ia");
@@ -32,10 +37,14 @@ const iaLimit = iaLimitArg ? Number(iaLimitArg.split("=")[1]) : Infinity;
 function readJson<T>(file: string, fallback: T): T {
   try {
     return JSON.parse(fs.readFileSync(file, "utf8")) as T;
-  } catch {
+  } catch (error) {
+    console.warn(`[build-library] could not read ${file}, using an empty default:`, error);
     return fallback;
   }
 }
+
+const countUncategorised = (games: CanonicalGame[]): number =>
+  games.filter((game) => game.category === "Uncategorised").length;
 
 async function main(): Promise<void> {
   const listings: SourceListing[] = [];
@@ -62,9 +71,22 @@ async function main(): Promise<void> {
     }
   }
 
+  // Games only.
+  const gameListings = listings.filter((listing) => !isNonGame(listing));
+  console.log(`[non-games] excluded ${listings.length - gameListings.length} listings`);
+
   // Merge.
   const overrides = readJson<{ aliases: Record<string, string> }>(overridesPath, { aliases: {} });
-  let games = mergeListings(listings, overrides.aliases);
+  const merged = mergeListings(gameListings, overrides.aliases);
+
+  // Enrich from reference catalogues, then from descriptions.
+  const references = readJson<GameReference[]>(wikidataPath, []);
+  console.log(`[wikidata] ${references.length} reference games`);
+  let games = enrichGames(merged, references);
+  console.log(
+    `[enrich] uncategorised ${countUncategorised(merged)} -> ${countUncategorised(games)}, ` +
+      `${games.filter((g) => g.externalIds).length} games matched a reference`,
+  );
 
   // Denylist.
   const denied = readJson<string[]>(denylistPath, []);
@@ -75,7 +97,7 @@ async function main(): Promise<void> {
   games.sort((a, b) => b.popularity - a.popularity || a.title.localeCompare(b.title));
 
   // Minified - this is large generated data, not a diff-reviewed file.
-  fs.writeFileSync(libraryPath, JSON.stringify(games));
+  fs.writeFileSync(libraryPath, JSON.stringify(games.map(toPublishedGame)));
 
   // Stats + a sanity check on cross-source merging.
   const multiSource = games.filter((g) => g.sources.length > 1);
@@ -84,6 +106,8 @@ async function main(): Promise<void> {
   console.log(`Total listings ingested : ${listings.length}`);
   console.log(`Canonical games         : ${games.length} (denied ${before - games.length})`);
   console.log(`Multi-source games      : ${multiSource.length}`);
+  console.log(`Uncategorised games     : ${countUncategorised(games)}`);
+  console.log(`Without popularity      : ${games.filter((g) => !g.popularity).length}`);
   if (wolf) {
     console.log(`Wolfenstein 3D sources  : ${wolf.sources.map((s) => s.site).join(", ")}`);
   }

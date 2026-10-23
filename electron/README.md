@@ -7,6 +7,9 @@ concerns like file system access, network communication, and hardware interactio
 
 - **main.mjs**: Electron main process that handles OS-level operations
 - **preload.mjs**: Preload script that exposes Electron APIs to the renderer process
+- **protocol/**: Serves the static export on `app://dos-usb/` with its Content Security Policy (see
+  [Packaged app](../docs/electron/packaging.md))
+- **dosbox/**: Cross-platform DOSBox resolution and launch
 
 ## Responsibilities
 

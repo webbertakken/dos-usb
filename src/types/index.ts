@@ -52,6 +52,8 @@ declare global {
       ) => Promise<{ success: boolean; game?: Game; error?: string }>;
       onDownloadStatus: (callback: (status: DownloadStatus) => void) => () => void;
       logError: (error: ErrorData) => Promise<{ received: boolean }>;
+      /** URL of a remote image through the app's offline image cache. */
+      cachedImageUrl: (src: string) => string;
     };
   }
 }

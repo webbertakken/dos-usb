@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
+import { displayImageUrl } from "../presentation/images/displayImageUrl";
 import {
   FaDownload,
   FaPlay,
@@ -120,7 +121,7 @@ const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
         <div className="relative w-full h-56 sm:h-72 bg-gray-950">
           {game.image ? (
             <Image
-              src={game.image}
+              src={displayImageUrl(game.image)}
               alt={`${game.title} screenshot`}
               fill
               className="object-contain"

@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+import { cachedImageUrl } from "./imageCache/cacheUrl.mjs";
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -39,4 +40,5 @@ contextBridge.exposeInMainWorld("electron", {
     };
   },
   logError: (error) => ipcRenderer.invoke("log-error", error),
+  cachedImageUrl: (src) => cachedImageUrl(String(src)),
 });

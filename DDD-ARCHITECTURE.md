@@ -24,7 +24,12 @@ frameworks or external concerns.
    - Domain for launching and playing games
    - Contains services to launch games with DOSBox
 
-4. **Error Handling** (`src/domain/errorHandling/`)
+4. **Library** (`src/domain/library/`)
+   - Domain for the aggregated, multi-source game library
+   - Merges source listings into canonical games, applies the denylist, sorts and picks a download
+     source
+
+5. **Error Handling** (`src/domain/errorHandling/`)
    - Cross-cutting concern for error management
    - Provides error reporting and tracking
 
