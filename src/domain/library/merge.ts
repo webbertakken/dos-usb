@@ -167,16 +167,16 @@ function mergeCluster(listings: SourceListing[]): CanonicalGame {
  */
 function bucketKey(
   listing: SourceListing,
-  keyOf: (title: string) => string,
+  aliasOf: (key: string) => string,
   knownKeys: ReadonlySet<string>,
 ): string {
-  const title = listing.title ?? "";
-  const ownYear = title.match(/^(.*\S)\s+(\d{4})$/);
+  const key = matchKey(listing.title ?? "");
+  const ownYear = key.match(/^(.+) (\d{4})$/);
   const isReleaseYear = ownYear && (!listing.year || ownYear[2] === listing.year);
-  if (ownYear && isReleaseYear && knownKeys.has(keyOf(ownYear[1]))) {
-    return keyOf(ownYear[1]);
+  if (ownYear && isReleaseYear && knownKeys.has(aliasOf(ownYear[1]))) {
+    return aliasOf(ownYear[1]);
   }
-  return keyOf(title);
+  return aliasOf(key);
 }
 
 /**
@@ -188,12 +188,12 @@ export function mergeListings(
   listings: SourceListing[],
   aliases: Record<string, string> = {},
 ): CanonicalGame[] {
-  const keyOf = (title: string) => aliases[matchKey(title)] ?? matchKey(title);
-  const knownKeys = new Set(listings.map((listing) => keyOf(listing.title ?? "")));
+  const aliasOf = (key: string) => aliases[key] ?? key;
+  const knownKeys = new Set(listings.map((listing) => aliasOf(matchKey(listing.title ?? ""))));
 
   const buckets = new Map<string, SourceListing[]>();
   for (const listing of listings) {
-    const key = bucketKey(listing, keyOf, knownKeys);
+    const key = bucketKey(listing, aliasOf, knownKeys);
     const arr = buckets.get(key) ?? [];
     arr.push(listing);
     buckets.set(key, arr);

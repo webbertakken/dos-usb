@@ -122,6 +122,19 @@ describe("mergeListings", () => {
     expect(games[0].sources).toHaveLength(2);
   });
 
+  it("finds the own year behind a platform label", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "The Oregon Trail 1990 MS-DOS",
+        year: "1990",
+      }),
+      listing({ site: "abandonwaredos", url: "b", title: "The Oregon Trail", year: "1990" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
   it("reads a trailing year as the release year when the source gives none", () => {
     const games = mergeListings([
       listing({ site: "archive.org", url: "a", title: "Xmas Lemmings 1992", year: "" }),
