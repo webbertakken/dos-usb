@@ -1,3 +1,4 @@
+import path from "path";
 import { describe, it, expect, vi } from "vitest";
 import { FuseState, FuseV1Options } from "@electron/fuses";
 import { packagedElectronPath, fuseConfigFor, createAfterPack } from "./electronFuses.mjs";
@@ -8,21 +9,32 @@ const contextFor = (electronPlatformName, appOutDir) => ({
   packager: { appInfo: { productFilename: "DOS USB" }, executableName: "dos-usb" },
 });
 
+// appOutDir lives on the build host, so paths join the host's way, whatever the target.
 describe("packagedElectronPath", () => {
   it("points at the lower-case executable on Linux", () => {
     expect(packagedElectronPath(contextFor("linux", "/dist/linux-unpacked"))).toBe(
-      "/dist/linux-unpacked/dos-usb",
+      path.join("/dist/linux-unpacked", "dos-usb"),
     );
   });
 
   it("points at the product .exe on Windows", () => {
-    expect(packagedElectronPath(contextFor("win32", "C:\\dist\\win-unpacked"))).toBe(
-      "C:\\dist\\win-unpacked\\DOS USB.exe",
+    expect(packagedElectronPath(contextFor("win32", "/dist/win-unpacked"))).toBe(
+      path.join("/dist/win-unpacked", "DOS USB.exe"),
+    );
+  });
+
+  it("joins the host's way when cross-building for Windows", () => {
+    const appOutDir = path.join(path.sep, "home", "ci", "dist", "win-unpacked");
+
+    expect(packagedElectronPath(contextFor("win32", appOutDir))).toBe(
+      `${appOutDir}${path.sep}DOS USB.exe`,
     );
   });
 
   it("points at the .app bundle on macOS", () => {
-    expect(packagedElectronPath(contextFor("darwin", "/dist/mac"))).toBe("/dist/mac/DOS USB.app");
+    expect(packagedElectronPath(contextFor("darwin", "/dist/mac"))).toBe(
+      path.join("/dist/mac", "DOS USB.app"),
+    );
   });
 });
 
