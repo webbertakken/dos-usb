@@ -138,6 +138,40 @@ describe("mergeListings", () => {
     expect(games).toHaveLength(2);
   });
 
+  it("prefers a curated description over a longer Internet Archive one", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        description: "Click here for the manual. Also for Amiga, Mac and more.",
+      }),
+      listing({
+        site: "abandonwaredos",
+        url: "b",
+        title: "Doom",
+        year: "1993",
+        description: "Rip and tear.",
+      }),
+    ]);
+    expect(games[0].description).toBe("Rip and tear.");
+  });
+
+  it("uses the Internet Archive description when no curated source has one", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        description: "From IA.",
+      }),
+      listing({ site: "abandonwaredos", url: "b", title: "Doom", year: "1993" }),
+    ]);
+    expect(games[0].description).toBe("From IA.");
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({

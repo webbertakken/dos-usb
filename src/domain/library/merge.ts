@@ -101,12 +101,21 @@ function clusterByYear(listings: SourceListing[]): SourceListing[][] {
   return clusters;
 }
 
+// The Internet Archive's descriptions are uploader text (often pasted manuals
+// or catalogue boilerplate), so curated sources' descriptions win over them.
+const isBulkArchive = (listing: SourceListing) => listing.site === "archive.org";
+
+const longestDescription = (listings: SourceListing[]): string =>
+  listings
+    .map((l) => l.description ?? "")
+    .reduce((best, d) => (d.length > best.length ? d : best), "");
+
 function mergeCluster(listings: SourceListing[]): CanonicalGame {
   const title = pick(listings, (l) => l.title) ?? listings[0].title ?? "Untitled";
   const year = pick(listings, (l) => l.year) ?? "";
-  const description = listings
-    .map((l) => l.description ?? "")
-    .reduce((best, d) => (d.length > best.length ? d : best), "");
+  const description =
+    longestDescription(listings.filter((l) => !isBulkArchive(l))) ||
+    longestDescription(listings.filter(isBulkArchive));
   const image =
     listings.find((l) => l.image && l.image.startsWith("/"))?.image ??
     pick(listings, (l) => l.image);
