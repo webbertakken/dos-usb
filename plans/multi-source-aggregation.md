@@ -157,6 +157,7 @@ Measured on the catalogue (10,372 games) and the live sources, then decided by W
 
 ## Follow-ups
 
-- [ ] Internet Archive download links are `/download/<id>/<id>.zip`, which 404s (the zip inside an
-      item has its own name, e.g. `ZZT_1991.zip` in `msdos_ZZT_1991`), so IA-only games cannot be
-      downloaded. Resolve the zip from the item's metadata - separate PR.
+- [~] Internet Archive download links are `/download/<id>/<id>.zip`, which 404s (the zip inside an
+  item has its own name, e.g. `ZZT_1991.zip` in `msdos_ZZT_1991`), so IA-only games cannot be
+  downloaded, and failed downloads were masked by a stand-in "mock" game. Fixed in #10 (zip resolved
+  from the item's metadata; failures reported).
