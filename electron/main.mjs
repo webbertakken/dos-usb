@@ -27,6 +27,7 @@ import {
 } from "./protocol/staticExport.mjs";
 import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
 import { resolvePortableRoot } from "./portable/root.mjs";
+import { scanCustomGames } from "./customGames/scan.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -46,7 +47,14 @@ const portableRoot = resolvePortableRoot({
   cwd: process.cwd(),
 });
 const gamesDir = path.join(portableRoot, "games");
-console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
+// Games the user owns and copies in themselves; zips unpack beside it.
+const customGamesDir = path.join(portableRoot, "games-custom");
+const customGamesUnpackDir = path.join(portableRoot, "games-custom-unpacked");
+console.log(
+  `Portable root: ${portableRoot} (games in ${gamesDir}, your games in ${customGamesDir})`,
+);
+// What the last scan of games-custom found, by the card's path.
+let customGameLaunches = new Map();
 
 // The packaged renderer loads from app://dos-usb/, not file://, so the static
 // export's absolute asset paths and routes resolve. Must precede `ready`.
@@ -188,16 +196,23 @@ function resolveLibraryPath() {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
 
+let libraryCache = null;
+
+function readLibrary() {
+  if (libraryCache) return libraryCache;
+  const libraryPath = resolveLibraryPath();
+  if (!libraryPath) {
+    console.error("Library not found in any known location");
+    return [];
+  }
+  libraryCache = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
+  console.log(`Loaded ${libraryCache.length} library games from ${libraryPath}`);
+  return libraryCache;
+}
+
 ipcMain.handle("get-library", async () => {
   try {
-    const libraryPath = resolveLibraryPath();
-    if (!libraryPath) {
-      console.error("Library not found in any known location");
-      return [];
-    }
-    const data = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
-    console.log(`Loaded ${data.length} library games from ${libraryPath}`);
-    return data;
+    return readLibrary();
   } catch (error) {
     console.error("Error reading library:", error);
     return [];
@@ -679,6 +694,22 @@ function resolveGameLaunch(gamePath, gameId, runExe) {
 ipcMain.handle("launch-game", async (event, { gamePath }) => {
   console.log(`Attempting to launch game from path: ${gamePath}`);
 
+  const customGame = customGameLaunches.get(gamePath);
+  if (customGame) {
+    console.log(
+      `Launching your game ${customGame.id}: ${customGame.executable} in ${customGame.dir}`,
+    );
+    return await setupDOSBox(customGame.id, path.resolve(customGame.dir), customGame.executable);
+  }
+  const isInside = (dir) => {
+    const relative = path.relative(dir, gamePath);
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
+  };
+  if (isInside(customGamesDir) || isInside(customGamesUnpackDir)) {
+    console.error(`Not launching ${gamePath}: no playable game was detected there`);
+    return { success: false, error: "This game needs attention before it can be played." };
+  }
+
   // First ensure any existing DOSBox instances are closed
   await ensureDOSBoxClosed();
 
@@ -738,8 +769,28 @@ pause
   }
 });
 
-// Get available games from the games directory
-ipcMain.handle("get-games", async () => {
+/** The games the user copied into games-custom/, as My Games cards. */
+async function listCustomGames() {
+  try {
+    const scan = await scanCustomGames({
+      customDir: customGamesDir,
+      unpackDir: customGamesUnpackDir,
+      library: readLibrary(),
+      log: console,
+      extractZip: extract,
+    });
+    customGameLaunches = scan.launches;
+    return scan.games;
+  } catch (error) {
+    console.error(`Error scanning your games in ${customGamesDir}:`, error);
+    return [];
+  }
+}
+
+ipcMain.handle("get-games", async () => [...listDownloadedGames(), ...(await listCustomGames())]);
+
+/** The games downloaded into games/. */
+function listDownloadedGames() {
   try {
     // Create games directory if it doesn't exist
     if (!fs.existsSync(gamesDir)) {
@@ -779,6 +830,7 @@ ipcMain.handle("get-games", async () => {
             image: metadata.image || metadata.thumbnail || "",
           },
           metadata,
+          { source: "download" },
         );
       });
 
@@ -787,7 +839,7 @@ ipcMain.handle("get-games", async () => {
     console.error("Error getting games list:", error);
     return [];
   }
-});
+}
 
 // Save game metadata
 ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
