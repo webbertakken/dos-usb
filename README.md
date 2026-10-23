@@ -69,7 +69,7 @@ The home screen displays all your installed DOS games. You can:
 - Launch games with a single click
 - Edit game metadata: title, description, year, category, and image
 
-### Add your own games
+#### Add your own games
 
 Own a DOS game already? Copy it into the `games-custom` folder beside the app (on the stick, next to
 `games`). Next time you open the app, or switch back to it, the game is in My Games, marked **Your
