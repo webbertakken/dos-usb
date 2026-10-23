@@ -42,6 +42,28 @@ describe("chooseDownloadSource", () => {
     expect(chooseDownloadSource(g)?.site).toBe("archive.org");
   });
 
+  it("passes over Abandonware DOS, whose files the app cannot fetch, for the Internet Archive", () => {
+    const g = game([
+      src({
+        site: "abandonwaredos",
+        downloadUrl: "https://www.abandonwaredos.com/aw-download.php?tit=X&gid=1",
+      }),
+      src({ site: "archive.org", downloadUrl: "https://archive.org/download/x/x.zip" }),
+    ]);
+    expect(chooseDownloadSource(g)?.site).toBe("archive.org");
+  });
+
+  it("offers no download when only Abandonware DOS has the game", () => {
+    const g = game([
+      src({
+        site: "abandonwaredos",
+        downloadUrl: "https://www.abandonwaredos.com/aw-download.php?tit=X&gid=1",
+      }),
+    ]);
+    expect(chooseDownloadSource(g)).toBeNull();
+    expect(buildDownloadPayload(g)).toBeNull();
+  });
+
   it("returns null when nothing is downloadable", () => {
     const g = game([src({ site: "archive.org", playUrl: "https://archive.org/details/x" })]);
     expect(chooseDownloadSource(g)).toBeNull();
@@ -80,9 +102,9 @@ describe("buildDownloadPayload", () => {
   it("uses the game's chosen image, never the download source's own", () => {
     const g = game([
       src({
-        site: "abandonwaredos",
-        downloadUrl: "https://www.abandonwaredos.com/aw-download.php?gid=1",
-        image: "https://www.abandonwaredos.com/x.jpg",
+        site: "archive.org",
+        downloadUrl: "https://archive.org/download/x/x.zip",
+        image: "https://archive.org/services/img/x",
       }),
     ]);
     expect(buildDownloadPayload(g)!.image).toBe("");
