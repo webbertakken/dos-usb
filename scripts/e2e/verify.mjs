@@ -166,6 +166,19 @@ async function verifyApp(app, target) {
     fail(`Stylesheets did not load: ${JSON.stringify(stylesheets)}`);
   }
 
+  // The layout's own surface utility must win over any global body rule.
+  const surface = await window.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.className = "bg-gray-900";
+    document.body.append(probe);
+    const expected = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return { expected, actual: getComputedStyle(document.body).backgroundColor };
+  });
+  if (surface.actual !== surface.expected) {
+    fail(`Body background ${surface.actual} overrides bg-gray-900 (${surface.expected})`);
+  }
+
   // --- Navigate to the store the way a user does ---
   // A marker on `window` survives only a client-side navigation, which proves
   // the app hydrated and the router fetched the route's RSC payload.
