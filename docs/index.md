@@ -8,3 +8,5 @@
   into one canonical, credited, sortable library.
 - [Packaged app](./electron/packaging.md) - how the packaged app serves the static export on
   `app://`, its Content Security Policy, and how to build and verify it.
+- [Gift stick](./stick/assembly.md) - how `yarn make-stick` lays out a ready-to-gift USB stick, and
+  what FAT32 and exFAT allow.
