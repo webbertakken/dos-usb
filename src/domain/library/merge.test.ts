@@ -122,6 +122,14 @@ describe("mergeListings", () => {
     expect(games[0].sources).toHaveLength(2);
   });
 
+  it("reads a trailing year as the release year when the source gives none", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Xmas Lemmings 1992", year: "" }),
+      listing({ site: "dosgamesarchive", url: "b", title: "Xmas Lemmings", year: "1992" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
   it("keeps a trailing year that is part of a title with no plain counterpart", () => {
     const games = mergeListings([
       listing({ site: "archive.org", url: "a", title: "NHL Hockey 1995", year: "1995" }),

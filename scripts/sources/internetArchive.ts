@@ -75,6 +75,8 @@ export async function fetchInternetArchiveListings(
   const limit = options.limit ?? Infinity;
   const listings: SourceListing[] = [];
   let cursor: string | undefined;
+  // Later cursor pages report what remains as `total`; keep the first answer.
+  let total: number | undefined;
 
   do {
     const params = new URLSearchParams({
@@ -95,7 +97,8 @@ export async function fetchInternetArchiveListings(
       }
     }
     cursor = data.cursor;
-    console.log(`  [archive.org] ${listings.length} / ${data.total}`);
+    total ??= data.total;
+    console.log(`  [archive.org] ${listings.length} / ${total}`);
   } while (cursor);
 
   return listings;

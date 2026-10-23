@@ -162,7 +162,8 @@ function mergeCluster(listings: SourceListing[]): CanonicalGame {
 /**
  * A title ending in its own release year ("Oregon Trail The 1990") joins the
  * plain title when another listing carries it; otherwise the year stays, as
- * in yearly series ("NHL Hockey 1995").
+ * in yearly series ("NHL Hockey 1995"). A source without a year is taken to
+ * mean the title's year.
  */
 function bucketKey(
   listing: SourceListing,
@@ -171,7 +172,8 @@ function bucketKey(
 ): string {
   const title = listing.title ?? "";
   const ownYear = title.match(/^(.*\S)\s+(\d{4})$/);
-  if (ownYear && ownYear[2] === listing.year && knownKeys.has(keyOf(ownYear[1]))) {
+  const isReleaseYear = ownYear && (!listing.year || ownYear[2] === listing.year);
+  if (ownYear && isReleaseYear && knownKeys.has(keyOf(ownYear[1]))) {
     return keyOf(ownYear[1]);
   }
   return keyOf(title);

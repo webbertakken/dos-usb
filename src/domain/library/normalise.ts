@@ -45,9 +45,15 @@ export function normaliseTitle(title: string): string {
   // Drop articles anywhere, but never reduce to nothing.
   const withoutArticles = words.filter((word) => !ARTICLES.has(word));
   const kept = withoutArticles.length > 0 ? withoutArticles : words;
-  // Drop a generic trailing "version".
+  // Drop a generic trailing "version" and a trailing platform label
+  // ("... DOS", "... MS-DOS", "... for DOS").
   while (kept.length > 1 && kept[kept.length - 1] === "version") {
     kept.pop();
+  }
+  if (kept.length > 1 && kept[kept.length - 1] === "dos") {
+    kept.pop();
+    if (kept.length > 1 && kept[kept.length - 1] === "ms") kept.pop();
+    if (kept.length > 1 && kept[kept.length - 1] === "for") kept.pop();
   }
 
   return kept.join(" ").trim();
