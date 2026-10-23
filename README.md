@@ -44,15 +44,16 @@ The app runs on **Windows, Linux, and macOS**. It locates DOSBox per platform:
 
 - **Windows**: uses the portable DOSBox in `bin/DOSBoxPortable`, or any `dosbox` on `PATH` as a
   fallback.
-- **Linux**: install a DOSBox from your package manager so one of `dosbox-staging`, `dosbox-x`, or
-  `dosbox` is on `PATH` (e.g. `sudo apt install dosbox-staging` or `sudo apt install dosbox`).
+- **Linux**: uses the DOSBox Staging in `bin/dosbox-staging-linux` (a gift stick carries one; see
+  [Making a gift stick](#making-a-gift-stick)), or a DOSBox from your package manager so one of
+  `dosbox-staging`, `dosbox-x`, or `dosbox` is on `PATH` (e.g. `sudo apt install dosbox-staging`).
 - **macOS**: install via Homebrew, e.g. `brew install dosbox-staging`.
 
 DOSBox is discovered in the order `dosbox-staging` -> `dosbox-x` -> `dosbox`. If none is found,
 launching a game reports a clear error with an install hint instead of failing silently.
 
-Downloaded games are stored in a `games` folder beside the app, and `bin/DOSBoxPortable` is resolved
-from the same folder, so the whole folder travels on a USB stick.
+Downloaded games are stored in a `games` folder beside the app, and the bundled DOSBoxes in `bin/`
+are resolved from the same folder, so the whole folder travels on a USB stick.
 
 ### Toolchain
 
@@ -159,6 +160,17 @@ yarn electron-build
 This creates a portable build in `dist/` that runs directly from a USB drive: `DOSGamesPortable.exe`
 on Windows, `DOSGamesPortable.AppImage` on Linux. See [Packaged app](./docs/electron/packaging.md)
 for how it serves the static export.
+
+### Making a gift stick
+
+```bash
+yarn make-stick /media/$USER/STICK          # both apps; --skip windows|linux for one
+node scripts/e2e/stick.mjs /media/$USER/STICK # Linux: play a starter game from it
+```
+
+Lays out a ready-to-gift stick from the builds in `dist/`: both apps with obvious names, a DOSBox
+for each OS, the starter games pre-installed and a `START-HERE.html` welcome page. See
+[Gift stick](./docs/stick/assembly.md).
 
 ## Technical details
 
