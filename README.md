@@ -126,7 +126,8 @@ Rebuild the aggregated library with `yarn build-library`.
 ### End-to-end verification
 
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
-downloads a game and launches it in DOSBox - a full cross-platform smoke test.
+downloads a game and launches it in DOSBox - a full cross-platform smoke test. After
+`yarn electron-pack`, `yarn e2e:packaged` runs the same checks against the packaged app.
 
 ### Settings
 
@@ -140,11 +141,13 @@ Configure your DOS USB environment:
 
 To build the application for production:
 
-```
-npm run electron-build
+```bash
+yarn electron-build
 ```
 
-This will create a portable executable that can be run directly from a USB drive.
+This creates a portable build in `dist/` that runs directly from a USB drive: `DOSGamesPortable.exe`
+on Windows, `DOSGamesPortable.AppImage` on Linux. See [Packaged app](./docs/electron/packaging.md)
+for how it serves the static export.
 
 ## Technical Details
 
