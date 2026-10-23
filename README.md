@@ -51,8 +51,8 @@ The app runs on **Windows, Linux, and macOS**. It locates DOSBox per platform:
 DOSBox is discovered in the order `dosbox-staging` -> `dosbox-x` -> `dosbox`. If none is found,
 launching a game reports a clear error with an install hint instead of failing silently.
 
-`bin/DOSBoxPortable` and the `games/` download folder are resolved from the working directory, so
-start the app from the repository (or USB stick) root.
+Downloaded games are stored in a `games` folder beside the app, and `bin/DOSBoxPortable` is resolved
+from the same folder, so the whole folder travels on a USB stick.
 
 ### Toolchain
 
@@ -145,7 +145,8 @@ fetches the Internet Archive collection live; pass `--no-ia` to skip it.
 
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
 downloads a game and launches it in DOSBox - a full cross-platform smoke test. It needs a display
-and a DOSBox on the machine.
+and a DOSBox on the machine. After `yarn electron-pack`, `yarn e2e:packaged` runs the same checks
+against the packaged app.
 
 ### Building for production
 
@@ -153,11 +154,9 @@ and a DOSBox on the machine.
 yarn electron-build
 ```
 
-This exports the Next.js app to `out/` and packages it with electron-builder. The `build` config in
-`package.json` targets a Windows portable executable, `DOSGamesPortable.exe`.
-
-Known limitation: the packaged app loads `out/index.html` over `file://`, where the export's
-absolute `/_next/` asset paths do not resolve, so use `yarn electron-dev` to run the app.
+This creates a portable build in `dist/` that runs directly from a USB drive: `DOSGamesPortable.exe`
+on Windows, `DOSGamesPortable.AppImage` on Linux. See [Packaged app](./docs/electron/packaging.md)
+for how it serves the static export.
 
 ## Technical details
 
