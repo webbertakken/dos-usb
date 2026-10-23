@@ -48,7 +48,7 @@ const Navigation: React.FC = () => {
                     aria-current={current ? "page" : undefined}
                     className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors sm:px-4 ${
                       current
-                        ? "bg-raised text-paper shadow-[inset_0_-2px_0_var(--color-phosphor)]"
+                        ? "bg-raised text-paper shadow-[inset_0_-3px_0_var(--color-phosphor)]"
                         : "text-muted hover:bg-raised/60 hover:text-paper"
                     }`}
                   >

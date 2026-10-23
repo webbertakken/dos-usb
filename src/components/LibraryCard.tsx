@@ -101,7 +101,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
             </span>
           )}
         </div>
-        <p className="font-pixel text-lg leading-tight text-faint">{details}</p>
+        <p className="font-pixel text-lg leading-tight text-muted">{details}</p>
         {game.description && (
           <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{game.description}</p>
         )}

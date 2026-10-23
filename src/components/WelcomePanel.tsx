@@ -15,16 +15,6 @@ const STEPS = [
   "When you are done, close the game window to come back here.",
 ];
 
-/** Confetti for a birthday: a few still pixels, placed by hand. */
-const CONFETTI = [
-  { left: "4%", top: "14%", color: "bg-rose" },
-  { left: "46%", top: "8%", color: "bg-amber" },
-  { left: "58%", top: "86%", color: "bg-cyan" },
-  { left: "93%", top: "18%", color: "bg-phosphor" },
-  { left: "88%", top: "78%", color: "bg-rose" },
-  { left: "30%", top: "92%", color: "bg-amber" },
-] as const;
-
 /** The first thing a new owner sees: a warm hello and how to start. */
 const WelcomePanel: React.FC<WelcomePanelProps> = ({ gift, onDismiss }) => {
   const signature = Welcome.signature(gift);
@@ -32,26 +22,17 @@ const WelcomePanel: React.FC<WelcomePanelProps> = ({ gift, onDismiss }) => {
   return (
     <section
       aria-labelledby="welcome-heading"
-      className="relative mb-10 overflow-hidden rounded-3xl border border-line bg-panel motion-safe:animate-rise"
+      className="relative mb-8 overflow-hidden rounded-3xl border border-line bg-panel motion-safe:animate-rise"
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_0%_0%,rgb(255_148_189/0.16),transparent_70%),radial-gradient(50%_70%_at_100%_100%,rgb(255_203_107/0.12),transparent_70%)]"
       />
-      {gift &&
-        CONFETTI.map(({ left, top, color }) => (
-          <span
-            key={`${left}-${top}`}
-            aria-hidden="true"
-            className={`absolute h-2 w-2 ${color} opacity-70`}
-            style={{ left, top }}
-          />
-        ))}
 
-      <div className="relative grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
+      <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
         <div>
           <div className="flex items-center gap-4">
-            <PixelArt name={gift ? "cake" : "joystick"} scale={4} className="shrink-0" />
+            <PixelArt name={gift ? "cake" : "joystick"} scale={3} className="shrink-0" />
             <div>
               <p className="font-pixel text-xl leading-none text-rose">
                 {gift ? "A present, just for you" : "Plug in, pick, play"}
@@ -66,13 +47,13 @@ const WelcomePanel: React.FC<WelcomePanelProps> = ({ gift, onDismiss }) => {
           </div>
 
           {gift?.message || signature ? (
-            <figure className="relative mt-6 rounded-lg bg-paper px-5 pb-4 pt-5 text-ink shadow-lg shadow-black/40 -rotate-[0.6deg]">
+            <figure className="relative mt-5 rounded-lg bg-paper px-5 pb-3 pt-4 text-ink shadow-lg shadow-black/40 -rotate-[0.6deg]">
               <span
                 aria-hidden="true"
                 className="absolute -top-2 left-1/2 h-4 w-20 -translate-x-1/2 rotate-2 bg-rose/70"
               />
               {gift?.message && (
-                <blockquote className="whitespace-pre-line text-lg leading-relaxed">
+                <blockquote className="whitespace-pre-line text-lg leading-snug">
                   {gift.message}
                 </blockquote>
               )}
@@ -89,10 +70,10 @@ const WelcomePanel: React.FC<WelcomePanelProps> = ({ gift, onDismiss }) => {
           )}
         </div>
 
-        <div className="flex flex-col justify-between gap-6">
+        <div className="flex flex-col justify-between gap-4">
           <div>
             <h3 className="font-display text-xl font-bold text-paper">Playing takes three steps</h3>
-            <ol className="mt-4 space-y-3">
+            <ol className="mt-3 space-y-2">
               {STEPS.map((step, index) => (
                 <li key={step} className="flex items-start gap-3 text-base leading-snug text-paper">
                   <span

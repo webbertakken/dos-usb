@@ -49,7 +49,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit, starting = fa
       </div>
 
       <div className="flex flex-1 flex-col px-1 pt-3">
-        <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-paper">
+        <h3 className="line-clamp-2 min-h-[2lh] font-display text-lg font-bold leading-snug tracking-tight text-paper">
           {game.title}
         </h3>
         {needsAttention ? (
@@ -58,7 +58,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit, starting = fa
           </p>
         ) : (
           <>
-            <p className="mb-4 mt-0.5 flex-1 font-pixel text-lg leading-tight text-faint">
+            <p className="mb-3 mt-0.5 flex-1 font-pixel text-lg leading-tight text-muted">
               {details}
             </p>
             <button
@@ -88,7 +88,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit, starting = fa
             type="button"
             onClick={() => onEdit(game)}
             aria-label={`Edit details of ${game.title}`}
-            className={`${buttonClass("quiet", "sm")} mt-2 self-center`}
+            className={`${buttonClass("quiet", "sm")} mt-1 self-center text-faint`}
           >
             <FaPen aria-hidden="true" className="text-xs" />
             Edit details

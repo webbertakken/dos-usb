@@ -178,10 +178,11 @@ const tour = async (width) => {
   try {
     // --- First run, with a gift ---
     await page.getByRole("region", { name: /Happy birthday/ }).waitFor({ timeout: 60_000 });
-    await page
-      .getByRole("button", { name: /^Play / })
-      .first()
-      .waitFor();
+    const firstPlay = page.getByRole("button", { name: /^Play / }).first();
+    await firstPlay.waitFor();
+    const box = await firstPlay.boundingBox();
+    const bottom = Math.round((box?.y ?? 0) + (box?.height ?? 0));
+    log(width, `first Play button ${Math.round(box?.height ?? 0)}px tall, bottom at ${bottom}`);
     await shot("welcome-gift");
     await page.evaluate(() => window.scrollTo(0, 0));
 
@@ -341,9 +342,9 @@ const libraryTour = async (width, { root, userData }) => {
 
     await openLibrary();
     await page.locator("main h3").first().waitFor({ timeout: 60_000 });
-    await page.getByRole("textbox", { name: "Search games" }).fill("qqqzzz");
+    await page.getByRole("searchbox", { name: "Search games" }).fill("qqqzzz");
     await shot("library-no-match");
-    await page.getByRole("textbox", { name: "Search games" }).fill("keen");
+    await page.getByRole("searchbox", { name: "Search games" }).fill("keen");
     await shot("library-search");
 
     await page.locator("main h3").first().click();

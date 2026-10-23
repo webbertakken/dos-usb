@@ -133,10 +133,10 @@ export default function Home() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-8 sm:px-8 sm:pt-10">
+    <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-6 sm:px-8 sm:pt-8">
       {showWelcome && <WelcomePanel gift={gift} onDismiss={dismissWelcome} />}
 
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-pixel text-xl leading-none text-phosphor">
             {games.length > 0
@@ -163,14 +163,14 @@ export default function Home() {
         )}
       </div>
 
-      {games.length > SEARCH_THRESHOLD && (
+      {!showWelcome && games.length > SEARCH_THRESHOLD && (
         <SearchField
           id="my-games-search"
           label="Search my games"
           placeholder="Search my games…"
           value={searchTerm}
           onChange={setSearchTerm}
-          className="mb-6"
+          className="mb-5"
         />
       )}
 
