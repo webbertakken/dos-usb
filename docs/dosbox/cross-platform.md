@@ -6,8 +6,11 @@ The app runs DOS games on Windows, Linux and macOS by resolving a DOSBox binary 
 
 `electron/dosbox/platform.mjs` (pure, unit-tested) decides what to run:
 
-1. The bundled Windows portable build (`bin/DOSBoxPortable/DOSBoxPortable.exe`, beside the app; see
-   [portable root](../electron/packaging.md#portable-root)).
+1. The DOSBox bundled beside the app (see [portable root](../electron/packaging.md#portable-root)),
+   so a stick needs nothing installed:
+   - Windows (any architecture): `bin/DOSBoxPortable/DOSBoxPortable.exe`.
+   - Linux x86_64: DOSBox Staging in `bin/dosbox-staging-linux/dosbox`, which
+     [`yarn make-stick`](../stick/assembly.md) puts on the stick.
 2. Otherwise a binary on `PATH`, searched in order: `dosbox-staging` -> `dosbox-x` -> `dosbox`.
 
 If none is found, launching a game returns a clear error with a per-OS install hint instead of
@@ -23,14 +26,15 @@ failing silently (the original bug on Linux/macOS).
 - `buildAutoexec({ gameDir, executable })` mounts the game on `C:` and runs it. Batch files are
   invoked with `call` so control returns to the autoexec.
 
-`electron/main.mjs` writes a per-game DOSBox conf, then spawns the resolved binary. The spawned
-child is tracked so it can be terminated cross-platform (Windows uses `taskkill /IM DOSBox.exe`;
-elsewhere the child handle is killed).
+`electron/main.mjs` writes a per-game DOSBox conf, then spawns the resolved binary from the game's
+folder. The spawned child is tracked so it can be terminated cross-platform (Windows uses
+`taskkill /IM DOSBox.exe`; elsewhere the child handle is killed).
 
 ## Per-game config location
 
-- Bundled (Windows): `bin/DOSBoxPortable/Data/`.
-- PATH binary: the app's user-data directory (`userData/dosbox/`).
+On the stick, beside the game, whichever DOSBox runs: `games/<id>/dosbox.generated.conf`, built from
+constants and the optional hand-written `games/<id>/dosbox.conf`. Nothing is read from or written to
+the host machine. See [per-game overrides](./overrides.md).
 
 ## Notes
 

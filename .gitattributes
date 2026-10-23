@@ -1,0 +1,17 @@
+# LF everywhere, whatever core.autocrlf says, so a checkout (the stick's
+# source/ copy on Windows too) stays clean.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.webp binary
+*.zip binary
+*.exe binary
+*.dll binary
+*.com binary
+*.woff binary
+*.woff2 binary

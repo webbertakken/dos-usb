@@ -10,13 +10,12 @@ import { createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import extract from "extract-zip";
 import electron from "electron";
-import {
-  resolveDosbox,
-  findOnPath,
-  getDosboxDataDir,
-  buildTerminationCommand,
-} from "./dosbox/platform.mjs";
-import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { resolveDosbox, findOnPath, buildTerminationCommand } from "./dosbox/platform.mjs";
+import { buildAutoexec } from "./dosbox/launch.mjs";
+import { resolveGameLaunch } from "./dosbox/resolveGameLaunch.mjs";
+import { isDirectFileLink } from "./download/directLink.mjs";
+import { gameMetadata } from "./download/gameMetadata.mjs";
+import { generateDosboxConf, mergeDosboxConf } from "./dosbox/conf.mjs";
 import { resolveArchiveDownload } from "./download/archiveOrg.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
@@ -28,6 +27,7 @@ import {
 import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
 import { resolvePortableRoot } from "./portable/root.mjs";
 import { readGiftMessage } from "./gift/giftMessage.mjs";
+import { scanCustomGames } from "./customGames/scan.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -47,7 +47,14 @@ const portableRoot = resolvePortableRoot({
   cwd: process.cwd(),
 });
 const gamesDir = path.join(portableRoot, "games");
-console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
+// Games the user owns and copies in themselves; zips unpack beside it.
+const customGamesDir = path.join(portableRoot, "games-custom");
+const customGamesUnpackDir = path.join(portableRoot, "games-custom-unpacked");
+console.log(
+  `Portable root: ${portableRoot} (games in ${gamesDir}, your games in ${customGamesDir})`,
+);
+// What the last scan of games-custom found, by the card's path.
+let customGameLaunches = new Map();
 
 // The packaged renderer loads from app://dos-usb/, not file://, so the static
 // export's absolute asset paths and routes resolve. Must precede `ready`.
@@ -198,16 +205,23 @@ function resolveLibraryPath() {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
 
+let libraryCache = null;
+
+function readLibrary() {
+  if (libraryCache) return libraryCache;
+  const libraryPath = resolveLibraryPath();
+  if (!libraryPath) {
+    console.error("Library not found in any known location");
+    return [];
+  }
+  libraryCache = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
+  console.log(`Loaded ${libraryCache.length} library games from ${libraryPath}`);
+  return libraryCache;
+}
+
 ipcMain.handle("get-library", async () => {
   try {
-    const libraryPath = resolveLibraryPath();
-    if (!libraryPath) {
-      console.error("Library not found in any known location");
-      return [];
-    }
-    const data = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
-    console.log(`Loaded ${data.length} library games from ${libraryPath}`);
-    return data;
+    return readLibrary();
   } catch (error) {
     console.error("Error reading library:", error);
     return [];
@@ -289,10 +303,40 @@ async function ensureDOSBoxClosed() {
   });
 }
 
+/** The per-game override, hand-written beside metadata.json; never written by the app. */
+const DOSBOX_OVERRIDE_FILE = "dosbox.conf";
+/** The config the last launch ran with: generated, then overridden. */
+const DOSBOX_LAUNCH_FILE = "dosbox.generated.conf";
+
+/** The override's text, or null when the game has none. */
+function readOverrideConf(overridePath) {
+  try {
+    return fs.readFileSync(overridePath, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+function logOverride({ gameId, overridePath, overrideConfig, launchConfig }) {
+  if (overrideConfig === null) {
+    console.log(`No DOSBox override for ${gameId} (${overridePath} absent)`);
+    return;
+  }
+  const applied = launchConfig.applied.length > 0 ? launchConfig.applied.join(", ") : "nothing";
+  console.log(`Applied DOSBox override for ${gameId} from ${overridePath}: ${applied}`);
+  for (const line of launchConfig.ignored) {
+    console.warn(`Ignored DOSBox override line for ${gameId}: ${line}`);
+  }
+}
+
 /**
- * Sets up the DOSBox environment for the game
+ * Sets up the DOSBox environment for the game. gameRoot is games/<id>;
+ * gameDir is the folder mounted as C: (gameRoot or a subfolder of it).
+ * launchConfigDir receives the generated config; it defaults to gameRoot,
+ * and points elsewhere for the user's own games, whose folders are never written.
  */
-async function setupDOSBox(gameId, gameDir, gameExe) {
+async function setupDOSBox({ gameId, gameRoot, gameDir, gameExe, launchConfigDir = gameRoot }) {
   try {
     // First ensure any existing DOSBox instances are closed
     await ensureDOSBoxClosed();
@@ -304,12 +348,12 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
     console.log(`Primary screen dimensions: ${width}x${height}`);
     console.log(`Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`);
 
-    // Resolve the DOSBox executable for the current platform:
-    // bundled portable build on Windows, a PATH binary elsewhere.
-    const baseDir = portableRoot;
+    // Resolve the DOSBox executable for the current platform: the build
+    // bundled beside the portable root first, then a PATH binary.
     const resolved = resolveDosbox({
       platform: process.platform,
-      baseDir,
+      arch: process.arch,
+      baseDir: portableRoot,
       fileExists: (candidate) => fs.existsSync(candidate),
       canRunFromPath: (command) =>
         findOnPath({
@@ -322,21 +366,6 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
     if (resolved) {
       console.log(`Using DOSBox (${resolved.source}) at: ${resolved.command}`);
-
-      // Directory for DOSBox configuration
-      const dosboxDataDir = getDosboxDataDir({
-        source: resolved.source,
-        baseDir,
-        userDataDir: app.getPath("userData"),
-      });
-
-      // Ensure the Data directory exists
-      if (!fs.existsSync(dosboxDataDir)) {
-        fs.mkdirSync(dosboxDataDir, { recursive: true });
-        console.log(`Created DOSBox data directory: ${dosboxDataDir}`);
-      }
-
-      const dosboxConfigPath = path.join(dosboxDataDir, "dosbox.conf");
 
       // Determine the best 4:3 window size based on screen dimensions
       // These are common 4:3 aspect ratio resolutions
@@ -389,195 +418,28 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
       const windowSize = `${preferredResolution.width}x${preferredResolution.height}`;
       console.log(`Selected optimal window size: ${windowSize}`);
 
-      // Read the existing DOSBox configuration
-      let dosboxConfig = "";
-      try {
-        dosboxConfig = fs.readFileSync(dosboxConfigPath, "utf8");
-      } catch (error) {
-        console.error("Error reading DOSBox config:", error);
-        // Create a default configuration
-        dosboxConfig = `
-[sdl]
-fullscreen=false
-fulldouble=false
-fullresolution=original
-windowresolution=1280x960
-output=opengl
-autolock=true
-sensitivity=100
-waitonerror=true
-priority=higher,normal
-usescancodes=true
-
-[dosbox]
-language=
-machine=svga_s3
-captures=capture
-memsize=16
-
-[render]
-frameskip=0
-aspect=true
-scaler=normal3x
-
-[cpu]
-core=auto
-cputype=auto
-cycles=auto
-cycleup=500
-cycledown=20
-
-[mixer]
-nosound=false
-rate=22050
-blocksize=2048
-prebuffer=10
-
-[midi]
-mpu401=intelligent
-mididevice=default
-midiconfig=
-
-[sblaster]
-sbtype=sb16
-sbbase=220
-irq=7
-dma=1
-hdma=5
-sbmixer=true
-oplmode=auto
-oplemu=default
-oplrate=22050
-
-[gus]
-gus=false
-gusrate=22050
-gusbase=240
-gusirq=5
-gusdma=3
-ultradir=C:\\ULTRASND
-
-[speaker]
-pcspeaker=true
-pcrate=22050
-tandy=auto
-tandyrate=22050
-disney=true
-
-[joystick]
-joysticktype=auto
-timed=true
-autofire=false
-swap34=false
-buttonwrap=true
-
-[serial]
-serial1=dummy
-serial2=dummy
-serial3=disabled
-serial4=disabled
-
-[dos]
-xms=true
-ems=true
-umb=true
-keyboardlayout=auto
-
-[ipx]
-ipx=false
-`;
-
-        // Save the default config for future use
-        try {
-          fs.writeFileSync(dosboxConfigPath, dosboxConfig);
-          console.log(`Created default DOSBox configuration at: ${dosboxConfigPath}`);
-        } catch (writeError) {
-          console.error("Error writing default DOSBox config:", writeError);
-        }
-      }
-
-      // Set proper 4:3 resolution and aspect
-      // Choose appropriate scaler based on resolution
-      let scaler = "normal3x";
-      let memsize = 16;
-      let cycles = "auto";
-
-      // For higher resolutions, use better quality scalers and more memory
-      if (preferredResolution.width >= 2048) {
-        scaler = "hq3x"; // High-quality scaler for high resolutions
-        memsize = 64; // More memory for higher resolutions
-        cycles = "max"; // Maximum cycle count for better performance
-      } else if (preferredResolution.width >= 1600) {
-        scaler = "advmame3x"; // Advanced scaler for larger resolutions
-        memsize = 32; // More memory for medium-high resolutions
-        cycles = "max"; // Maximum cycle count for better performance
-      }
-
-      const resolutionPatch = `
-[sdl]
-fullscreen=false
-fulldouble=false
-fullresolution=original
-windowresolution=${windowSize}
-output=opengl
-autolock=true
-
-[dosbox]
-memsize=${memsize}
-
-[render]
-frameskip=0
-aspect=true
-scaler=${scaler}
-
-[cpu]
-cycles=${cycles}
-
-`;
-
-      // Start with our resolution settings
-      let newConfig = resolutionPatch;
-
-      // Then add the original config (excluding autoexec and overridden sections)
-      let insideAutoexec = false;
-      for (const line of dosboxConfig.split("\n")) {
-        if (line.trim().startsWith("[autoexec]")) {
-          insideAutoexec = true;
-        } else if (line.trim().startsWith("[") && insideAutoexec) {
-          insideAutoexec = false;
-        }
-
-        // Skip lines we're overriding (sdl and render sections)
-        if (
-          !insideAutoexec &&
-          !line.trim().startsWith("[sdl]") &&
-          !line.trim().startsWith("[render]") &&
-          !line.match(
-            /^(fullscreen|fulldouble|fullresolution|windowresolution|output|autolock|frameskip|aspect|scaler)=/,
-          )
-        ) {
-          newConfig += line + "\n";
-        }
-      }
-
-      // Check if we need special handling for START.EXE (common for some games)
+      // The launch config lives on the stick beside the game, never on the
+      // host. games/<id>/dosbox.conf, when present, is laid over it; the app
+      // never writes that file.
       const isStartExe = gameExe.toLowerCase() === "start.exe";
+      const generatedConfig = generateDosboxConf({
+        window: preferredResolution,
+        autoexec: buildAutoexec({ gameDir, executable: gameExe }),
+      });
+      const overridePath = path.join(gameRoot, DOSBOX_OVERRIDE_FILE);
+      const overrideConfig = readOverrideConf(overridePath);
+      const launchConfig = mergeDosboxConf(generatedConfig, overrideConfig ?? "");
+      logOverride({ gameId, overridePath, overrideConfig, launchConfig });
 
-      // Build the autoexec that mounts the game and runs it (cross-platform,
-      // uses `call` for .bat so control returns to the script).
-      const autoexecSection = `
-[autoexec]
-${buildAutoexec({ gameDir, executable: gameExe })}`;
+      fs.mkdirSync(launchConfigDir, { recursive: true });
+      const customConfigPath = path.join(launchConfigDir, DOSBOX_LAUNCH_FILE);
+      fs.writeFileSync(customConfigPath, launchConfig.text);
+      console.log(`Wrote DOSBox launch config for ${gameId}: ${customConfigPath}`);
 
-      newConfig += autoexecSection;
-
-      // Write the updated configuration to a custom file
-      const customConfigPath = path.join(dosboxDataDir, `dosbox-${gameId}.conf`);
-      fs.writeFileSync(customConfigPath, newConfig);
-      console.log(`Created custom DOSBox config at: ${customConfigPath}`);
-
-      // Launch DOSBox with the custom config
+      // Run DOSBox from games/<id>, so an override can mount the game with a
+      // relative `mount c "."` that survives the stick's path changing.
       const child = execFile(resolved.command, ["-conf", customConfigPath], {
+        cwd: gameRoot,
         windowsHide: false,
       });
       activeDosboxChild = child;
@@ -613,23 +475,9 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
           activeDosboxChild = null;
         }
 
-        // Clean up any leftover detached processes (Windows portable launcher).
-        const termination = buildTerminationCommand(process.platform);
-        if (!termination) {
-          return;
-        }
-        try {
-          const cleanup = execFile(termination.command, termination.args, {
-            windowsHide: true,
-            shell: true,
-          });
-
-          cleanup.on("close", (cleanupCode) => {
-            console.log(`DOSBox cleanup exited with code ${cleanupCode}`);
-          });
-        } catch (cleanupError) {
-          console.error("Error during DOSBox cleanup:", cleanupError);
-        }
+        // On Windows this child is the PortableApps launcher, which starts
+        // DOSBox.exe and exits at once (WaitForProgram=false): its exit is not
+        // the game's. Leftover DOSBox is closed before the next launch instead.
       });
 
       // Wait a moment to ensure the process starts
@@ -653,41 +501,31 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
   }
 }
 
-/**
- * Resolve which executable to run and the directory it lives in.
- * Looks at the game root first, then one level of subdirectories (some zips
- * extract into a folder). Returns { dir, executable } or null.
- */
-function resolveGameLaunch(gamePath, gameId, runExe) {
-  const rootFiles = fs.readdirSync(gamePath);
-  const rootExe = selectExecutable(rootFiles, { gameId, runExe });
-  if (rootExe) {
-    return { dir: gamePath, executable: rootExe };
-  }
-
-  // Search immediate subdirectories.
-  const subdirs = rootFiles.filter((entry) => {
-    try {
-      return fs.statSync(path.join(gamePath, entry)).isDirectory();
-    } catch {
-      return false;
-    }
-  });
-  for (const subdir of subdirs) {
-    const subPath = path.join(gamePath, subdir);
-    const subFiles = fs.readdirSync(subPath);
-    const subExe = selectExecutable(subFiles, { gameId, runExe });
-    if (subExe) {
-      return { dir: subPath, executable: subExe };
-    }
-  }
-
-  return null;
-}
-
 // Update the launchGame function to use our new setupDOSBox function
 ipcMain.handle("launch-game", async (event, { gamePath }) => {
   console.log(`Attempting to launch game from path: ${gamePath}`);
+
+  const customGame = customGameLaunches.get(gamePath);
+  if (customGame) {
+    console.log(
+      `Launching your game ${customGame.id}: ${customGame.executable} in ${customGame.dir}`,
+    );
+    return await setupDOSBox({
+      gameId: customGame.id,
+      gameRoot: path.resolve(customGame.root),
+      gameDir: path.resolve(customGame.dir),
+      gameExe: customGame.executable,
+      launchConfigDir: path.join(customGamesUnpackDir, "launch-configs", customGame.id),
+    });
+  }
+  const isInside = (dir) => {
+    const relative = path.relative(dir, gamePath);
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
+  };
+  if (isInside(customGamesDir) || isInside(customGamesUnpackDir)) {
+    console.error(`Not launching ${gamePath}: no playable game was detected there`);
+    return { success: false, error: "This game needs attention before it can be played." };
+  }
 
   // First ensure any existing DOSBox instances are closed
   await ensureDOSBoxClosed();
@@ -714,7 +552,12 @@ ipcMain.handle("launch-game", async (event, { gamePath }) => {
 
     if (resolved) {
       console.log(`Will execute: ${resolved.executable} in ${resolved.dir} for ${gameId}`);
-      return await setupDOSBox(gameId, path.resolve(resolved.dir), resolved.executable);
+      return await setupDOSBox({
+        gameId,
+        gameRoot: path.resolve(gamePath),
+        gameDir: path.resolve(resolved.dir),
+        gameExe: resolved.executable,
+      });
     } else {
       const gameFiles = fs.readdirSync(gamePath);
       console.error(`No suitable executable found for ${gameId}`);
@@ -737,7 +580,12 @@ pause
 `,
         );
         console.log(`Created fallback game.bat for ${gameId}`);
-        return await setupDOSBox(gameId, gamePath, "game.bat");
+        return await setupDOSBox({
+          gameId,
+          gameRoot: path.resolve(gamePath),
+          gameDir: path.resolve(gamePath),
+          gameExe: "game.bat",
+        });
       }
 
       return { success: false, error: "No suitable executable found" };
@@ -748,8 +596,28 @@ pause
   }
 });
 
-// Get available games from the games directory
-ipcMain.handle("get-games", async () => {
+/** The games the user copied into games-custom/, as My Games cards. */
+async function listCustomGames() {
+  try {
+    const scan = await scanCustomGames({
+      customDir: customGamesDir,
+      unpackDir: customGamesUnpackDir,
+      library: readLibrary(),
+      log: console,
+      extractZip: extract,
+    });
+    customGameLaunches = scan.launches;
+    return scan.games;
+  } catch (error) {
+    console.error(`Error scanning your games in ${customGamesDir}:`, error);
+    return [];
+  }
+}
+
+ipcMain.handle("get-games", async () => [...listDownloadedGames(), ...(await listCustomGames())]);
+
+/** The games downloaded into games/. */
+function listDownloadedGames() {
   try {
     // Create games directory if it doesn't exist
     if (!fs.existsSync(gamesDir)) {
@@ -789,6 +657,7 @@ ipcMain.handle("get-games", async () => {
             image: metadata.image || metadata.thumbnail || "",
           },
           metadata,
+          { source: "download" },
         );
       });
 
@@ -797,7 +666,7 @@ ipcMain.handle("get-games", async () => {
     console.error("Error getting games list:", error);
     return [];
   }
-});
+}
 
 // Save game metadata
 ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
@@ -854,15 +723,9 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
         }
         const requestedUrl = archiveZipUrl ?? gameInfo.downloadUrl;
 
-        // Check if the URL points to a game page or directly to a file
-        // (case-insensitive: catalogue URLs use .ZIP).
-        const lowerUrl = requestedUrl.toLowerCase();
-        const isDirectFileLink =
-          lowerUrl.endsWith(".zip") || lowerUrl.endsWith(".exe") || lowerUrl.includes("file=");
-
         let downloadUrl = "";
 
-        if (isDirectFileLink) {
+        if (isDirectFileLink(requestedUrl)) {
           // If it's already a direct link, use it as is
           downloadUrl = requestedUrl;
           console.log("Using direct file URL:", downloadUrl);
@@ -1149,22 +1012,7 @@ echo Running ${gameInfo.title}
 
           // Create metadata file
           const metadataPath = path.join(gameDir, "metadata.json");
-          fs.writeFileSync(
-            metadataPath,
-            JSON.stringify(
-              {
-                title: gameInfo.title,
-                description: gameInfo.description,
-                year: gameInfo.year,
-                category: gameInfo.category,
-                thumbnail: gameInfo.thumbnail || gameInfo.image,
-                downloadUrl: gameInfo.downloadUrl,
-                runExe: gameInfo.runExe,
-              },
-              null,
-              2,
-            ),
-          );
+          fs.writeFileSync(metadataPath, JSON.stringify(gameMetadata(gameInfo), null, 2));
 
           // Inform renderer that download is complete
           mainWindow.webContents.send("download-status", {

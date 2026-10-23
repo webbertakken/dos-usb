@@ -26,6 +26,7 @@ export default function Home() {
     loading,
     error,
     fetchGames,
+    refreshGames,
     launchGame,
     startingGameId,
     launchError,
@@ -43,6 +44,12 @@ export default function Home() {
   useEffect(() => {
     fetchGames();
   }, [fetchGames]);
+
+  // Games copied into games-custom/ appear when the user comes back to the app.
+  useEffect(() => {
+    window.addEventListener("focus", refreshGames);
+    return () => window.removeEventListener("focus", refreshGames);
+  }, [refreshGames]);
 
   useEffect(() => {
     setShowWelcome(!Welcome.hasBeenSeen(window.localStorage));
@@ -135,7 +142,7 @@ export default function Home() {
           <p className="text-gray-300 text-lg mb-4">
             {searchTerm
               ? `No games found matching "${searchTerm}"`
-              : "There are no games on this stick yet. You can find more in the Game Store when you are connected to the internet."}
+              : "There are no games on this stick yet. You can find more in the Game Store when you are connected to the internet, or copy games you own into the games-custom folder."}
           </p>
           {!searchTerm && (
             <Link

@@ -16,6 +16,8 @@ interface GameState {
 
   clearLaunchError: () => void;
   fetchGames: () => Promise<void>;
+  /** Re-read My Games without the loading spinner, e.g. when the window regains focus. */
+  refreshGames: () => Promise<void>;
   fetchDosgamesList: () => Promise<void>;
   launchGame: (gameId: string) => Promise<void>;
   downloadGame: (game: DosgamesListItem) => Promise<void>;
@@ -69,6 +71,15 @@ export const useGameStore = create<GameState>((set, get) => {
       } catch (error) {
         console.error("Error fetching games:", error);
         set({ error: "Failed to fetch games", loading: false });
+      }
+    },
+
+    refreshGames: async () => {
+      if (typeof window === "undefined" || !window.electron) return;
+      try {
+        set({ games: await window.electron.getGames() });
+      } catch (error) {
+        console.error("Error refreshing games:", error);
       }
     },
 

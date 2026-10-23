@@ -11,14 +11,36 @@ import path from "path";
 export const DOSBOX_PATH_CANDIDATES = ["dosbox-staging", "dosbox-x", "dosbox"];
 
 /**
- * Path to the bundled portable build, if one ships for the platform.
- * Only Windows currently bundles a portable DOSBox.
+ * Where each platform's bundled DOSBox lives, relative to the portable root.
+ * Windows runs its x86 portable build on every architecture; the Linux bundle
+ * is DOSBox Staging's x86_64 release, so other Linux architectures use PATH.
  */
-export function getBundledDosboxPath(baseDir, platform) {
-  if (platform === "win32") {
-    return path.win32.join(baseDir, "bin", "DOSBoxPortable", "DOSBoxPortable.exe");
+const BUNDLES = [
+  {
+    platform: "win32",
+    arch: null,
+    dir: ["bin", "DOSBoxPortable"],
+    executable: "DOSBoxPortable.exe",
+  },
+  { platform: "linux", arch: "x64", dir: ["bin", "dosbox-staging-linux"], executable: "dosbox" },
+];
+
+/**
+ * The bundled DOSBox for a platform beside the portable root, or null when
+ * none ships for it.
+ * @returns {{ dir: string, executable: string } | null}
+ */
+export function getBundledDosbox({ baseDir, platform, arch }) {
+  const bundle = BUNDLES.find(
+    (candidate) =>
+      candidate.platform === platform && (candidate.arch === null || candidate.arch === arch),
+  );
+  if (!bundle) {
+    return null;
   }
-  return null;
+  const join = pathFor(platform).join;
+  const dir = join(baseDir, ...bundle.dir);
+  return { dir, executable: join(dir, bundle.executable) };
 }
 
 /** Picks path semantics matching the target platform, not the host. */
@@ -56,19 +78,21 @@ export function findOnPath({ command, platform, env, fileExists }) {
 
 /**
  * Resolve which DOSBox to launch.
- * Prefers the bundled portable build, then falls back to a PATH binary.
- * @returns {{ command: string, source: "bundled" | "path" } | null}
+ * Prefers the bundled build beside the portable root (so a USB stick needs
+ * nothing installed), then falls back to a PATH binary.
+ * @returns {{ command: string, source: "bundled", bundleDir: string } | { command: string, source: "path" } | null}
  */
 export function resolveDosbox({
   platform,
+  arch,
   baseDir,
   fileExists,
   canRunFromPath,
   candidates = DOSBOX_PATH_CANDIDATES,
 }) {
-  const bundled = getBundledDosboxPath(baseDir, platform);
-  if (bundled && fileExists(bundled)) {
-    return { command: bundled, source: "bundled" };
+  const bundled = getBundledDosbox({ baseDir, platform, arch });
+  if (bundled && fileExists(bundled.executable)) {
+    return { command: bundled.executable, source: "bundled", bundleDir: bundled.dir };
   }
 
   for (const candidate of candidates) {
@@ -78,19 +102,6 @@ export function resolveDosbox({
   }
 
   return null;
-}
-
-/**
- * Directory where per-game DOSBox config files are written.
- * The portable build keeps them in its own Data folder; a PATH binary
- * has no writable home of its own, so we use the app's user-data dir.
- */
-export function getDosboxDataDir({ source, baseDir, userDataDir, platform = process.platform }) {
-  const join = pathFor(platform).join;
-  if (source === "bundled") {
-    return join(baseDir, "bin", "DOSBoxPortable", "Data");
-  }
-  return join(userDataDir, "dosbox");
 }
 
 /**
