@@ -163,10 +163,7 @@ const firstLaunchWithGift = async (userDataDir) => {
     log("Let's play hides the welcome and moves focus to My Games");
     await shot(page, "03-my-games");
 
-    await page
-      .getByRole("link", { name: /Game Store|Store|Library/ })
-      .first()
-      .click();
+    await page.getByRole("link", { name: "Library" }).first().click();
     await page
       .getByRole("heading", { level: 1, name: "Game library" })
       .waitFor({ timeout: 30_000 });

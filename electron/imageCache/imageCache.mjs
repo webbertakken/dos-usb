@@ -1,5 +1,5 @@
 /**
- * Runtime image cache: store screenshots shown in the store beside the games,
+ * Runtime image cache: store screenshots shown in the Library beside the games,
  * so a game's art keeps working offline once it has been seen.
  *
  * The renderer asks for `dosusb-image://cache/?src=<remote url>`; the handler

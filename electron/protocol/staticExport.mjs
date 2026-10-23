@@ -3,7 +3,7 @@
  * privileged custom scheme, `app://dos-usb/`.
  *
  * Under `file://` the export's absolute URLs (`/_next/...`, `/screens/...`,
- * `/store`) resolve against the filesystem root and nothing loads. A standard
+ * `/library`) resolve against the filesystem root and nothing loads. A standard
  * scheme gives the renderer a real origin instead, so absolute paths, client
  * routing, `fetch` and storage all behave as they do on the dev server,
  * wherever the app (or the USB stick it lives on) is mounted.

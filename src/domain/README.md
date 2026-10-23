@@ -5,7 +5,7 @@ This folder contains the domain-specific logic organized into bounded contexts.
 ## Bounded Contexts
 
 1. **Game Management** - Core domain for managing installed games
-2. **Game Store** - Domain for browsing and downloading games
+2. **Game Store** - Domain for browsing and downloading games (shown to users as the Library)
 3. **Game Playing** - Domain for launching and playing games
 4. **Library** - Domain for the aggregated, multi-source game library
 5. **Error Handling** - Cross-cutting concern for error management

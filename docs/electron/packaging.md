@@ -6,7 +6,7 @@ without a server, from wherever it is mounted - typically a USB stick.
 ## How the renderer loads
 
 The renderer never loads `file://`. A Next static export references everything by absolute path
-(`/_next/static/...`, `/screens/...`, `/store`), and under `file://` those resolve against the
+(`/_next/static/...`, `/screens/...`, `/library`), and under `file://` those resolve against the
 filesystem root, so nothing loads.
 
 Instead, `electron/main.mjs` registers a privileged standard scheme and loads `app://dos-usb/`:
@@ -104,7 +104,7 @@ The run first starts the executable directly with a `--require` in `NODE_OPTIONS
 that variable from what it launches) and requires it to serve `app://`. Then, launched by Playwright
 from a fresh working directory, it fails on any CSP violation, unused preload, failed or 4xx/5xx
 `app://` request, unparsed stylesheet, body font other than a loaded Geist, or broken screenshot in
-view. It navigates to the store as a user does (through the menu when the window is narrow) and
+view. It navigates to the Library as a user does (through the menu when the window is narrow) and
 requires a client-side navigation (proof of hydration), then downloads the smallest catalogue game,
 requires it beside the executable, and requires a new, live DOSBox process. Screenshots land in
 `$E2E_ARTIFACTS` (default `/tmp/dos-usb-e2e`). Without a display, wrap it in

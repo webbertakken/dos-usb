@@ -20,7 +20,7 @@ import { useOnlineStatus } from "../../presentation/hooks/useOnlineStatus";
 /** Rows of cards per category shelf when grouping across all categories. */
 const SHELF_ROWS = 2;
 
-export default function StorePage() {
+export default function LibraryPage() {
   const {
     games,
     downloadStatus,
@@ -159,7 +159,7 @@ export default function StorePage() {
   return (
     <div className="p-6 h-full">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Game library</h1>
+        <h1 className="text-3xl font-bold text-white mb-2">Library</h1>
         <p className="text-gray-300">
           {library.length > 0
             ? `${library.length.toLocaleString()} DOS games aggregated from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(" and ")}`

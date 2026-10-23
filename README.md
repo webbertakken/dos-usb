@@ -34,7 +34,7 @@ a USB stick and carry your collection between machines.
    yarn electron-dev
    ```
 
-3. Open the Game Store, download a game, and play. That's it.
+3. Open the Library, download a game, and play. That's it.
 
 ## Getting started
 
@@ -93,10 +93,10 @@ To help a game the app gets wrong, put a `game.json` in its folder:
 
 See [Your own games](./docs/library/custom-games.md) for every detail.
 
-### Game Store
+### Library
 
-The Game Store lets you browse and download from a library of **10,000+ classic DOS games**,
-aggregated and deduplicated across four archives:
+The Library lets you browse and download from a library of **10,000+ classic DOS games**, aggregated
+and deduplicated across four archives:
 
 - Sort by Most downloaded / Top rated / Year (new) / Year (old) / A-Z
 - Filter by category or source, search by title, description, or tag, and group by category
@@ -152,7 +152,7 @@ yarn test           # vitest (yarn coverage for the coverage report)
 
 ### Rebuilding the library
 
-The Game Store loads `public/library.json`, which `yarn build-library` assembles from every source:
+The Library loads `public/library.json`, which `yarn build-library` assembles from every source:
 
 ```bash
 yarn scrape                    # DOSGames.com -> public/catalogue.json + public/screens/
@@ -169,12 +169,12 @@ fetches the Internet Archive collection live; pass `--no-ia` to skip it.
 
 ### End-to-end verification
 
-With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
-downloads a game and launches it in DOSBox - a full cross-platform smoke test. It needs a display
-and a DOSBox on the machine. After `yarn electron-pack`, `yarn e2e:packaged` runs the same checks
-against the packaged app. `node scripts/e2e/custom-games.mjs dist/linux-unpacked/dos-usb` lays out
-real shareware Keen 1 and 4 plus every messy layout in `games-custom`, screenshots My Games and
-plays Keen 1.
+With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the
+Library, downloads a game and launches it in DOSBox - a full cross-platform smoke test. It needs a
+display and a DOSBox on the machine. After `yarn electron-pack`, `yarn e2e:packaged` runs the same
+checks against the packaged app. `node scripts/e2e/custom-games.mjs dist/linux-unpacked/dos-usb`
+lays out real shareware Keen 1 and 4 plus every messy layout in `games-custom`, screenshots My Games
+and plays Keen 1.
 
 ### Building for production
 

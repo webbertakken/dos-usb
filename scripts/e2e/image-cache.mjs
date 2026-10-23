@@ -37,7 +37,7 @@ async function visitStore() {
   app.process().stdout.on("data", (chunk) => output.push(String(chunk)));
   try {
     const window = await appWindow(app);
-    await window.goto("http://localhost:3000/store");
+    await window.goto("http://localhost:3000/library");
     await window.waitForSelector("h3", { timeout: 60_000 });
     await window.waitForTimeout(6000);
     const images = await window.evaluate(() =>

@@ -21,8 +21,15 @@ describe("Navigation", () => {
     expect(panel).not.toBeNull();
     expect([...(panel?.querySelectorAll("a") ?? [])].map((link) => link.textContent)).toEqual([
       "My Games",
-      "Game Store",
+      "Library",
     ]);
+  });
+
+  it("leads to My Games and the Library", () => {
+    render(<Navigation />);
+
+    expect(screen.getAllByRole("link", { name: "Library" })[0]).toHaveAttribute("href", "/library");
+    expect(screen.getAllByRole("link", { name: "My Games" })[0]).toHaveAttribute("href", "/");
   });
 
   it("closes the menu again from the same button", async () => {

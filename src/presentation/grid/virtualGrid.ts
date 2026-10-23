@@ -1,7 +1,7 @@
 /**
  * Pure helpers for a responsive virtualised grid.
  *
- * Column counts mirror the Tailwind grid breakpoints used by the store
+ * Column counts mirror the Tailwind grid breakpoints used by the Library
  * (1 / sm:2 / lg:3 / xl:4), so the virtualised layout matches the CSS one.
  */
 

@@ -1,7 +1,7 @@
 /**
  * Real end-to-end verification of the Electron app on this platform.
  *
- * Launches the actual Electron app, navigates to the store the way a user
+ * Launches the actual Electron app, navigates to the Library the way a user
  * does, checks the library and its screenshots render, downloads a real game,
  * then launches it in DOSBox. Fails loudly on any problem.
  *
@@ -360,7 +360,7 @@ async function verifyApp(app, target) {
     fail(`Body font is ${font.family}, expected a loaded Geist`);
   }
 
-  // --- Navigate to the store the way a user does ---
+  // --- Navigate to the Library the way a user does ---
   // A marker on `window` survives only a client-side navigation, which proves
   // the app hydrated and the router fetched the route's RSC payload.
   await window.evaluate(() => {
@@ -368,21 +368,21 @@ async function verifyApp(app, target) {
   });
   try {
     // Narrow windows (dev docks DevTools) collapse the sidebar into a menu.
-    const storeLink = window.getByRole("link", { name: "Game Store" }).filter({ visible: true });
+    const storeLink = window.getByRole("link", { name: "Library" }).filter({ visible: true });
     if ((await storeLink.count()) === 0) {
       log("Sidebar collapsed; opening the menu");
       await window.getByRole("button", { name: "Menu" }).click({ timeout: 15000 });
     }
     await storeLink.first().click({ timeout: 15000 });
-    await window.waitForURL(`${target.origin}/store`, { timeout: 15000 });
+    await window.waitForURL(`${target.origin}/library`, { timeout: 15000 });
   } catch (error) {
     await window.screenshot({ path: path.join(artifactsDir, "navigation-fail.png") });
-    fail(`Could not navigate to the store: ${error.message.split("\n")[0]}`);
+    fail(`Could not navigate to the Library: ${error.message.split("\n")[0]}`);
   }
   const sameDocument = await window.evaluate(() => window.__e2eSameDocument === true);
   log("Navigated to", window.url(), sameDocument ? "(client-side)" : "(full reload)");
   if (!sameDocument) {
-    fail("Navigation to /store reloaded the page: the app did not hydrate");
+    fail("Navigation to /library reloaded the page: the app did not hydrate");
   }
 
   // The grid is virtualised, so assert via the "Showing X of Y games" total

@@ -12,8 +12,8 @@ const request = (url) => new Request(url);
 const exportedSite = filesIn(
   "index.html",
   "index.txt",
-  "store.html",
-  "store.txt",
+  "library.html",
+  "library.txt",
   "404.html",
   "_next/static/chunks/main.js",
   "screens/doom.png",
@@ -43,15 +43,15 @@ describe("resolveStaticAsset", () => {
   });
 
   it("maps an extensionless route onto its exported .html page", () => {
-    expect(resolveStaticAsset({ root, pathname: "/store", isFile: exportedSite })).toEqual({
-      filePath: path.join(root, "store.html"),
+    expect(resolveStaticAsset({ root, pathname: "/library", isFile: exportedSite })).toEqual({
+      filePath: path.join(root, "library.html"),
       status: 200,
     });
   });
 
   it("maps a trailing-slash route onto its exported .html page", () => {
-    expect(resolveStaticAsset({ root, pathname: "/store/", isFile: exportedSite })).toEqual({
-      filePath: path.join(root, "store.html"),
+    expect(resolveStaticAsset({ root, pathname: "/library/", isFile: exportedSite })).toEqual({
+      filePath: path.join(root, "library.html"),
       status: 200,
     });
   });
@@ -64,8 +64,8 @@ describe("resolveStaticAsset", () => {
   });
 
   it("serves the RSC payload Next fetches during client-side navigation", () => {
-    expect(resolveStaticAsset({ root, pathname: "/store.txt", isFile: exportedSite })).toEqual({
-      filePath: path.join(root, "store.txt"),
+    expect(resolveStaticAsset({ root, pathname: "/library.txt", isFile: exportedSite })).toEqual({
+      filePath: path.join(root, "library.txt"),
       status: 200,
     });
   });
@@ -144,7 +144,7 @@ describe("createStaticExportHandler", () => {
   it("serves HTML documents with a CSP that allows exactly their inline scripts", async () => {
     const { handler } = setup();
 
-    const response = await handler(request("app://dos-usb/store"));
+    const response = await handler(request("app://dos-usb/library"));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("text/html; charset=utf-8");
@@ -165,9 +165,9 @@ describe("createStaticExportHandler", () => {
   it("ignores the query string Next appends to RSC payload requests", async () => {
     const { handler, fetchFile } = setup();
 
-    await handler(request("app://dos-usb/store.txt?_rsc=abc123"));
+    await handler(request("app://dos-usb/library.txt?_rsc=abc123"));
 
-    expect(fetchFile).toHaveBeenCalledWith(path.join(root, "store.txt"));
+    expect(fetchFile).toHaveBeenCalledWith(path.join(root, "library.txt"));
   });
 
   it("serves the exported 404 page with a 404 status and logs the miss", async () => {

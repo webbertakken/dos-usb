@@ -33,7 +33,7 @@ on `PATH` ([resolution order](../dosbox/cross-platform.md#resolution-order)).
   SHA-256). The download is cached in `~/.cache/dos-usb/make-stick/` and its checksum verified on
   every run; a mismatch removes it from the cache and stops the run.
 - **Starter games**: `scripts/data/starter-pack.json`, shaped `[{ "id": string }]` of library ids.
-  Each id gets the download source the store would pick (`buildDownloadPayload`) and the same
+  Each id gets the download source the Library would pick (`buildDownloadPayload`) and the same
   `metadata.json` (`electron/download/gameMetadata.mjs`). Only direct `.zip` links and Internet
   Archive items qualify, because assembly runs without the app's page scraping. Downloads are cached
   too, so the next stick needs no network.
