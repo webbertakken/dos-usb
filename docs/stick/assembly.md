@@ -66,6 +66,6 @@ xvfb-run -a -s "-screen 0 1600x1000x24" node scripts/e2e/stick.mjs /tmp/stick
 ```
 
 `scripts/e2e/stick.mjs` starts the stick's AppImage with a fresh `HOME` and a `PATH` without any
-DOSBox, requires the starter games on the home screen, presses **Play** on Captain Comic and
-requires the stick's own DOSBox to run it. Screenshots land in `$E2E_ARTIFACTS` (default
+DOSBox, requires the starter games on the home screen, presses **Play** on the starter pack's first
+game and requires the stick's own DOSBox to run it. Screenshots land in `$E2E_ARTIFACTS` (default
 `/tmp/dos-usb-e2e`).

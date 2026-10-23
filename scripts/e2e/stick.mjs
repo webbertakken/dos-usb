@@ -3,6 +3,9 @@
  *
  *   node scripts/e2e/stick.mjs <stickDir> [gameTitle]
  *
+ * Without a gameTitle it plays the first game of scripts/data/starter-pack.json,
+ * by the title the stick's metadata.json gives it.
+ *
  * Starts the stick's AppImage with a fresh HOME and a PATH without any DOSBox,
  * requires the starter games on the home screen, presses Play on one and
  * requires the stick's own DOSBox to run it. Screenshots land in
@@ -17,12 +20,22 @@ import os from "node:os";
 import path from "node:path";
 import { DOSBOX_PATH_CANDIDATES, findOnPath } from "../../electron/dosbox/platform.mjs";
 
-const [stickArgument, gameTitle = "Captain Comic"] = process.argv.slice(2);
+const [stickArgument, requestedTitle] = process.argv.slice(2);
 if (!stickArgument) {
   console.error("Usage: node scripts/e2e/stick.mjs <stickDir> [gameTitle]");
   process.exit(1);
 }
 const stick = path.resolve(stickArgument);
+
+/** The title of the starter pack's first game, as installed on the stick. */
+function firstStarterTitle() {
+  const starterPack = new URL("../data/starter-pack.json", import.meta.url);
+  const [first] = JSON.parse(fs.readFileSync(starterPack, "utf8"));
+  const metadataPath = path.join(stick, "games", first.id, "metadata.json");
+  return JSON.parse(fs.readFileSync(metadataPath, "utf8")).title;
+}
+
+const gameTitle = requestedTitle ?? firstStarterTitle();
 const appImage = path.join(stick, "Play DOS Games (Linux).AppImage");
 const stickDosbox = path.join(stick, "bin", "dosbox-staging-linux", "dosbox");
 const artifactsDir = process.env.E2E_ARTIFACTS ?? path.join(os.tmpdir(), "dos-usb-e2e");
@@ -107,14 +120,12 @@ async function main() {
   try {
     const window = await app.firstWindow();
     await window.setViewportSize({ width: 1280, height: 860 });
-    const card = window.locator("div.rounded-lg", {
-      has: window.getByRole("heading", { name: gameTitle, exact: true }),
-    });
-    await card.waitFor({ timeout: 30000 });
+    const play = window.getByRole("button", { name: `Play ${gameTitle}`, exact: true });
+    await play.waitFor({ timeout: 30000 });
     log(`"${gameTitle}" is on the home screen`);
     await window.screenshot({ path: path.join(artifactsDir, "stick-home.png") });
 
-    await card.getByRole("button", { name: "Play" }).click();
+    await play.click();
     const running = await waitFor(() => stickDosboxProcesses()[0], "the stick's DOSBox to start");
     log("Running:", running);
     await new Promise((resolve) => setTimeout(resolve, 6000));
