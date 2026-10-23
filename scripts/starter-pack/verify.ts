@@ -113,6 +113,14 @@ async function install(download: StarterDownload, options: Options): Promise<str
   return gameDir;
 }
 
+/** Kills a process and waits until it is gone: DOSBox ignores SIGTERM. */
+async function stop(child: ChildProcess): Promise<void> {
+  if (child.exitCode !== null || child.signalCode !== null) return;
+  const exited = new Promise((resolve) => child.once("exit", resolve));
+  child.kill("SIGKILL");
+  await exited;
+}
+
 async function startDisplay(display: number): Promise<ChildProcess> {
   const xvfb = spawn("Xvfb", [`:${display}`, "-screen", "0", "1024x768x24", "-nolisten", "tcp"], {
     stdio: "ignore",
@@ -195,8 +203,8 @@ async function launchAndCapture(
       verdict: judgeFrame({ running, standardDeviation }),
     };
   } finally {
-    dosbox?.kill();
-    xvfb.kill();
+    if (dosbox) await stop(dosbox);
+    await stop(xvfb);
     fs.closeSync(dosboxLog);
   }
 }
