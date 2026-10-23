@@ -186,6 +186,11 @@ This creates a portable build in `dist/` that runs directly from a USB drive: `D
 on Windows, `DOSGamesPortable.AppImage` on Linux. See [Packaged app](./docs/electron/packaging.md)
 for how it serves the static export.
 
+`yarn export-source <stick>/source` writes the source onto the stick as a git working copy of the
+build commit; [AGENTS-README.md](./AGENTS-README.md), copied to the stick root, tells the
+recipient's AI agent how to fix games. See [Source on the stick](./docs/electron/source-on-stick.md)
+and [per-game DOSBox overrides](./docs/dosbox/overrides.md).
+
 ### Making a gift stick
 
 ```bash

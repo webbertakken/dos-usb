@@ -26,15 +26,15 @@ failing silently (the original bug on Linux/macOS).
 - `buildAutoexec({ gameDir, executable })` mounts the game on `C:` and runs it. Batch files are
   invoked with `call` so control returns to the autoexec.
 
-`electron/main.mjs` writes a per-game DOSBox conf, then spawns the resolved binary. The spawned
-child is tracked so it can be terminated cross-platform (Windows uses `taskkill /IM DOSBox.exe`;
-elsewhere the child handle is killed).
+`electron/main.mjs` writes a per-game DOSBox conf, then spawns the resolved binary from the game's
+folder. The spawned child is tracked so it can be terminated cross-platform (Windows uses
+`taskkill /IM DOSBox.exe`; elsewhere the child handle is killed).
 
 ## Per-game config location
 
-- Bundled: the bundle's own `Data/` folder (`bin/DOSBoxPortable/Data/`,
-  `bin/dosbox-staging-linux/Data/`), so it travels with the stick.
-- PATH binary: the app's user-data directory (`userData/dosbox/`).
+On the stick, beside the game, whichever DOSBox runs: `games/<id>/dosbox.generated.conf`, built from
+constants and the optional hand-written `games/<id>/dosbox.conf`. Nothing is read from or written to
+the host machine. See [per-game overrides](./overrides.md).
 
 ## Notes
 

@@ -43,6 +43,12 @@ describe("fuseConfigFor", () => {
     expect(fuseConfigFor("linux")[FuseV1Options.EnableNodeOptionsEnvironmentVariable]).toBe(false);
   });
 
+  it("keeps RunAsNode, which the stick's AGENTS-README relies on to run scripts", () => {
+    expect(fuseConfigFor("linux")[FuseV1Options.RunAsNode]).toBe(true);
+    expect(fuseConfigFor("win32")[FuseV1Options.RunAsNode]).toBe(true);
+    expect(fuseConfigFor("darwin")[FuseV1Options.RunAsNode]).toBe(true);
+  });
+
   it("re-signs ad hoc on macOS, where flipping fuses breaks the signature", () => {
     expect(fuseConfigFor("darwin").resetAdHocDarwinSignature).toBe(true);
     expect(fuseConfigFor("linux").resetAdHocDarwinSignature).toBe(false);
@@ -50,10 +56,13 @@ describe("fuseConfigFor", () => {
 });
 
 describe("createAfterPack", () => {
-  const wireWith = (state) => ({ [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: state });
-  const setup = (wireState) => {
+  const wireWith = (nodeOptions, runAsNode) => ({
+    [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: nodeOptions,
+    [FuseV1Options.RunAsNode]: runAsNode,
+  });
+  const setup = (nodeOptions, runAsNode = FuseState.ENABLE) => {
     const flipFuses = vi.fn(async () => 1);
-    const getCurrentFuseWire = vi.fn(async () => wireWith(wireState));
+    const getCurrentFuseWire = vi.fn(async () => wireWith(nodeOptions, runAsNode));
     const log = vi.fn();
     const afterPack = createAfterPack({ flipFuses, getCurrentFuseWire, log });
     return { afterPack, flipFuses, getCurrentFuseWire, log };
@@ -67,6 +76,7 @@ describe("createAfterPack", () => {
     expect(flipFuses).toHaveBeenCalledWith("/dist/linux-unpacked/dos-usb", fuseConfigFor("linux"));
     expect(getCurrentFuseWire).toHaveBeenCalledWith("/dist/linux-unpacked/dos-usb");
     expect(log).toHaveBeenCalledWith(expect.stringContaining("NODE_OPTIONS ignored"));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("ELECTRON_RUN_AS_NODE honoured"));
   });
 
   it("fails the build when the fuse did not take", async () => {
@@ -74,6 +84,14 @@ describe("createAfterPack", () => {
 
     await expect(afterPack(contextFor("linux", "/dist/linux-unpacked"))).rejects.toThrow(
       /EnableNodeOptionsEnvironmentVariable/,
+    );
+  });
+
+  it("fails the build when RunAsNode was switched off", async () => {
+    const { afterPack } = setup(FuseState.DISABLE, FuseState.DISABLE);
+
+    await expect(afterPack(contextFor("linux", "/dist/linux-unpacked"))).rejects.toThrow(
+      /RunAsNode/,
     );
   });
 });

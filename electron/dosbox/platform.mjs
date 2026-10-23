@@ -105,19 +105,6 @@ export function resolveDosbox({
 }
 
 /**
- * Directory where per-game DOSBox config files are written.
- * A bundled build keeps them in its own Data folder; a PATH binary has no
- * writable home of its own, so we use the app's user-data dir.
- */
-export function getDosboxDataDir({ resolved, userDataDir, platform = process.platform }) {
-  const join = pathFor(platform).join;
-  if (resolved.source === "bundled") {
-    return join(resolved.bundleDir, "Data");
-  }
-  return join(userDataDir, "dosbox");
-}
-
-/**
  * Command used to forcibly clean up stray DOSBox processes.
  * Windows needs `taskkill` because the portable launcher spawns a
  * detached `DOSBox.exe`; on other platforms DOSBox is the direct child,
