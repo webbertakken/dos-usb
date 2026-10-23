@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session } from "electron";
+import { app, BrowserWindow, ipcMain, net, protocol, session } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import isDev from "electron-is-dev";
@@ -17,6 +17,12 @@ import {
   buildTerminationCommand,
 } from "./dosbox/platform.mjs";
 import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
+
+// Must be registered before the app is ready.
+protocol.registerSchemesAsPrivileged([
+  { scheme: IMAGE_CACHE_SCHEME, privileges: { standard: true, secure: true } },
+]);
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -34,8 +40,8 @@ function createWindow() {
         ...details.responseHeaders,
         "Content-Security-Policy": [
           isDev
-            ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; connect-src 'self' ws: wss: http: https:;"
-            : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; connect-src 'self' https://*;",
+            ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://* dosusb-image:; connect-src 'self' ws: wss: http: https:;"
+            : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://* dosusb-image:; connect-src 'self' https://*;",
         ],
       },
     });
@@ -156,7 +162,18 @@ ipcMain.handle("get-library", async () => {
   }
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // Store-seen screenshots live beside the games, so they travel on the stick.
+  protocol.handle(
+    IMAGE_CACHE_SCHEME,
+    createImageCacheHandler({
+      cacheDir: path.join(process.cwd(), "image-cache"),
+      fetchImage: (url) => net.fetch(url),
+      log: console,
+    }),
+  );
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
