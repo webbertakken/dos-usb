@@ -1,3 +1,4 @@
+import { CUSTOM_GAMES_DIR } from "./customGames";
 import { STICK_NAMES } from "./plan";
 
 const escapeHtml = (text: string) =>
@@ -61,6 +62,8 @@ ${gameList}
       <h2>Playing</h2>
       <p>Pick a game and press <strong>Play</strong>. Each game opens in its own window; close that window to come back.</p>
       <p>When the computer is online, the <strong>Store</strong> has thousands more games to add to the stick.</p>
+      <h2>Adding games you own</h2>
+      <p>Copy them into the <span class="file">${CUSTOM_GAMES_DIR}</span> folder on this stick, each game in a folder of its own. They appear in the app next time you open it.</p>
       <p>Keep the stick plugged in while you play: the games and your progress live on it.</p>
     </main>
   </body>

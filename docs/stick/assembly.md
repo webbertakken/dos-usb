@@ -14,6 +14,7 @@ AGENTS-README.md                  a guide for coding agents, when the repo has o
 bin/DOSBoxPortable/               DOSBox for Windows (from this repo)
 bin/dosbox-staging-linux/         DOSBox Staging for Linux x86_64 (pinned download)
 games/<id>/                       the starter games, installed as the app installs them
+games-custom/                     for games the recipient owns, with PUT YOUR OWN GAMES HERE.txt
 source/                           the source, via `yarn export-source`, when the repo has it
 ```
 
@@ -41,6 +42,8 @@ on `PATH` ([resolution order](../dosbox/cross-platform.md#resolution-order)).
 - **Re-runs** are incremental: apps and DOSBoxes are refreshed, an installed game (one with a
   `metadata.json`) is left as it is, and a game's own `dosbox.conf` is never replaced, because it is
   a user override.
+- **`games-custom/`** belongs to the recipient: it is created with its note on a new stick, and a
+  refresh never deletes or replaces anything in it (the note is only written when absent).
 
 ## FAT32 and exFAT
 

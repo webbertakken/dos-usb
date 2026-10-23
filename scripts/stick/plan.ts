@@ -1,6 +1,7 @@
 import path from "node:path";
 import { getBundledDosbox } from "../../electron/dosbox/platform.mjs";
 import type { DownloadPayload } from "../../src/domain/library/select";
+import { CUSTOM_GAMES_DIR, CUSTOM_GAMES_NOTE } from "./customGames";
 import { type DosboxRelease, LINUX_DOSBOX_RELEASE } from "./dosboxRelease";
 
 /** The names a recipient sees at the root of the stick. */
@@ -30,6 +31,7 @@ export type StickStep =
   | { kind: "copyTree"; label: string; from: string; to: string }
   | { kind: "installDosbox"; label: string; release: DosboxRelease; to: string }
   | { kind: "installGame"; label: string; game: DownloadPayload; to: string }
+  | { kind: "prepareCustomGames"; label: string; dir: string; note: string }
   | { kind: "exportSource"; label: string; to: string }
   | { kind: "writeStartHere"; label: string; games: readonly DownloadPayload[]; to: string }
   | { kind: "skip"; label: string; reason: string };
@@ -86,6 +88,12 @@ export function planStick(input: StickInput): StickPlan {
           to: target("games", game.id),
         }),
       ),
+      {
+        kind: "prepareCustomGames",
+        label: "Folder for the recipient's own games",
+        dir: target(CUSTOM_GAMES_DIR),
+        note: target(CUSTOM_GAMES_DIR, CUSTOM_GAMES_NOTE.name),
+      },
       input.exportSourceAvailable
         ? { kind: "exportSource", label: "Source code", to: target("source") }
         : {

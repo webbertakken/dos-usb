@@ -25,6 +25,10 @@ describe("renderStartHere", () => {
     expect(html).toMatch(/no internet/i);
   });
 
+  it("tells the recipient where their own games go", () => {
+    expect(html).toContain("games-custom");
+  });
+
   it("leaves out the game list when the stick has none", () => {
     expect(renderStartHere([])).not.toContain("<ul");
   });

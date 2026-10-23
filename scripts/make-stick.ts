@@ -17,6 +17,7 @@ import { resolveArchiveDownload } from "../electron/download/archiveOrg.mjs";
 import { gameMetadata } from "../electron/download/gameMetadata.mjs";
 import type { DownloadPayload } from "../src/domain/library/select";
 import type { CanonicalGame } from "../src/domain/library/types";
+import { CUSTOM_GAMES_NOTE } from "./stick/customGames";
 import { checksumProblem, type DosboxRelease } from "./stick/dosboxRelease";
 import {
   FAT32_MAX_FILE_BYTES,
@@ -222,6 +223,20 @@ async function installGame(game: DownloadPayload, to: string) {
   fs.writeFileSync(path.join(to, "metadata.json"), JSON.stringify(gameMetadata(game), null, 2));
 }
 
+/** Creates the recipient's folder and its note, never touching what is already there. */
+function prepareCustomGames(dir: string, note: string) {
+  fs.mkdirSync(dir, { recursive: true });
+  try {
+    fs.writeFileSync(note, CUSTOM_GAMES_NOTE.text, { flag: "wx" });
+    console.log(`  created ${note}`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") {
+      throw error;
+    }
+    console.log(`  kept ${dir} as it is (${fs.readdirSync(dir).length} entries)`);
+  }
+}
+
 function exportSource(to: string) {
   const result = spawnSync("yarn", ["export-source", to], { cwd: repoDir, stdio: "inherit" });
   if (result.status !== 0) {
@@ -246,6 +261,9 @@ async function run(step: StickStep) {
       return installDosbox(step.release, step.to);
     case "installGame":
       return installGame(step.game, step.to);
+    case "prepareCustomGames":
+      prepareCustomGames(step.dir, step.note);
+      return;
     case "exportSource":
       return exportSource(step.to);
     case "writeStartHere":

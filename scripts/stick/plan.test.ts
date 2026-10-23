@@ -2,6 +2,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { DownloadPayload } from "../../src/domain/library/select";
 import { LINUX_DOSBOX_RELEASE } from "./dosboxRelease";
+import { CUSTOM_GAMES_NOTE } from "./customGames";
 import { STICK_NAMES, isPortableDosboxScratch, keepsExistingFile, planStick } from "./plan";
 
 const keen: DownloadPayload = {
@@ -61,6 +62,12 @@ describe("planStick", () => {
         label: "Commander Keen",
         game: keen,
         to: path.join("/stick", "games", "keen"),
+      },
+      {
+        kind: "prepareCustomGames",
+        label: "Folder for the recipient's own games",
+        dir: path.join("/stick", "games-custom"),
+        note: path.join("/stick", "games-custom", CUSTOM_GAMES_NOTE.name),
       },
       { kind: "exportSource", label: "Source code", to: path.join("/stick", "source") },
       {
