@@ -14,6 +14,7 @@ export default function Home() {
     loading,
     error,
     fetchGames,
+    refreshGames,
     launchGame,
     selectedGame,
     setSelectedGame,
@@ -26,6 +27,12 @@ export default function Home() {
   useEffect(() => {
     fetchGames();
   }, [fetchGames]);
+
+  // Games copied into games-custom/ appear when the user comes back to the app.
+  useEffect(() => {
+    window.addEventListener("focus", refreshGames);
+    return () => window.removeEventListener("focus", refreshGames);
+  }, [refreshGames]);
 
   useEffect(() => {
     if (games) {
@@ -92,7 +99,7 @@ export default function Home() {
           <p className="text-gray-400 mb-4">
             {searchTerm
               ? `No games found matching "${searchTerm}"`
-              : "No games installed yet. Visit the Game Store to download games."}
+              : "No games installed yet. Visit the Game Store to download games, or copy games you own into the games-custom folder."}
           </p>
           {!searchTerm && (
             <Link
