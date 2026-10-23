@@ -1,0 +1,85 @@
+{
+  "results": {
+    "bindings": [
+      {
+        "game": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q74061"
+        },
+        "gameLabel": {
+          "xml:lang": "en",
+          "type": "literal",
+          "value": "Star Wars: Rebel Assault II: The Hidden Empire"
+        },
+        "y": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1995"
+        },
+        "genres": {
+          "type": "literal",
+          "value": "shoot 'em up"
+        },
+        "mobyId": {
+          "type": "literal",
+          "value": "star-wars-rebel-assault-ii-the-hidden-empire"
+        },
+        "igdbId": {
+          "type": "literal",
+          "value": "star-wars-rebel-assault-ii-the-hidden-empire"
+        }
+      },
+      {
+        "game": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q7537719"
+        },
+        "gameLabel": {
+          "xml:lang": "en",
+          "type": "literal",
+          "value": "Skyfox II: The Cygnus Conflict"
+        },
+        "y": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1987"
+        },
+        "genres": {
+          "type": "literal",
+          "value": ""
+        },
+        "mobyId": {
+          "type": "literal",
+          "value": "skyfox-ii-the-cygnus-conflict"
+        },
+        "igdbId": {
+          "type": "literal",
+          "value": "skyfox-ii-the-cygnus-conflict"
+        }
+      },
+      {
+        "game": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q88855"
+        },
+        "y": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "1987"
+        },
+        "genres": {
+          "type": "literal",
+          "value": "sports video game"
+        },
+        "mobyId": {
+          "type": "literal",
+          "value": "california-games"
+        },
+        "igdbId": {
+          "type": "literal",
+          "value": "california-games"
+        }
+      }
+    ]
+  }
+}

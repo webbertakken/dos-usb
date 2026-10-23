@@ -172,6 +172,39 @@ describe("mergeListings", () => {
     expect(games[0].description).toBe("From IA.");
   });
 
+  it("never shows an image from a source that forbids hotlinking", () => {
+    const games = mergeListings([
+      listing({
+        site: "abandonwaredos",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        image: "https://www.abandonwaredos.com/x.jpg",
+      }),
+      listing({
+        site: "archive.org",
+        url: "b",
+        title: "Doom",
+        year: "1993",
+        image: "https://archive.org/services/img/doom",
+      }),
+    ]);
+    expect(games[0].image).toBe("https://archive.org/services/img/doom");
+  });
+
+  it("shows no image when only a hotlink-blocking source has one", () => {
+    const games = mergeListings([
+      listing({
+        site: "abandonwaredos",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        image: "https://www.abandonwaredos.com/x.jpg",
+      }),
+    ]);
+    expect(games[0].image).toBeUndefined();
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({

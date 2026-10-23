@@ -101,6 +101,10 @@ function clusterByYear(listings: SourceListing[]): SourceListing[][] {
   return clusters;
 }
 
+// Sites that refuse image requests from other origins (hotlink protection).
+// Their images are never shown, out of respect for that choice.
+const HOTLINK_BLOCKED_SITES: ReadonlySet<SiteId> = new Set(["abandonwaredos"]);
+
 // The Internet Archive's descriptions are uploader text (often pasted manuals
 // or catalogue boilerplate), so curated sources' descriptions win over them.
 const isBulkArchive = (listing: SourceListing) => listing.site === "archive.org";
@@ -116,9 +120,10 @@ function mergeCluster(listings: SourceListing[]): CanonicalGame {
   const description =
     longestDescription(listings.filter((l) => !isBulkArchive(l))) ||
     longestDescription(listings.filter(isBulkArchive));
+  const displayable = listings.filter((l) => !HOTLINK_BLOCKED_SITES.has(l.site));
   const image =
-    listings.find((l) => l.image && l.image.startsWith("/"))?.image ??
-    pick(listings, (l) => l.image);
+    displayable.find((l) => l.image && l.image.startsWith("/"))?.image ??
+    pick(displayable, (l) => l.image);
   const tags = [...new Set(listings.flatMap((l) => l.tags ?? []))];
   const ratings = listings
     .map((l) => l.metrics.rating)

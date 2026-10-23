@@ -59,6 +59,24 @@ export interface SourceListing {
   normalisedPopularity?: number;
 }
 
+/** Identifiers of a game in reference catalogues. */
+export interface ExternalIds {
+  wikidata?: string;
+  mobygames?: string;
+  igdb?: string;
+}
+
+/**
+ * A game as described by a reference catalogue (e.g. Wikidata): not a place to
+ * get the game, but facts used to enrich canonical games.
+ */
+export interface GameReference {
+  title: string;
+  year: string;
+  genres: string[];
+  ids: ExternalIds;
+}
+
 export interface CanonicalGame {
   /** Stable slug derived from normalised title + year. */
   id: string;
@@ -79,6 +97,8 @@ export interface CanonicalGame {
   links?: ExternalLink[];
   resolution?: string;
   multiplayer?: string;
+  /** Identifiers in reference catalogues, when a reference matched. */
+  externalIds?: ExternalIds;
   sources: SourceListing[];
 }
 

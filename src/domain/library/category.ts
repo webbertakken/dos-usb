@@ -51,7 +51,7 @@ const KEYWORDS: [RegExp, UnifiedCategory][] = [
     /\b(educat\w*|edutainment|kids|learning|reader rabbit|super solvers|living books)\b/,
     "Educational",
   ],
-  [/\b(sim|simulation)\b/, "Simulation"],
+  [/\b(sim|simulat\w*)\b/, "Simulation"],
   [/\b(action)\b/, "Action"],
 ];
 

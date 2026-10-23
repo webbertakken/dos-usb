@@ -16,6 +16,7 @@ describe("unifyCategory", () => {
   it("maps categories whose word extends a keyword", () => {
     expect(unifyCategory("Educational")).toBe("Educational");
     expect(unifyCategory("Space Shooting")).toBe("Shooter");
+    expect(unifyCategory("flight simulator")).toBe("Simulation");
   });
 
   it("maps DOS Games Archive's traditional games to board and card", () => {
