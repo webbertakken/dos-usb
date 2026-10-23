@@ -134,10 +134,7 @@ const run = async () => {
     log("Saved", shot);
 
     const dosboxBefore = new Set(dosboxPids());
-    const keen1 = window.locator("div.rounded-lg", {
-      has: window.getByRole("heading", { name: EXPECTED_READY[0], exact: true }),
-    });
-    await keen1.getByRole("button", { name: "Play" }).click();
+    await window.getByRole("button", { name: `Play ${EXPECTED_READY[0]}`, exact: true }).click();
     await window.waitForTimeout(6000);
     const ours = dosboxPids().filter((pid) => !dosboxBefore.has(pid));
     if (ours.length === 0) fail("DOSBox did not start for Keen 1");

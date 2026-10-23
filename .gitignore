@@ -33,6 +33,9 @@
 
 # The games that are downloaded
 /games
+# Games the user copies in themselves, and what the app unpacks from them
+/games-custom
+/games-custom-unpacked
 # Screenshots the store has shown, cached for offline use
 /image-cache
 
