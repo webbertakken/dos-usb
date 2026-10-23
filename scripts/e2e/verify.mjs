@@ -11,11 +11,15 @@
  *   node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb
  *     a packaged executable, serving the static export on app://dos-usb/,
  *     started from a fresh working directory; games land beside the executable
+ *   node scripts/e2e/verify.mjs --portable-exe <stick>/DOSGamesPortable.exe
+ *     the Windows portable exe, which unpacks itself to a temp folder and runs
+ *     from there; driven over the DevTools protocol, it must still put games
+ *     beside the exe and launch the DOSBox bundle in <stick>/bin
  *
  * Screenshots land in $E2E_ARTIFACTS (default /tmp/dos-usb-e2e).
  */
 
-import { _electron as electron } from "playwright";
+import { _electron as electron, chromium } from "playwright";
 import path from "path";
 import os from "os";
 import { fileURLToPath } from "url";
@@ -30,6 +34,21 @@ const log = (...args) => console.log("[e2e]", ...args);
 
 /** Where and how to launch the app under test, from the command line. */
 const resolveTarget = (argv) => {
+  const portableFlag = argv.indexOf("--portable-exe");
+  if (portableFlag !== -1) {
+    const executable = argv[portableFlag + 1];
+    if (!executable) throw new Error("--portable-exe needs the path to DOSGamesPortable.exe");
+    const executablePath = path.resolve(executable);
+    return {
+      name: "portable",
+      origin: "app://dos-usb",
+      launch: {
+        executablePath,
+        cwd: fs.mkdtempSync(path.join(os.tmpdir(), "dos-usb-portable-")),
+      },
+      gamesRoot: path.dirname(executablePath),
+    };
+  }
   const flag = argv.indexOf("--packaged");
   if (flag === -1) {
     return {
@@ -75,6 +94,7 @@ const fail = (message) => {
  * wrapper would match its own command line and fake a running DOSBox.
  */
 const dosboxPids = () => {
+  if (process.platform === "win32") return windowsDosboxPids();
   try {
     return execFileSync("pgrep", ["-f", "dosbox"], { encoding: "utf8" })
       .split("\n")
@@ -84,8 +104,32 @@ const dosboxPids = () => {
   }
 };
 
+/** PIDs of running DOSBox processes on Windows: DOSBoxPortable.exe starts DOSBox.exe. */
+const windowsDosboxPids = () =>
+  execFileSync("tasklist", ["/FO", "CSV", "/NH"], { encoding: "utf8" })
+    .split(/\r?\n/)
+    .map((line) => line.split('","').map((cell) => cell.replace(/"/g, "")))
+    .filter(([image]) => /dosbox/i.test(image ?? ""))
+    .map(([, pid]) => pid);
+
+const captureWindowsScreen = (file) => {
+  const script = [
+    "Add-Type -AssemblyName System.Windows.Forms, System.Drawing",
+    "$b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds",
+    "$i = New-Object System.Drawing.Bitmap $b.Width, $b.Height",
+    "[System.Drawing.Graphics]::FromImage($i).CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)",
+    `$i.Save('${file}')`,
+  ].join("; ");
+  execFileSync("powershell", ["-NoProfile", "-Command", script]);
+};
+
 const captureScreen = (file) => {
   try {
+    if (process.platform === "win32") {
+      captureWindowsScreen(file);
+      log("Saved screen capture to", file);
+      return;
+    }
     execSync(`import -window root ${file}`, { env: { ...process.env, DISPLAY: display } });
     log("Saved screen capture to", file);
   } catch (error) {
@@ -137,9 +181,58 @@ const verifyStartsDespiteNodeOptions = ({ executablePath, cwd }) =>
     });
   });
 
+const DEBUGGING_PORT = 9333;
+
+/** Waits for the DevTools endpoint of an app started with --remote-debugging-port. */
+const connectOverDevTools = async (child) => {
+  let lastError;
+  for (let attempt = 0; attempt < 120; attempt++) {
+    if (child.exitCode !== null)
+      throw new Error(`Exited (${child.exitCode}) before serving DevTools`);
+    try {
+      return await chromium.connectOverCDP(`http://127.0.0.1:${DEBUGGING_PORT}`);
+    } catch (error) {
+      lastError = error;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+  }
+  throw new Error(`No DevTools endpoint within 60s: ${lastError?.message}`);
+};
+
+/** Kills the portable exe and the app it unpacked and started. */
+const killTree = (pid) => {
+  try {
+    if (process.platform === "win32") execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"]);
+    else process.kill(pid, "SIGTERM");
+  } catch {
+    /* already gone */
+  }
+};
+
+/**
+ * The portable exe is a self-extracting wrapper that starts the real app as a
+ * child, so Playwright cannot launch it; start it and attach over DevTools.
+ */
+async function verifyPortableExe(target) {
+  log(`Starting ${target.launch.executablePath} from ${target.launch.cwd}...`);
+  const child = spawn(target.launch.executablePath, [`--remote-debugging-port=${DEBUGGING_PORT}`], {
+    cwd: target.launch.cwd,
+    stdio: "ignore",
+  });
+  try {
+    const browser = await connectOverDevTools(child);
+    const app = { windows: () => browser.contexts().flatMap((context) => context.pages()) };
+    await verifyApp(app, target);
+  } finally {
+    killTree(child.pid);
+  }
+  log("PASS: portable exe store + download + launch all verified.");
+}
+
 async function main() {
   const target = resolveTarget(process.argv.slice(2));
   fs.mkdirSync(artifactsDir, { recursive: true });
+  if (target.name === "portable") return verifyPortableExe(target);
   if (target.name === "packaged") {
     log("Starting directly with a --require in NODE_OPTIONS...");
     await verifyStartsDespiteNodeOptions(target.launch).catch((error) => fail(error.message));
@@ -392,13 +485,7 @@ async function verifyApp(app, target) {
   captureScreen(path.join(artifactsDir, `${target.name}-dosbox.png`));
 
   // Clean up only the DOSBox we started, then the app.
-  for (const pid of ours) {
-    try {
-      process.kill(Number(pid), "SIGTERM");
-    } catch {
-      /* already gone */
-    }
-  }
+  for (const pid of ours) killTree(Number(pid));
 }
 
 main().catch((error) => {
