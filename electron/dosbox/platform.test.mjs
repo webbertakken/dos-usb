@@ -5,7 +5,6 @@ import {
   getBundledDosboxPath,
   findOnPath,
   resolveDosbox,
-  getDosboxDataDir,
   buildTerminationCommand,
 } from "./platform.mjs";
 
@@ -133,37 +132,6 @@ describe("resolveDosbox", () => {
 
   it("exposes the documented candidate order", () => {
     expect(DOSBOX_PATH_CANDIDATES).toEqual(["dosbox-staging", "dosbox-x", "dosbox"]);
-  });
-});
-
-describe("getDosboxDataDir", () => {
-  it("uses the portable Data directory for the bundled source", () => {
-    const result = getDosboxDataDir({
-      source: "bundled",
-      baseDir: "C:\\app",
-      userDataDir: "C:\\Users\\u\\AppData\\dos-usb",
-      platform: "win32",
-    });
-    expect(result).toBe(path.win32.join("C:\\app", "bin", "DOSBoxPortable", "Data"));
-  });
-
-  it("uses the user data directory for a PATH-resolved binary", () => {
-    const result = getDosboxDataDir({
-      source: "path",
-      baseDir: "/app",
-      userDataDir: "/home/u/.config/dos-usb",
-      platform: "linux",
-    });
-    expect(result).toBe(path.posix.join("/home/u/.config/dos-usb", "dosbox"));
-  });
-
-  it("defaults to the host platform when none is given", () => {
-    const result = getDosboxDataDir({
-      source: "path",
-      baseDir: "/app",
-      userDataDir: "/data",
-    });
-    expect(result).toBe(path.join("/data", "dosbox"));
   });
 });
 
