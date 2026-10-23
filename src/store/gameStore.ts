@@ -9,7 +9,12 @@ interface GameState {
   error: string | null;
   selectedGame: Game | null;
   downloadStatus: Record<string, DownloadStatus>;
+  /** The game whose window is opening, so its Play button can say so. */
+  startingGameId: string | null;
+  /** Why the last game failed to start; the games list stays usable. */
+  launchError: string | null;
 
+  clearLaunchError: () => void;
   fetchGames: () => Promise<void>;
   /** Re-read My Games without the loading spinner, e.g. when the window regains focus. */
   refreshGames: () => Promise<void>;
@@ -40,6 +45,10 @@ export const useGameStore = create<GameState>((set, get) => {
     error: null,
     selectedGame: null,
     downloadStatus: {},
+    startingGameId: null,
+    launchError: null,
+
+    clearLaunchError: () => set({ launchError: null }),
 
     fetchGames: async () => {
       try {
@@ -100,7 +109,7 @@ export const useGameStore = create<GameState>((set, get) => {
           throw new Error("Game not found");
         }
 
-        set({ loading: true, error: null });
+        set({ startingGameId: gameId, launchError: null });
 
         if (typeof window !== "undefined" && window.electron) {
           const result = await window.electron.launchGame(game.path);
@@ -113,12 +122,13 @@ export const useGameStore = create<GameState>((set, get) => {
           throw new Error("Game launching requires Electron");
         }
 
-        set({ loading: false });
+        console.log(`Launched game ${gameId}`);
+        set({ startingGameId: null });
       } catch (error) {
         console.error("Error launching game:", error);
         set({
-          error: error instanceof Error ? error.message : "Failed to launch game",
-          loading: false,
+          launchError: error instanceof Error ? error.message : "Failed to launch game",
+          startingGameId: null,
         });
       }
     },

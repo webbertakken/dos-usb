@@ -3,6 +3,7 @@ import Image from "next/image";
 import { displayImageUrl } from "../presentation/images/displayImageUrl";
 import {
   FaDownload,
+  FaWifi,
   FaSpinner,
   FaCheck,
   FaExclamationTriangle,
@@ -12,12 +13,15 @@ import {
 import { CanonicalGame } from "../domain/library/types";
 import { DownloadStatus } from "../types";
 import { chooseDownloadSource } from "../domain/library/select";
+import { friendlyError } from "../domain/firstRun/friendlyError";
 
 interface LibraryCardProps {
   game: CanonicalGame;
   installed?: boolean;
   downloadStatus?: DownloadStatus;
   onDownload: (game: CanonicalGame) => void;
+  /** Downloads need the internet; offline they say so instead of failing. */
+  online?: boolean;
   onPlay: (gameId: string) => void;
   onOpen: (game: CanonicalGame) => void;
 }
@@ -36,6 +40,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
   onDownload,
   onPlay,
   onOpen,
+  online = true,
 }) => {
   const isDownloading = downloadStatus?.status === "downloading";
   const isExtracting = downloadStatus?.status === "extracting";
@@ -43,6 +48,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
   const isProcessing = isDownloading || isExtracting;
   const isInstalled = installed || downloadStatus?.status === "completed";
   const downloadable = chooseDownloadSource(game) !== null;
+  const needsInternet = downloadable && !online && !isProcessing;
 
   const maxDownloads = game.sources.reduce((max, s) => Math.max(max, s.metrics.downloads ?? 0), 0);
   const siteCount = new Set(game.sources.map((s) => s.site)).size;
@@ -50,6 +56,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
   const actionLabel = () => {
     if (isDownloading) return `Downloading ${downloadStatus?.progress ?? 0}%`;
     if (isExtracting) return "Extracting...";
+    if (needsInternet) return "Needs internet";
     if (hasError) return "Retry";
     return "Download";
   };
@@ -59,7 +66,6 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
       <button
         type="button"
         onClick={() => onOpen(game)}
-        aria-label={`View details for ${game.title}`}
         className="text-left focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
       >
         <div className="relative h-40 w-full bg-gray-900">
@@ -73,7 +79,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
               unoptimized
             />
           ) : (
-            <div className="flex items-center justify-center w-full h-full text-gray-500">
+            <div className="flex items-center justify-center w-full h-full text-gray-400">
               No image
             </div>
           )}
@@ -129,26 +135,31 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           {isInstalled ? (
             <button
               onClick={() => onPlay(game.id)}
-              className="flex-1 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+              aria-label={`Play ${game.title}`}
+              className="flex-1 flex items-center justify-center bg-green-700 hover:bg-green-800 text-white px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
             >
               <FaPlay className="mr-2" aria-hidden="true" /> Play
             </button>
           ) : (
             <button
-              onClick={() => !isProcessing && downloadable && onDownload(game)}
-              disabled={isProcessing || !downloadable}
+              onClick={() => !isProcessing && downloadable && online && onDownload(game)}
+              disabled={isProcessing || !downloadable || needsInternet}
               className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                hasError
-                  ? "bg-red-600 hover:bg-red-700"
-                  : !downloadable
-                    ? "bg-gray-700 cursor-not-allowed"
-                    : isProcessing
-                      ? "bg-gray-600 cursor-wait"
-                      : "bg-blue-600 hover:bg-blue-700"
+                needsInternet
+                  ? "bg-gray-700 text-gray-200 cursor-not-allowed"
+                  : hasError
+                    ? "bg-red-700 hover:bg-red-800"
+                    : !downloadable
+                      ? "bg-gray-700 cursor-not-allowed"
+                      : isProcessing
+                        ? "bg-gray-600 cursor-wait"
+                        : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
               {isProcessing ? (
                 <FaSpinner className="mr-2 animate-spin" aria-hidden="true" />
+              ) : needsInternet ? (
+                <FaWifi className="mr-2" aria-hidden="true" />
               ) : hasError ? (
                 <FaExclamationTriangle className="mr-2" aria-hidden="true" />
               ) : (
@@ -157,10 +168,13 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
               {downloadable ? actionLabel() : "Play online"}
             </button>
           )}
-          <span className="text-gray-500 text-xs whitespace-nowrap" title="Number of sources">
+          <span className="text-gray-400 text-xs whitespace-nowrap" title="Number of sources">
             {siteCount} {siteCount === 1 ? "source" : "sources"}
           </span>
         </div>
+        {hasError && downloadStatus?.error && (
+          <p className="text-red-300 text-sm mt-2">{friendlyError(downloadStatus.error).message}</p>
+        )}
       </div>
     </div>
   );
