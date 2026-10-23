@@ -17,6 +17,7 @@ import {
   buildTerminationCommand,
 } from "./dosbox/platform.mjs";
 import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { resolveArchiveDownload } from "./download/archiveOrg.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
   APP_ORIGIN,
@@ -804,6 +805,7 @@ ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
 
 // Handle game download and extraction
 ipcMain.handle("download-game", async (event, gameInfo) => {
+  let gameDir;
   try {
     if (!gameInfo || !gameInfo.id || !gameInfo.downloadUrl) {
       throw new Error("Invalid game information");
@@ -819,14 +821,10 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
     await mkdir(gamesDir, { recursive: true });
 
     // Create directory for this specific game
-    const gameDir = path.join(gamesDir, gameInfo.id);
+    gameDir = path.join(gamesDir, gameInfo.id);
     await mkdir(gameDir, { recursive: true });
 
-    // Check if we're using a mock URL (for testing)
-    if (gameInfo.downloadUrl.startsWith("mock://")) {
-      console.log("Using mock download for testing");
-      return await mockDownload(gameInfo, gameDir);
-    } else if (gameInfo.downloadUrl.startsWith("http")) {
+    if (gameInfo.downloadUrl.startsWith("http")) {
       // This is likely a dosgames.com page URL, not a direct file link
       console.log("Processing URL:", gameInfo.downloadUrl);
 
@@ -835,9 +833,20 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
         const { default: axios } = await import("axios");
         const { JSDOM } = await import("jsdom");
 
+        // Internet Archive items name their zip themselves: read it from the
+        // item's metadata instead of trusting the URL's file name.
+        const archiveZipUrl = await resolveArchiveDownload(
+          gameInfo.downloadUrl,
+          async (url) => (await axios.get(url, { timeout: 30000 })).data,
+        );
+        if (archiveZipUrl) {
+          console.log("Resolved Internet Archive download:", archiveZipUrl);
+        }
+        const requestedUrl = archiveZipUrl ?? gameInfo.downloadUrl;
+
         // Check if the URL points to a game page or directly to a file
         // (case-insensitive: catalogue URLs use .ZIP).
-        const lowerUrl = gameInfo.downloadUrl.toLowerCase();
+        const lowerUrl = requestedUrl.toLowerCase();
         const isDirectFileLink =
           lowerUrl.endsWith(".zip") || lowerUrl.endsWith(".exe") || lowerUrl.includes("file=");
 
@@ -845,7 +854,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
 
         if (isDirectFileLink) {
           // If it's already a direct link, use it as is
-          downloadUrl = gameInfo.downloadUrl;
+          downloadUrl = requestedUrl;
           console.log("Using direct file URL:", downloadUrl);
         } else {
           // It's a game page, so we need to scrape it to find the download link
@@ -1081,9 +1090,7 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
             }
           } catch (scrapeError) {
             console.error("Error scraping game page:", scrapeError.message);
-            // If we can't scrape, fall back to mock download
-            console.log("Scraping failed, using mock download");
-            return await mockDownload(gameInfo, gameDir);
+            throw scrapeError;
           }
         }
 
@@ -1188,14 +1195,11 @@ echo Running ${gameInfo.title}
           console.error("Error cleaning up after failed download:", cleanupError);
         }
 
-        // Try to use mock download as last resort
-        console.log("Error in download process, using mock download");
-        return await mockDownload(gameInfo, gameDir);
+        removeIfEmpty(gameDir);
+        return { success: false, error: error.message || "Failed to download or extract the game" };
       }
     } else {
-      // Unknown URL format, use mock download
-      console.log("Unknown URL format, using mock download");
-      return await mockDownload(gameInfo, gameDir);
+      throw new Error(`Unsupported download URL: ${gameInfo.downloadUrl}`);
     }
   } catch (error) {
     console.error("Download failed:", error);
@@ -1207,17 +1211,24 @@ echo Running ${gameInfo.title}
       error: error.message,
     });
 
-    // Try to use mock download as last resort
-    try {
-      return await mockDownload(gameInfo, gameDir);
-    } catch {
-      return {
-        success: false,
-        error: error.message,
-      };
+    if (gameDir) {
+      removeIfEmpty(gameDir);
     }
+    return { success: false, error: error.message };
   }
 });
+
+// A failed download leaves no empty game folder behind (it would list as a
+// game); a folder that already holds an installed game is kept.
+function removeIfEmpty(dir) {
+  try {
+    if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
+      fs.rmdirSync(dir);
+    }
+  } catch (error) {
+    console.error(`Could not remove empty game folder ${dir}:`, error);
+  }
+}
 
 /**
  * Downloads a file from a URL to a local path, reporting progress
@@ -1309,158 +1320,4 @@ async function downloadFile(url, dest, progressCallback) {
 
     get(url, 5);
   });
-}
-
-// Helper function for mock downloads when real downloads fail
-async function mockDownload(gameInfo, gameDir) {
-  console.log("Using mock download for:", gameInfo.title);
-
-  // Simulate download progress
-  for (let progress = 0; progress <= 100; progress += 10) {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    mainWindow.webContents.send("download-status", {
-      gameId: gameInfo.id,
-      status: "downloading",
-      progress: progress,
-    });
-  }
-
-  // Inform renderer that extraction is starting
-  mainWindow.webContents.send("download-status", {
-    gameId: gameInfo.id,
-    status: "extracting",
-    progress: 100,
-  });
-
-  // Simulate extraction delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Common executable names to check for in the game ID
-  // This helps create appropriate mock files for known games
-  const commonExePatterns = {
-    "commander-keen-dreams": "START.EXE", // Special case that uses START.EXE
-    keen: "KEEN",
-    wolf: "WOLF",
-    doom: "DOOM",
-    duke: "DUKE",
-  };
-
-  // Determine the right mock executable to create
-  let mockExeName = null;
-
-  // Check if any known pattern matches the game ID
-  for (const [pattern, exePrefix] of Object.entries(commonExePatterns)) {
-    if (gameInfo.id.includes(pattern)) {
-      // For keen dreams, use the special executable
-      if (pattern === "commander-keen-dreams") {
-        mockExeName = exePrefix;
-      }
-      // Otherwise generate a numbered executable if it's a numbered game
-      else {
-        // Extract any numbers from the game ID
-        const matches = gameInfo.id.match(/\d+/);
-        const number = matches ? matches[0] : "";
-        mockExeName = number ? `${exePrefix}${number}.EXE` : `${exePrefix}.EXE`;
-      }
-      break;
-    }
-  }
-
-  // If no specific pattern matched, use a generic name
-  if (!mockExeName) {
-    mockExeName = "GAME.EXE";
-  }
-
-  // Create a mock game.bat file that will run the appropriate exe
-  const gameBatPath = path.join(gameDir, "game.bat");
-  fs.writeFileSync(
-    gameBatPath,
-    `@echo off
-echo Loading ${gameInfo.title || gameInfo.id}...
-echo.
-if exist ${mockExeName} (
-  ${mockExeName}
-) else (
-  echo Could not find ${mockExeName}
-  echo.
-  echo Available files:
-  dir *.exe
-  echo.
-  pause
-)
-`,
-  );
-
-  // Create the mock executable file
-  const exePath = path.join(gameDir, mockExeName);
-  console.log(`Creating mock executable: ${exePath}`);
-  fs.writeFileSync(
-    exePath,
-    `@echo off
-echo This is a mock executable for ${gameInfo.title}.
-echo In a real download, this would be the actual game executable.
-echo.
-echo Press any key to return to DOS...
-pause > nul
-`,
-  );
-
-  // For games using START.EXE, also create a necessary companion file
-  if (mockExeName === "START.EXE") {
-    // Games with START.EXE often need a companion file
-    const companionFile = path.join(gameDir, "KDREAMS.EXE");
-    fs.writeFileSync(
-      companionFile,
-      `@echo off
-echo This is a companion file for ${gameInfo.title}.
-echo.
-echo Press any key to return to DOS...
-pause > nul
-`,
-    );
-  }
-
-  // Create a README.TXT with general instructions
-  const readmePath = path.join(gameDir, "README.TXT");
-  fs.writeFileSync(
-    readmePath,
-    `${gameInfo.title}
-==============================
-
-This is a mock download of ${gameInfo.title}.
-In a real installation, this would contain the actual game files.
-
-The game should start automatically when launched using the executable: ${mockExeName}
-
-Enjoy the game!
-`,
-  );
-
-  // Create metadata file
-  const metadataPath = path.join(gameDir, "metadata.json");
-  fs.writeFileSync(
-    metadataPath,
-    JSON.stringify(
-      {
-        title: gameInfo.title || gameInfo.id,
-        description: gameInfo.description || "Mock game for testing",
-        year: gameInfo.year || new Date().getFullYear().toString(),
-        category: gameInfo.category || "Test",
-        thumbnail: gameInfo.thumbnail || "",
-      },
-      null,
-      2,
-    ),
-  );
-
-  // Inform renderer that download is complete
-  mainWindow.webContents.send("download-status", {
-    gameId: gameInfo.id,
-    status: "completed",
-  });
-
-  return {
-    success: true,
-    gamePath: gameDir,
-  };
 }

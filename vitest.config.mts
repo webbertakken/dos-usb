@@ -23,6 +23,7 @@ export default defineConfig({
         "src/presentation/grid/**/*.ts",
         "src/presentation/images/**/*.ts",
         "electron/dosbox/**/*.mjs",
+        "electron/download/**/*.mjs",
         "electron/imageCache/**/*.mjs",
         "scripts/lib/ingestCache.ts",
         "electron/protocol/**/*.mjs",

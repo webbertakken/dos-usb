@@ -53,7 +53,9 @@ export function mapIaItem(item: IaItem): SourceListing {
     siteName: "Internet Archive",
     url: `${BASE}/details/${id}`,
     playUrl: `${BASE}/details/${id}`,
-    downloadUrl: `${BASE}/download/${id}/${id}.zip`,
+    // The zip inside an item has its own name; the downloader resolves it
+    // from the item's metadata.
+    downloadUrl: `${BASE}/download/${id}/`,
     image: `${BASE}/services/img/${id}`,
     title: (item.title ?? id).toString().trim(),
     year: item.year !== undefined && item.year !== null ? String(item.year) : "",
