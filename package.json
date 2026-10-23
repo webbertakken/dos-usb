@@ -21,6 +21,7 @@
     "scrape": "tsx scripts/scrape-catalogue.ts",
     "add-games": "tsx scripts/add-games.ts",
     "build-library": "tsx scripts/build-library.ts",
+    "starter-pack": "tsx scripts/starter-pack/verify.ts",
     "ingest": "tsx scripts/ingest-source.ts",
     "ingest-references": "tsx scripts/ingest-references.ts",
     "make-stick": "tsx scripts/make-stick.ts",

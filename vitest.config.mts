@@ -31,6 +31,7 @@ export default defineConfig({
         "electron/customGames/**/*.mjs",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
+        "scripts/starter-pack/starterPack.ts",
         "scripts/stick/**/*.ts",
       ],
       exclude: [
