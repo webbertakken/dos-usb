@@ -16,7 +16,8 @@ import {
   getDosboxDataDir,
   buildTerminationCommand,
 } from "./dosbox/platform.mjs";
-import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { buildAutoexec } from "./dosbox/launch.mjs";
+import { resolveGameLaunch } from "./dosbox/resolveGameLaunch.mjs";
 import { resolveArchiveDownload } from "./download/archiveOrg.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
@@ -641,38 +642,6 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
     console.error("Error setting up DOSBox:", error);
     return { success: false, error: error.message };
   }
-}
-
-/**
- * Resolve which executable to run and the directory it lives in.
- * Looks at the game root first, then one level of subdirectories (some zips
- * extract into a folder). Returns { dir, executable } or null.
- */
-function resolveGameLaunch(gamePath, gameId, runExe) {
-  const rootFiles = fs.readdirSync(gamePath);
-  const rootExe = selectExecutable(rootFiles, { gameId, runExe });
-  if (rootExe) {
-    return { dir: gamePath, executable: rootExe };
-  }
-
-  // Search immediate subdirectories.
-  const subdirs = rootFiles.filter((entry) => {
-    try {
-      return fs.statSync(path.join(gamePath, entry)).isDirectory();
-    } catch {
-      return false;
-    }
-  });
-  for (const subdir of subdirs) {
-    const subPath = path.join(gamePath, subdir);
-    const subFiles = fs.readdirSync(subPath);
-    const subExe = selectExecutable(subFiles, { gameId, runExe });
-    if (subExe) {
-      return { dir: subPath, executable: subExe };
-    }
-  }
-
-  return null;
 }
 
 // Update the launchGame function to use our new setupDOSBox function

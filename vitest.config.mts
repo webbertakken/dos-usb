@@ -30,6 +30,7 @@ export default defineConfig({
         "electron/portable/**/*.mjs",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
+        "scripts/starter-pack/starterPack.ts",
       ],
       exclude: [
         "src/**/*.test.ts",
