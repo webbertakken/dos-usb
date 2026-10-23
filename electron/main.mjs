@@ -18,6 +18,8 @@ import {
 } from "./dosbox/platform.mjs";
 import { buildAutoexec } from "./dosbox/launch.mjs";
 import { resolveGameLaunch } from "./dosbox/resolveGameLaunch.mjs";
+import { isDirectFileLink } from "./download/directLink.mjs";
+import { gameMetadata } from "./download/gameMetadata.mjs";
 import { resolveArchiveDownload } from "./download/archiveOrg.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
@@ -28,6 +30,7 @@ import {
 } from "./protocol/staticExport.mjs";
 import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
 import { resolvePortableRoot } from "./portable/root.mjs";
+import { scanCustomGames } from "./customGames/scan.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -47,7 +50,14 @@ const portableRoot = resolvePortableRoot({
   cwd: process.cwd(),
 });
 const gamesDir = path.join(portableRoot, "games");
-console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
+// Games the user owns and copies in themselves; zips unpack beside it.
+const customGamesDir = path.join(portableRoot, "games-custom");
+const customGamesUnpackDir = path.join(portableRoot, "games-custom-unpacked");
+console.log(
+  `Portable root: ${portableRoot} (games in ${gamesDir}, your games in ${customGamesDir})`,
+);
+// What the last scan of games-custom found, by the card's path.
+let customGameLaunches = new Map();
 
 // The packaged renderer loads from app://dos-usb/, not file://, so the static
 // export's absolute asset paths and routes resolve. Must precede `ready`.
@@ -189,16 +199,23 @@ function resolveLibraryPath() {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
 
+let libraryCache = null;
+
+function readLibrary() {
+  if (libraryCache) return libraryCache;
+  const libraryPath = resolveLibraryPath();
+  if (!libraryPath) {
+    console.error("Library not found in any known location");
+    return [];
+  }
+  libraryCache = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
+  console.log(`Loaded ${libraryCache.length} library games from ${libraryPath}`);
+  return libraryCache;
+}
+
 ipcMain.handle("get-library", async () => {
   try {
-    const libraryPath = resolveLibraryPath();
-    if (!libraryPath) {
-      console.error("Library not found in any known location");
-      return [];
-    }
-    const data = JSON.parse(fs.readFileSync(libraryPath, "utf8"));
-    console.log(`Loaded ${data.length} library games from ${libraryPath}`);
-    return data;
+    return readLibrary();
   } catch (error) {
     console.error("Error reading library:", error);
     return [];
@@ -295,12 +312,12 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
     console.log(`Primary screen dimensions: ${width}x${height}`);
     console.log(`Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`);
 
-    // Resolve the DOSBox executable for the current platform:
-    // bundled portable build on Windows, a PATH binary elsewhere.
-    const baseDir = portableRoot;
+    // Resolve the DOSBox executable for the current platform: the build
+    // bundled beside the portable root first, then a PATH binary.
     const resolved = resolveDosbox({
       platform: process.platform,
-      baseDir,
+      arch: process.arch,
+      baseDir: portableRoot,
       fileExists: (candidate) => fs.existsSync(candidate),
       canRunFromPath: (command) =>
         findOnPath({
@@ -316,8 +333,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
       // Directory for DOSBox configuration
       const dosboxDataDir = getDosboxDataDir({
-        source: resolved.source,
-        baseDir,
+        resolved,
         userDataDir: app.getPath("userData"),
       });
 
@@ -604,23 +620,9 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
           activeDosboxChild = null;
         }
 
-        // Clean up any leftover detached processes (Windows portable launcher).
-        const termination = buildTerminationCommand(process.platform);
-        if (!termination) {
-          return;
-        }
-        try {
-          const cleanup = execFile(termination.command, termination.args, {
-            windowsHide: true,
-            shell: true,
-          });
-
-          cleanup.on("close", (cleanupCode) => {
-            console.log(`DOSBox cleanup exited with code ${cleanupCode}`);
-          });
-        } catch (cleanupError) {
-          console.error("Error during DOSBox cleanup:", cleanupError);
-        }
+        // On Windows this child is the PortableApps launcher, which starts
+        // DOSBox.exe and exits at once (WaitForProgram=false): its exit is not
+        // the game's. Leftover DOSBox is closed before the next launch instead.
       });
 
       // Wait a moment to ensure the process starts
@@ -647,6 +649,22 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
 // Update the launchGame function to use our new setupDOSBox function
 ipcMain.handle("launch-game", async (event, { gamePath }) => {
   console.log(`Attempting to launch game from path: ${gamePath}`);
+
+  const customGame = customGameLaunches.get(gamePath);
+  if (customGame) {
+    console.log(
+      `Launching your game ${customGame.id}: ${customGame.executable} in ${customGame.dir}`,
+    );
+    return await setupDOSBox(customGame.id, path.resolve(customGame.dir), customGame.executable);
+  }
+  const isInside = (dir) => {
+    const relative = path.relative(dir, gamePath);
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
+  };
+  if (isInside(customGamesDir) || isInside(customGamesUnpackDir)) {
+    console.error(`Not launching ${gamePath}: no playable game was detected there`);
+    return { success: false, error: "This game needs attention before it can be played." };
+  }
 
   // First ensure any existing DOSBox instances are closed
   await ensureDOSBoxClosed();
@@ -707,8 +725,28 @@ pause
   }
 });
 
-// Get available games from the games directory
-ipcMain.handle("get-games", async () => {
+/** The games the user copied into games-custom/, as My Games cards. */
+async function listCustomGames() {
+  try {
+    const scan = await scanCustomGames({
+      customDir: customGamesDir,
+      unpackDir: customGamesUnpackDir,
+      library: readLibrary(),
+      log: console,
+      extractZip: extract,
+    });
+    customGameLaunches = scan.launches;
+    return scan.games;
+  } catch (error) {
+    console.error(`Error scanning your games in ${customGamesDir}:`, error);
+    return [];
+  }
+}
+
+ipcMain.handle("get-games", async () => [...listDownloadedGames(), ...(await listCustomGames())]);
+
+/** The games downloaded into games/. */
+function listDownloadedGames() {
   try {
     // Create games directory if it doesn't exist
     if (!fs.existsSync(gamesDir)) {
@@ -748,6 +786,7 @@ ipcMain.handle("get-games", async () => {
             image: metadata.image || metadata.thumbnail || "",
           },
           metadata,
+          { source: "download" },
         );
       });
 
@@ -756,7 +795,7 @@ ipcMain.handle("get-games", async () => {
     console.error("Error getting games list:", error);
     return [];
   }
-});
+}
 
 // Save game metadata
 ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
@@ -813,15 +852,9 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
         }
         const requestedUrl = archiveZipUrl ?? gameInfo.downloadUrl;
 
-        // Check if the URL points to a game page or directly to a file
-        // (case-insensitive: catalogue URLs use .ZIP).
-        const lowerUrl = requestedUrl.toLowerCase();
-        const isDirectFileLink =
-          lowerUrl.endsWith(".zip") || lowerUrl.endsWith(".exe") || lowerUrl.includes("file=");
-
         let downloadUrl = "";
 
-        if (isDirectFileLink) {
+        if (isDirectFileLink(requestedUrl)) {
           // If it's already a direct link, use it as is
           downloadUrl = requestedUrl;
           console.log("Using direct file URL:", downloadUrl);
@@ -1108,22 +1141,7 @@ echo Running ${gameInfo.title}
 
           // Create metadata file
           const metadataPath = path.join(gameDir, "metadata.json");
-          fs.writeFileSync(
-            metadataPath,
-            JSON.stringify(
-              {
-                title: gameInfo.title,
-                description: gameInfo.description,
-                year: gameInfo.year,
-                category: gameInfo.category,
-                thumbnail: gameInfo.thumbnail || gameInfo.image,
-                downloadUrl: gameInfo.downloadUrl,
-                runExe: gameInfo.runExe,
-              },
-              null,
-              2,
-            ),
-          );
+          fs.writeFileSync(metadataPath, JSON.stringify(gameMetadata(gameInfo), null, 2));
 
           // Inform renderer that download is complete
           mainWindow.webContents.send("download-status", {

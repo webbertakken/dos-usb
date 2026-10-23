@@ -28,9 +28,11 @@ export default defineConfig({
         "scripts/lib/ingestCache.ts",
         "electron/protocol/**/*.mjs",
         "electron/portable/**/*.mjs",
+        "electron/customGames/**/*.mjs",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
         "scripts/starter-pack/starterPack.ts",
+        "scripts/stick/**/*.ts",
       ],
       exclude: [
         "src/**/*.test.ts",

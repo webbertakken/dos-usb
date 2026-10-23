@@ -50,8 +50,9 @@ The Windows DOSBox bundle (`bin/DOSBoxPortable`) is resolved against the same ro
 ## Build
 
 ```bash
-yarn electron-build   # next build + electron-builder: dist/DOSGamesPortable.AppImage on Linux
-yarn electron-pack    # next build + unpacked app only: dist/linux-unpacked/dos-usb
+yarn electron-build      # next build + electron-builder: dist/DOSGamesPortable.AppImage on Linux
+yarn electron-build:win  # next build + dist/DOSGamesPortable.exe (Windows portable)
+yarn electron-pack       # next build + unpacked app only: dist/linux-unpacked/dos-usb
 ```
 
 Next keeps its build artefacts in `.next/`; `out/` holds only the static export that is packaged.
@@ -63,6 +64,34 @@ Next keeps its build artefacts in `.next/`; `out/` holds only the static export 
   packaged app and fails the build if the fuse did not take. Electron 35 aborts at start-up when
   `NODE_OPTIONS` carries `--require` (VS Code debug terminals set it), and honouring it would let
   the environment inject code.
+
+## Windows portable build
+
+`DOSGamesPortable.exe` is built on Windows by the **Windows portable** workflow
+(`.github/workflows/windows-portable.yml`, `windows-latest`): on every pull request and push to
+`main` it builds the exe, lays it out as on a stick (`bin/DOSBoxPortable` beside it), smoke-tests it
+and uploads it as the `DOSGamesPortable` artifact. A published release gets the exe attached.
+
+Building it on Linux:
+
+- **Without wine** it fails: electron-builder needs wine to run `rcedit`, which writes the icon and
+  version information into the exe.
+- **With wine** (`yarn electron-build:win`), or in Docker without installing wine:
+
+```bash
+yarn build
+docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp/home -v "$PWD":/project -w /project \
+  electronuserland/builder:wine \
+  bash -c 'mkdir -p /tmp/home && node_modules/.bin/electron-builder --win portable --x64'
+```
+
+The `afterPack` fuse hook joins paths the build host's way, so cross-builds find the exe.
+
+## Icons
+
+`build/icon.svg` is the source. `yarn icons` renders it (through Playwright's Chromium) into
+`build/icon.png` (Linux, 512 px) and `build/icon.ico` (Windows, 16-256 px); both are committed.
+`build/` is electron-builder's `buildResources` folder.
 
 ## Verify
 
@@ -80,3 +109,9 @@ requires a client-side navigation (proof of hydration), then downloads the small
 requires it beside the executable, and requires a new, live DOSBox process. Screenshots land in
 `$E2E_ARTIFACTS` (default `/tmp/dos-usb-e2e`). Without a display, wrap it in
 `xvfb-run -a -s "-screen 0 1600x1000x24"`.
+
+The Windows portable exe unpacks itself to a temp folder and starts the app as a child, so
+Playwright cannot launch it.
+`node scripts/e2e/verify.mjs --portable-exe <stick>/DOSGamesPortable.exe` starts it with
+`--remote-debugging-port`, attaches over DevTools and runs the same checks; the downloaded game must
+land in `<stick>/games` and `<stick>/bin/DOSBoxPortable` must start.

@@ -15,6 +15,8 @@
     "electron-build": "yarn build && electron-builder",
     "electron-pack": "yarn build && electron-builder --dir",
     "electron-start": "electron .",
+    "electron-build:win": "yarn build && electron-builder --win portable --x64",
+    "icons": "node scripts/icons.mjs",
     "test": "node scripts/ensure-husky.mjs && vitest run",
     "scrape": "tsx scripts/scrape-catalogue.ts",
     "add-games": "tsx scripts/add-games.ts",
@@ -22,6 +24,7 @@
     "starter-pack": "tsx scripts/starter-pack/verify.ts",
     "ingest": "tsx scripts/ingest-source.ts",
     "ingest-references": "tsx scripts/ingest-references.ts",
+    "make-stick": "tsx scripts/make-stick.ts",
     "e2e": "node scripts/e2e/verify.mjs",
     "e2e:packaged": "node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb",
     "test:watch": "vitest",
@@ -89,17 +92,19 @@
       "package.json"
     ],
     "directories": {
-      "buildResources": "public"
+      "buildResources": "build"
     },
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "build/icon.ico"
     },
     "portable": {
       "artifactName": "DOSGamesPortable.exe"
     },
     "linux": {
       "target": "AppImage",
-      "category": "Game"
+      "category": "Game",
+      "icon": "build/icon.png"
     },
     "appImage": {
       "artifactName": "DOSGamesPortable.AppImage"
