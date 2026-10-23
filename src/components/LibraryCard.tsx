@@ -1,19 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import { displayImageUrl } from "../presentation/images/displayImageUrl";
-import {
-  FaDownload,
-  FaWifi,
-  FaSpinner,
-  FaCheck,
-  FaExclamationTriangle,
-  FaPlay,
-  FaStar,
-} from "react-icons/fa";
+import { FaCheck, FaStar } from "react-icons/fa";
 import { CanonicalGame } from "../domain/library/types";
 import { DownloadStatus } from "../types";
 import { chooseDownloadSource } from "../domain/library/select";
 import { friendlyError } from "../domain/firstRun/friendlyError";
+import { formatCount } from "../presentation/format/formatCount";
+import PixelArt from "./PixelArt";
+import GameAction from "./GameAction";
 
 interface LibraryCardProps {
   game: CanonicalGame;
@@ -26,13 +21,7 @@ interface LibraryCardProps {
   onOpen: (game: CanonicalGame) => void;
 }
 
-const formatDownloads = (n: number): string =>
-  n >= 1_000_000
-    ? `${(n / 1_000_000).toFixed(1)}M`
-    : n >= 1000
-      ? `${Math.round(n / 1000)}k`
-      : `${n}`;
-
+/** One game in the Library: its screen, what it is, and how to get it. */
 const LibraryCard: React.FC<LibraryCardProps> = ({
   game,
   installed = false,
@@ -42,141 +31,98 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
   onOpen,
   online = true,
 }) => {
-  const isDownloading = downloadStatus?.status === "downloading";
-  const isExtracting = downloadStatus?.status === "extracting";
-  const hasError = downloadStatus?.status === "error";
-  const isProcessing = isDownloading || isExtracting;
   const isInstalled = installed || downloadStatus?.status === "completed";
-  const downloadable = chooseDownloadSource(game) !== null;
-  const needsInternet = downloadable && !online && !isProcessing;
-
+  const downloadSource = chooseDownloadSource(game);
+  const hasError = downloadStatus?.status === "error";
   const maxDownloads = game.sources.reduce((max, s) => Math.max(max, s.metrics.downloads ?? 0), 0);
   const siteCount = new Set(game.sources.map((s) => s.site)).size;
+  const details = [game.year, game.category].filter(Boolean).join(" · ");
 
-  const actionLabel = () => {
-    if (isDownloading) return `Downloading ${downloadStatus?.progress ?? 0}%`;
-    if (isExtracting) return "Extracting...";
-    if (needsInternet) return "Needs internet";
-    if (hasError) return "Retry";
-    return "Download";
-  };
+  const caption = hasError
+    ? friendlyError(downloadStatus?.error ?? "").message
+    : [
+        downloadSource?.fileSize,
+        `${siteCount} ${siteCount === 1 ? "source" : "sources"}`,
+        maxDownloads > 0 ? `${formatCount(maxDownloads)} downloads` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
 
   return (
-    <div className="flex flex-col bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105 focus-within:ring-2 focus-within:ring-blue-400">
-      <button
-        type="button"
-        onClick={() => onOpen(game)}
-        className="text-left focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-      >
-        <div className="relative h-40 w-full bg-gray-900">
-          {game.image ? (
-            <Image
-              src={displayImageUrl(game.image)}
-              alt={`${game.title} screenshot`}
-              className="object-cover"
-              fill
-              sizes="(max-width: 768px) 100vw, 25vw"
-              unoptimized
-            />
+    <article className="group relative flex h-full flex-col rounded-2xl border border-line bg-panel p-3 transition-[box-shadow,transform,border-color] has-[h3_button:focus-visible]:outline-3 has-[h3_button:focus-visible]:outline-offset-3 has-[h3_button:focus-visible]:outline-cyan motion-safe:hover:-translate-y-1 hover:border-field hover:shadow-xl hover:shadow-black/40">
+      <div className="crt aspect-[16/10] w-full rounded-xl">
+        {game.image ? (
+          <Image
+            src={displayImageUrl(game.image)}
+            alt=""
+            className="pixelated object-cover"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            unoptimized
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-raised/40">
+            <PixelArt name="floppy" scale={4} />
+          </div>
+        )}
+        <div className="absolute inset-x-2 top-2 z-10 flex items-start justify-between gap-2">
+          {isInstalled ? (
+            <span className="inline-flex -rotate-2 items-center gap-1 rounded-md bg-phosphor px-2 py-0.5 text-sm font-bold text-ink shadow-md shadow-black/40">
+              <FaCheck aria-hidden="true" className="text-xs" /> On your stick
+            </span>
           ) : (
-            <div className="flex items-center justify-center w-full h-full text-gray-400">
-              No image
-            </div>
+            <span />
           )}
           {game.mature && (
-            <span className="absolute top-2 right-2 bg-red-700 text-white text-xs font-bold px-2 py-1 rounded">
+            <span className="rounded-md bg-rose px-2 py-0.5 text-sm font-bold text-ink shadow-md shadow-black/40">
               18+
             </span>
           )}
-          {isInstalled && (
-            <span className="absolute top-2 left-2 bg-green-700 text-white text-xs font-bold px-2 py-1 rounded inline-flex items-center">
-              <FaCheck className="mr-1" aria-hidden="true" /> Installed
-            </span>
-          )}
-          {maxDownloads > 0 && (
-            <span className="absolute bottom-2 right-2 bg-black/60 text-gray-200 text-xs px-2 py-0.5 rounded">
-              {formatDownloads(maxDownloads)} downloads
-            </span>
-          )}
         </div>
-
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">{game.title}</h3>
-            {typeof game.rating === "number" && (
-              <span
-                className="flex items-center text-yellow-400 text-sm shrink-0"
-                aria-hidden="true"
-              >
-                <FaStar className="mr-1" />
-                {game.rating}
-              </span>
-            )}
-          </div>
-          <p className="text-gray-400 text-xs mb-2">
-            {[game.year, game.category, game.publisher].filter(Boolean).join("  •  ")}
-          </p>
-          {game.description && (
-            <p className="text-gray-300 text-sm line-clamp-2">{game.description}</p>
-          )}
-        </div>
-      </button>
-
-      <div className="mt-auto p-4 pt-0">
-        {isDownloading && downloadStatus?.progress !== undefined && (
-          <div className="w-full bg-gray-700 rounded-full h-2 mb-2" aria-hidden="true">
-            <div
-              className="bg-blue-600 h-2 rounded-full"
-              style={{ width: `${downloadStatus.progress}%` }}
-            ></div>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          {isInstalled ? (
-            <button
-              onClick={() => onPlay(game.id)}
-              aria-label={`Play ${game.title}`}
-              className="flex-1 flex items-center justify-center bg-green-700 hover:bg-green-800 text-white px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-            >
-              <FaPlay className="mr-2" aria-hidden="true" /> Play
-            </button>
-          ) : (
-            <button
-              onClick={() => !isProcessing && downloadable && online && onDownload(game)}
-              disabled={isProcessing || !downloadable || needsInternet}
-              className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                needsInternet
-                  ? "bg-gray-700 text-gray-200 cursor-not-allowed"
-                  : hasError
-                    ? "bg-red-700 hover:bg-red-800"
-                    : !downloadable
-                      ? "bg-gray-700 cursor-not-allowed"
-                      : isProcessing
-                        ? "bg-gray-600 cursor-wait"
-                        : "bg-blue-600 hover:bg-blue-700"
-              }`}
-            >
-              {isProcessing ? (
-                <FaSpinner className="mr-2 animate-spin" aria-hidden="true" />
-              ) : needsInternet ? (
-                <FaWifi className="mr-2" aria-hidden="true" />
-              ) : hasError ? (
-                <FaExclamationTriangle className="mr-2" aria-hidden="true" />
-              ) : (
-                <FaDownload className="mr-2" aria-hidden="true" />
-              )}
-              {downloadable ? actionLabel() : "Play online"}
-            </button>
-          )}
-          <span className="text-gray-400 text-xs whitespace-nowrap" title="Number of sources">
-            {siteCount} {siteCount === 1 ? "source" : "sources"}
-          </span>
-        </div>
-        {hasError && downloadStatus?.error && (
-          <p className="text-red-300 text-sm mt-2">{friendlyError(downloadStatus.error).message}</p>
-        )}
       </div>
-    </div>
+
+      <div className="flex flex-1 flex-col px-1 pt-3">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="line-clamp-2 font-display text-lg font-bold leading-snug tracking-tight text-paper">
+            <button
+              type="button"
+              onClick={() => onOpen(game)}
+              className="text-left before:absolute before:inset-0 before:z-0 before:rounded-2xl before:content-[''] focus-visible:outline-none"
+            >
+              {game.title}
+            </button>
+          </h3>
+          {typeof game.rating === "number" && (
+            <span className="mt-0.5 flex shrink-0 items-center gap-1 font-pixel text-xl leading-none text-amber">
+              <FaStar aria-hidden="true" className="text-sm" />
+              <span className="sr-only">Rated </span>
+              {game.rating}
+              <span className="sr-only"> out of 5</span>
+            </span>
+          )}
+        </div>
+        <p className="font-pixel text-lg leading-tight text-muted">{details}</p>
+        {game.description && (
+          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{game.description}</p>
+        )}
+
+        <div className="relative z-10 mt-auto pt-4">
+          <GameAction
+            game={game}
+            installed={isInstalled}
+            downloadStatus={downloadStatus}
+            online={online}
+            onDownload={onDownload}
+            onPlay={onPlay}
+          />
+          <p
+            className={`mt-2 line-clamp-2 min-h-10 text-sm leading-5 ${hasError ? "text-danger" : "text-faint"}`}
+          >
+            {caption}
+          </p>
+        </div>
+      </div>
+    </article>
   );
 };
 

@@ -1,113 +1,67 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaGamepad, FaBook } from "react-icons/fa";
+import PixelArt from "./PixelArt";
 
+const DESTINATIONS = [
+  { name: "My Games", path: "/", Icon: FaGamepad },
+  { name: "Library", path: "/library", Icon: FaBook },
+] as const;
+
+/** The exported site serves pages with a trailing slash; both are the same page. */
+const samePage = (pathname: string | null, path: string) =>
+  (pathname ?? "/").replace(/(.)\/$/, "$1") === path;
+
+/** The top bar: the app's name, and both places to go, always in view. */
 const Navigation: React.FC = () => {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const navItems = [
-    {
-      name: "My Games",
-      path: "/",
-      icon: <FaGamepad className="w-5 h-5 mr-2" />,
-    },
-    {
-      name: "Library",
-      path: "/library",
-      icon: <FaBook className="w-5 h-5 mr-2" />,
-    },
-  ];
 
   return (
-    <>
-      {/* Mobile Navigation */}
-      <div className="md:hidden bg-gray-900 p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-white">DOS USB</h1>
-        <button
-          type="button"
-          aria-label="Menu"
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-white rounded focus-visible:outline-2 focus-visible:outline-blue-400"
+    <header className="shrink-0 border-b border-line/70 bg-night/95">
+      <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
+        <Link
+          href="/"
+          aria-label="DOS USB, home"
+          className="group flex items-center gap-3 rounded-lg"
         >
-          <svg
-            aria-hidden="true"
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-      </div>
+          <PixelArt
+            name="floppy"
+            scale={2}
+            className="motion-safe:transition-transform motion-safe:group-hover:-rotate-6"
+          />
+          <span className="font-display text-xl font-extrabold tracking-tight text-paper">
+            DOS USB
+          </span>
+        </Link>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div id="mobile-menu" className="md:hidden bg-gray-800 p-4">
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.path} className="mb-2">
-                <Link
-                  href={item.path}
-                  className={`flex items-center p-2 rounded-md ${
-                    pathname === item.path
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-700 text-gray-300"
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.icon}
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+        <nav aria-label="Main">
+          <ul className="flex items-center gap-1 rounded-xl bg-panel p-1 ring-1 ring-line">
+            {DESTINATIONS.map(({ name, path, Icon }) => {
+              const current = samePage(pathname, path);
+              return (
+                <li key={path}>
+                  <Link
+                    href={path}
+                    aria-current={current ? "page" : undefined}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors sm:px-4 ${
+                      current
+                        ? "bg-raised text-paper shadow-[inset_0_-3px_0_var(--color-phosphor)]"
+                        : "text-muted hover:bg-raised/60 hover:text-paper"
+                    }`}
+                  >
+                    <Icon aria-hidden="true" className={current ? "text-phosphor" : ""} />
+                    {name}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
-        </div>
-      )}
-
-      {/* Desktop Navigation */}
-      <div className="hidden md:flex flex-col w-64 bg-gray-900 h-screen">
-        <div className="p-4 border-b border-gray-800">
-          <h1 className="text-2xl font-bold text-white">DOS USB</h1>
-          <p className="text-gray-400 text-sm">DOS Games Collection</p>
-        </div>
-        <div className="flex-grow p-4">
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.path} className="mb-2">
-                <Link
-                  href={item.path}
-                  className={`flex items-center p-3 rounded-md ${
-                    pathname === item.path
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-700 text-gray-300"
-                  }`}
-                >
-                  {item.icon}
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="p-4 text-center text-xs text-gray-400">
-          <p>DOS USB v0.1.0</p>
-          <p>Running from portable drive</p>
-        </div>
+        </nav>
       </div>
-    </>
+    </header>
   );
 };
 

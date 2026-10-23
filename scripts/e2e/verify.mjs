@@ -335,14 +335,14 @@ async function verifyApp(app, target) {
   // The layout's own surface utility must win over any global body rule.
   const surface = await window.evaluate(() => {
     const probe = document.createElement("div");
-    probe.className = "bg-gray-900";
+    probe.className = "bg-night";
     document.body.append(probe);
     const expected = getComputedStyle(probe).backgroundColor;
     probe.remove();
     return { expected, actual: getComputedStyle(document.body).backgroundColor };
   });
   if (surface.actual !== surface.expected) {
-    fail(`Body background ${surface.actual} overrides bg-gray-900 (${surface.expected})`);
+    fail(`Body background ${surface.actual} overrides bg-night (${surface.expected})`);
   }
 
   // The text renders in Geist, the font the layout loads, and that font loaded.

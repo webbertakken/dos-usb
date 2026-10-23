@@ -1,35 +1,28 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
+import PixelArt from "./PixelArt";
+import { buttonClass } from "./buttonStyles";
 
 interface Props {
   children: ReactNode;
 }
 
 interface State {
-  hasError: boolean;
   error: Error | null;
 }
 
+/** Catches a crashed screen and offers a calm way back: reload the app. */
 class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-    };
-  }
+  state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true, error };
+    return { error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log the error to the console
     console.error("React Error Boundary caught an error:", error, errorInfo);
 
-    // Send error to main process if electron is available
     if (typeof window !== "undefined" && window.electron?.logError) {
       window.electron.logError({
         message: error.message,
@@ -40,29 +33,40 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   render(): ReactNode {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return (
-        <div className="p-6 bg-red-900 rounded-lg m-4 text-white">
-          <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
-          <details className="mt-2">
-            <summary className="cursor-pointer font-medium">Error details</summary>
-            <pre className="mt-2 p-2 bg-red-950 rounded text-sm overflow-auto">
-              {this.state.error?.message}
-              {this.state.error?.stack}
-            </pre>
-          </details>
+    const { error } = this.state;
+    if (!error) return this.props.children;
+
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-night p-6">
+        <div className="w-full max-w-lg rounded-3xl border border-line bg-panel p-8 text-center sm:p-10">
+          <PixelArt name="crash" scale={5} className="mx-auto" />
+          <h1 className="mt-6 font-display text-3xl font-extrabold tracking-tight text-paper">
+            Something went wrong
+          </h1>
+          <p className="mt-3 text-lg leading-relaxed text-muted">
+            DOS USB tripped over itself. Your games are safe on the stick. Reloading usually puts
+            things right.
+          </p>
           <button
-            className="mt-4 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-md transition-colors"
+            type="button"
+            className={`${buttonClass("play", "lg")} mt-8 font-display font-extrabold`}
             onClick={() => window.location.reload()}
           >
-            Try reloading the application
+            Reload DOS USB
           </button>
+          <details className="mt-8 text-left text-sm text-muted">
+            <summary className="w-fit cursor-pointer rounded underline decoration-faint underline-offset-4 hover:text-paper">
+              Technical details
+            </summary>
+            <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-night p-3 text-xs">
+              {error.message}
+              {"\n"}
+              {error.stack}
+            </pre>
+          </details>
         </div>
-      );
-    }
-
-    return this.props.children;
+      </div>
+    );
   }
 }
 

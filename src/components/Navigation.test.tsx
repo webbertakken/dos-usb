@@ -1,44 +1,52 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, within } from "@testing-library/react";
 import Navigation from "./Navigation";
 
-describe("Navigation", () => {
-  it("names the collapsed menu button and reports it closed", () => {
-    render(<Navigation />);
+const pathname = vi.hoisted(() => ({ current: "/" }));
+vi.mock("next/navigation", () => ({ usePathname: () => pathname.current }));
 
-    expect(screen.getByRole("button", { name: "Menu" })).toHaveAttribute("aria-expanded", "false");
+describe("Navigation", () => {
+  beforeEach(() => {
+    pathname.current = "/";
   });
 
-  it("opens the menu with both destinations and reports it open", async () => {
+  it("names the app as a link home", () => {
     render(<Navigation />);
-    const menu = screen.getByRole("button", { name: "Menu" });
 
-    await userEvent.click(menu);
+    expect(screen.getByRole("link", { name: "DOS USB, home" })).toHaveAttribute("href", "/");
+  });
 
-    expect(menu).toHaveAttribute("aria-expanded", "true");
-    const panel = document.getElementById(menu.getAttribute("aria-controls") ?? "");
-    expect(panel).not.toBeNull();
-    expect([...(panel?.querySelectorAll("a") ?? [])].map((link) => link.textContent)).toEqual([
-      "My Games",
-      "Library",
-    ]);
+  it("shows both destinations at once, with no menu to open", () => {
+    render(<Navigation />);
+
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(
+      within(nav)
+        .getAllByRole("link")
+        .map((link) => link.textContent),
+    ).toEqual(["My Games", "Library"]);
+    expect(screen.queryByRole("button", { name: "Menu" })).not.toBeInTheDocument();
   });
 
   it("leads to My Games and the Library", () => {
     render(<Navigation />);
 
-    expect(screen.getAllByRole("link", { name: "Library" })[0]).toHaveAttribute("href", "/library");
-    expect(screen.getAllByRole("link", { name: "My Games" })[0]).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("href", "/library");
+    expect(screen.getByRole("link", { name: "My Games" })).toHaveAttribute("href", "/");
   });
 
-  it("closes the menu again from the same button", async () => {
+  it("marks the page you are on", () => {
+    pathname.current = "/library";
     render(<Navigation />);
-    const menu = screen.getByRole("button", { name: "Menu" });
 
-    await userEvent.click(menu);
-    await userEvent.click(menu);
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "My Games" })).not.toHaveAttribute("aria-current");
+  });
 
-    expect(menu).toHaveAttribute("aria-expanded", "false");
+  it("treats the exported page path with a trailing slash as the same page", () => {
+    pathname.current = "/library/";
+    render(<Navigation />);
+
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("aria-current", "page");
   });
 });

@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Image from "next/image";
 import { displayImageUrl } from "../presentation/images/displayImageUrl";
-import {
-  FaDownload,
-  FaPlay,
-  FaSpinner,
-  FaCheck,
-  FaStar,
-  FaTimes,
-  FaExternalLinkAlt,
-  FaWifi,
-} from "react-icons/fa";
+import { FaExternalLinkAlt, FaPlay, FaStar } from "react-icons/fa";
 import { CanonicalGame } from "../domain/library/types";
 import { DownloadStatus } from "../types";
 import { chooseDownloadSource, distinctSites, SITE_NAMES } from "../domain/library/select";
+import { friendlyError } from "../domain/firstRun/friendlyError";
+import { formatCount } from "../presentation/format/formatCount";
+import Dialog from "./Dialog";
+import GameAction from "./GameAction";
+import PixelArt from "./PixelArt";
 
 interface LibraryDetailModalProps {
   game: CanonicalGame;
@@ -30,19 +26,22 @@ interface LibraryDetailModalProps {
 
 const Fact: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) =>
   value ? (
-    <div>
-      <dt className="text-xs uppercase tracking-wide text-gray-500">{label}</dt>
-      <dd className="text-sm text-gray-200">{value}</dd>
+    <div className="min-w-0">
+      <dt className="font-pixel text-lg leading-none text-faint">{label}</dt>
+      <dd className="mt-1 break-words text-sm text-paper">{value}</dd>
     </div>
   ) : null;
 
-const formatDownloads = (n: number) =>
-  n >= 1_000_000
-    ? `${(n / 1_000_000).toFixed(1)}M`
-    : n >= 1000
-      ? `${Math.round(n / 1000)}k`
-      : `${n}`;
+const SectionLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <h3 className="mb-3 font-pixel text-xl leading-none text-faint">{children}</h3>
+);
 
+const LINK =
+  "inline-flex items-center gap-2 rounded-lg text-sm font-medium underline underline-offset-4";
+const CYAN_LINK = `${LINK} text-cyan decoration-cyan/40 hover:decoration-cyan`;
+const PLAY_LINK = `${LINK} text-phosphor decoration-phosphor/40 hover:decoration-phosphor`;
+
+/** Everything known about one Library game, and the way to get it. */
 const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
   game,
   installed,
@@ -52,254 +51,186 @@ const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
   onClose,
   online = true,
 }) => {
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  const isDownloading = downloadStatus?.status === "downloading";
-  const isExtracting = downloadStatus?.status === "extracting";
-  const isProcessing = isDownloading || isExtracting;
+  const titleId = React.useId();
   const isInstalled = installed || downloadStatus?.status === "completed";
-
   const downloadSource = chooseDownloadSource(game);
   const sites = distinctSites(game.sources);
   const license = game.sources.find((s) => s.license)?.license;
+  const meta = [game.year, game.category, game.publisher].filter(Boolean).join(" · ");
 
-  useEffect(() => {
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const { overflow } = document.body.style;
-    document.body.style.overflow = "hidden";
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") return onClose();
-      if (event.key === "Tab" && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = overflow;
-      previouslyFocused?.focus();
-    };
-  }, [onClose]);
-
-  const meta = [game.year, game.category, game.publisher].filter(Boolean).join("  •  ");
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button
-        type="button"
-        aria-label="Close dialog"
-        tabIndex={-1}
-        onClick={onClose}
-        className="absolute inset-0 bg-black/70 cursor-default"
-      />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="library-detail-title"
-        className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 rounded-xl shadow-2xl border border-gray-700"
-      >
-        <button
-          ref={closeRef}
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute top-3 right-3 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <FaTimes aria-hidden="true" />
-        </button>
-
-        <div className="relative w-full h-56 sm:h-72 bg-gray-950">
-          {game.image ? (
-            <Image
-              src={displayImageUrl(game.image)}
-              alt={`${game.title} screenshot`}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 768px"
-              unoptimized
-            />
-          ) : (
-            <div className="flex items-center justify-center w-full h-full text-gray-500">
-              No screenshot
-            </div>
-          )}
-          {game.mature && (
-            <span className="absolute top-3 left-3 bg-red-700 text-white text-xs font-bold px-2 py-1 rounded">
-              18+ Mature
-            </span>
-          )}
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 id="library-detail-title" className="text-2xl font-bold text-white">
-                {game.title}
-              </h2>
-              <p className="text-gray-400 text-sm mt-1">{meta}</p>
-            </div>
-            {typeof game.rating === "number" && (
-              <span
-                className="flex items-center text-yellow-400 text-lg shrink-0"
-                aria-label={`Rated ${game.rating} out of 5`}
-              >
-                <FaStar className="mr-1" aria-hidden="true" />
-                {game.rating}
-                <span className="text-gray-400 text-sm ml-1">/ 5</span>
-              </span>
-            )}
+  const hero = (
+    <div className="relative overflow-hidden bg-night px-6 pb-6 pt-14 sm:px-10">
+      {game.image && (
+        <Image
+          src={displayImageUrl(game.image)}
+          alt=""
+          aria-hidden="true"
+          fill
+          className="scale-125 object-cover opacity-35 blur-2xl"
+          sizes="768px"
+          unoptimized
+        />
+      )}
+      <div className="crt relative mx-auto aspect-[16/10] w-full max-w-xl rounded-2xl shadow-2xl shadow-black/60">
+        {game.image ? (
+          <Image
+            src={displayImageUrl(game.image)}
+            alt={`${game.title} screenshot`}
+            fill
+            className="pixelated object-contain"
+            sizes="(max-width: 640px) 100vw, 576px"
+            unoptimized
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-raised/40 text-faint">
+            <PixelArt name="floppy" scale={5} />
+            <span className="font-pixel text-xl">No screenshot yet</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3 mt-4">
-            {isInstalled ? (
-              <button
-                onClick={() => onPlay(game.id)}
-                className="flex items-center bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-300"
-              >
-                <FaPlay className="mr-2" aria-hidden="true" /> Play
-              </button>
-            ) : downloadSource && !online && !isProcessing ? (
-              <button
-                disabled
-                className="flex items-center bg-gray-700 text-gray-200 px-5 py-2 rounded-md cursor-not-allowed"
-              >
-                <FaWifi className="mr-2" aria-hidden="true" />
-                Needs internet
-              </button>
-            ) : downloadSource ? (
-              <button
-                onClick={() => !isProcessing && onDownload(game)}
-                disabled={isProcessing}
-                className="flex items-center bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-5 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                {isProcessing ? (
-                  <FaSpinner className="mr-2 animate-spin" aria-hidden="true" />
-                ) : (
-                  <FaDownload className="mr-2" aria-hidden="true" />
-                )}
-                {isDownloading
-                  ? `Downloading ${downloadStatus?.progress ?? 0}%`
-                  : isExtracting
-                    ? "Extracting..."
-                    : `Download${downloadSource.fileSize ? ` (${downloadSource.fileSize})` : ""}`}
-              </button>
-            ) : null}
-            {isInstalled && (
-              <span className="flex items-center text-green-400 text-sm">
-                <FaCheck className="mr-1" aria-hidden="true" /> Installed
-              </span>
-            )}
-          </div>
-
-          {game.description && (
-            <p className="text-gray-300 text-sm leading-relaxed mt-5 whitespace-pre-line">
-              {game.description}
-            </p>
-          )}
-
-          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-            <Fact label="Year" value={game.year} />
-            <Fact label="Category" value={game.category} />
-            <Fact label="Publisher" value={game.publisher} />
-            <Fact label="Licence" value={license} />
-            <Fact label="Resolution" value={game.resolution} />
-            <Fact label="Multiplayer" value={game.multiplayer} />
-            <Fact label="File size" value={downloadSource?.fileSize} />
-            <Fact label="Runs" value={downloadSource?.runExe} />
-          </dl>
-
-          {game.tags.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-2">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {game.tags.slice(0, 12).map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {game.links && game.links.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-2">More info</h3>
-              <div className="flex flex-wrap gap-2">
-                {game.links.map((link) => (
-                  <a
-                    key={link.url}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center bg-gray-800 hover:bg-gray-700 text-blue-300 text-sm px-3 py-1.5 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    {link.label}
-                    <FaExternalLinkAlt className="ml-2 text-xs" aria-hidden="true" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Provenance / credits with per-source actions */}
-          <div className="mt-6 pt-4 border-t border-gray-800">
-            <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-              Listed on {sites.length} {sites.length === 1 ? "source" : "sources"}
-            </h3>
-            <ul className="space-y-2">
-              {sites.map((source) => (
-                <li
-                  key={source.site + source.url}
-                  className="flex flex-wrap items-center justify-between gap-2 bg-gray-800/60 rounded-md px-3 py-2"
-                >
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-blue-300 hover:text-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
-                  >
-                    {SITE_NAMES[source.site]}
-                    <FaExternalLinkAlt className="ml-2 text-xs" aria-hidden="true" />
-                  </a>
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
-                    {typeof source.metrics.downloads === "number" && (
-                      <span>{formatDownloads(source.metrics.downloads)} downloads</span>
-                    )}
-                    {source.playUrl && (
-                      <a
-                        href={source.playUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center text-green-300 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-400 rounded"
-                      >
-                        <FaPlay className="mr-1" aria-hidden="true" /> Play online
-                      </a>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        )}
+        {game.mature && (
+          <span className="absolute left-3 top-3 z-10 rounded-md bg-rose px-2 py-0.5 text-sm font-bold text-ink">
+            18+ Mature
+          </span>
+        )}
       </div>
     </div>
+  );
+
+  return (
+    <Dialog labelledBy={titleId} onClose={onClose} hero={hero} size="lg">
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+        <div className="min-w-0">
+          <h2
+            id={titleId}
+            className="font-display text-3xl font-extrabold leading-tight tracking-tight text-paper"
+          >
+            {game.title}
+          </h2>
+          {meta && <p className="mt-1 font-pixel text-xl leading-tight text-muted">{meta}</p>}
+        </div>
+        {typeof game.rating === "number" && (
+          <p className="flex items-center gap-2 font-pixel text-3xl leading-none text-amber">
+            <FaStar aria-hidden="true" className="text-xl" />
+            <span className="sr-only">Rated </span>
+            {game.rating}
+            <span className="text-xl text-faint">
+              <span aria-hidden="true">/ 5</span>
+              <span className="sr-only"> out of 5</span>
+            </span>
+          </p>
+        )}
+      </div>
+
+      <div className="mt-6 max-w-sm">
+        <GameAction
+          game={game}
+          installed={isInstalled}
+          downloadStatus={downloadStatus}
+          online={online}
+          onDownload={onDownload}
+          onPlay={onPlay}
+          showSize
+        />
+        {downloadStatus?.status === "error" && (
+          <p className="mt-2 text-sm text-danger">
+            {friendlyError(downloadStatus.error ?? "").message}
+          </p>
+        )}
+        {!downloadSource && (
+          <p className="mt-2 text-sm text-faint">
+            None of its sources offers a download. Some let you play it online, below.
+          </p>
+        )}
+      </div>
+
+      {game.description && (
+        <p className="mt-8 whitespace-pre-line text-base leading-relaxed text-muted">
+          {game.description}
+        </p>
+      )}
+
+      <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 rounded-2xl border border-line bg-night/50 p-5 sm:grid-cols-4">
+        <Fact label="Year" value={game.year} />
+        <Fact label="Category" value={game.category} />
+        <Fact label="Publisher" value={game.publisher} />
+        <Fact label="Licence" value={license} />
+        <Fact label="Resolution" value={game.resolution} />
+        <Fact label="Multiplayer" value={game.multiplayer} />
+        <Fact label="File size" value={downloadSource?.fileSize} />
+        <Fact label="Runs" value={downloadSource?.runExe} />
+      </dl>
+
+      {game.tags.length > 0 && (
+        <section className="mt-8">
+          <SectionLabel>Tags</SectionLabel>
+          <ul className="flex flex-wrap gap-2">
+            {game.tags.slice(0, 12).map((tag) => (
+              <li
+                key={tag}
+                className="rounded-md bg-raised px-2 py-0.5 font-pixel text-lg leading-6 text-muted"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {game.links && game.links.length > 0 && (
+        <section className="mt-8">
+          <SectionLabel>More about it</SectionLabel>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2">
+            {game.links.map((link) => (
+              <li key={link.url}>
+                <a href={link.url} target="_blank" rel="noopener noreferrer" className={CYAN_LINK}>
+                  {link.label}
+                  <FaExternalLinkAlt aria-hidden="true" className="text-xs" />
+                  <span className="sr-only">(opens in your browser)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="mt-8 border-t border-line pt-6">
+        <SectionLabel>
+          Listed on {sites.length} {sites.length === 1 ? "source" : "sources"}
+        </SectionLabel>
+        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line">
+          {sites.map((source) => (
+            <li
+              key={source.site + source.url}
+              className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3"
+            >
+              <a href={source.url} target="_blank" rel="noopener noreferrer" className={CYAN_LINK}>
+                {SITE_NAMES[source.site]}
+                <FaExternalLinkAlt aria-hidden="true" className="text-xs" />
+                <span className="sr-only">(opens in your browser)</span>
+              </a>
+              <div className="flex items-center gap-4 text-sm text-faint">
+                {typeof source.metrics.downloads === "number" && (
+                  <span className="font-pixel text-lg leading-none">
+                    {formatCount(source.metrics.downloads)} downloads
+                  </span>
+                )}
+                {source.playUrl && (
+                  <a
+                    href={source.playUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={PLAY_LINK}
+                  >
+                    <FaPlay aria-hidden="true" className="text-xs" /> Play online
+                    <span className="sr-only">(opens in your browser)</span>
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </Dialog>
   );
 };
 

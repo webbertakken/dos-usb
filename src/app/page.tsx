@@ -1,16 +1,19 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useGameStore } from "../store/gameStore";
 import GameCard from "../components/GameCard";
 import GameEditModal from "../components/GameEditModal";
 import WelcomePanel from "../components/WelcomePanel";
 import ControlsHelp from "../components/ControlsHelp";
 import FriendlyErrorNotice from "../components/FriendlyErrorNotice";
+import EmptyState from "../components/EmptyState";
+import SearchField from "../components/SearchField";
+import SkeletonGrid from "../components/SkeletonGrid";
+import { buttonClass } from "../components/buttonStyles";
 import { Welcome, type GiftMessage } from "../domain/firstRun/welcome";
 import { Game, GameMetadata } from "../types";
-import { FaSearch, FaGift } from "react-icons/fa";
+import { FaGift } from "react-icons/fa";
 
 /** Past this many games a search box helps more than it distracts. */
 const SEARCH_THRESHOLD = 6;
@@ -19,6 +22,8 @@ const matches = (game: Game, term: string) =>
   [game.title, game.description, game.category].some((field) =>
     (field ?? "").toLowerCase().includes(term),
   );
+
+const GRID = "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
 export default function Home() {
   const {
@@ -76,28 +81,81 @@ export default function Home() {
     });
   };
 
+  const renderGames = () => {
+    if (loading && games.length === 0) {
+      return <SkeletonGrid label="Loading your games" className={GRID} />;
+    }
+    if (error && games.length === 0) {
+      return <FriendlyErrorNotice error={error} onRetry={() => fetchGames()} />;
+    }
+    if (games.length === 0) {
+      return (
+        <EmptyState
+          art="floppy"
+          title="Your shelf is empty"
+          text={
+            <>
+              Find games in the Library when you are online, or copy games you own into the{" "}
+              <span className="rounded bg-raised px-1.5 py-0.5 font-pixel text-lg text-paper">
+                games-custom
+              </span>{" "}
+              folder on the stick.
+            </>
+          }
+          action={{ label: "Browse the Library", href: "/library" }}
+        />
+      );
+    }
+    if (filteredGames.length === 0) {
+      return (
+        <EmptyState
+          art="question"
+          title={`No games match “${searchTerm.trim()}”`}
+          text="Try a shorter word, or part of the title."
+          action={{ label: "Clear search", onClick: () => setSearchTerm("") }}
+        />
+      );
+    }
+    return (
+      <ul aria-label="My games" className={GRID}>
+        {filteredGames.map((game) => (
+          <li key={game.id} className="flex">
+            <GameCard
+              game={game}
+              onPlay={launchGame}
+              onEdit={setSelectedGame}
+              starting={startingGameId === game.id}
+            />
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
-    <div className="p-6 md:p-8 h-full max-w-7xl">
+    <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-6 sm:px-8 sm:pt-8">
       {showWelcome && <WelcomePanel gift={gift} onDismiss={dismissWelcome} />}
 
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
+          <p className="font-pixel text-xl leading-none text-phosphor">
+            {games.length > 0
+              ? `${games.length} ${games.length === 1 ? "game" : "games"} on this stick`
+              : "On this stick"}
+          </p>
           <h1
             ref={gamesHeadingRef}
             tabIndex={-1}
-            className="text-4xl font-bold text-white mb-1 focus:outline-none"
+            className="mt-1 rounded-lg font-display text-4xl font-extrabold tracking-tight text-paper focus:outline-none sm:text-5xl"
           >
             My Games
           </h1>
-          <p className="text-gray-300 text-lg">
-            These games are on your stick. Press Play to start one.
-          </p>
         </div>
         {!showWelcome && gift && (
           <button
             type="button"
             onClick={() => setShowWelcome(true)}
-            className="inline-flex items-center gap-2 rounded-md border border-indigo-400 px-4 py-2 text-indigo-100 hover:bg-indigo-950 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300"
+            className={buttonClass("gift")}
           >
             <FaGift aria-hidden="true" />
             Read your birthday message
@@ -105,78 +163,30 @@ export default function Home() {
         )}
       </div>
 
-      {launchError && <FriendlyErrorNotice error={launchError} onDismiss={clearLaunchError} />}
-
-      {games.length > SEARCH_THRESHOLD && (
-        <div className="relative mb-6">
-          <label htmlFor="my-games-search" className="sr-only">
-            Search my games
-          </label>
-          <input
-            id="my-games-search"
-            type="search"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search my games..."
-            className="w-full p-3 pl-10 bg-gray-800 border border-gray-500 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <FaSearch
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            aria-hidden="true"
-          />
-        </div>
+      {!showWelcome && games.length > SEARCH_THRESHOLD && (
+        <SearchField
+          id="my-games-search"
+          label="Search my games"
+          placeholder="Search my games…"
+          value={searchTerm}
+          onChange={setSearchTerm}
+          className="mb-5"
+        />
       )}
 
-      {loading && games.length === 0 ? (
-        <div className="flex items-center justify-center h-48" role="status">
-          <div
-            className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-            aria-hidden="true"
-          ></div>
-          <span className="sr-only">Loading your games</span>
-        </div>
-      ) : error && games.length === 0 ? (
-        <FriendlyErrorNotice error={error} onRetry={() => fetchGames()} />
-      ) : filteredGames.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-center">
-          <p className="text-gray-300 text-lg mb-4">
-            {searchTerm
-              ? `No games found matching "${searchTerm}"`
-              : "There are no games on this stick yet. You can find more in the Library when you are connected to the internet, or copy games you own into the games-custom folder."}
-          </p>
-          {!searchTerm && (
-            <Link
-              href="/library"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
-            >
-              Go to the Library
-            </Link>
-          )}
-        </div>
-      ) : (
-        <ul
-          aria-label="My games"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
-          {filteredGames.map((game) => (
-            <li key={game.id} className="flex">
-              <GameCard
-                game={game}
-                onPlay={launchGame}
-                onEdit={setSelectedGame}
-                starting={startingGameId === game.id}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      {renderGames()}
 
-      <div className="mt-10">
+      <div className="mt-14">
         <ControlsHelp />
       </div>
 
+      {launchError && (
+        <FriendlyErrorNotice error={launchError} onDismiss={clearLaunchError} floating />
+      )}
+
       {selectedGame && (
         <GameEditModal
+          key={selectedGame.id}
           game={selectedGame}
           onClose={() => setSelectedGame(null)}
           onSave={handleSaveMetadata}

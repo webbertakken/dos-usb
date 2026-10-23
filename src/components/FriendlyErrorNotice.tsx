@@ -1,37 +1,54 @@
 import React from "react";
-import { FaExclamationCircle, FaTimes } from "react-icons/fa";
+import { FaExclamation, FaTimes } from "react-icons/fa";
 import { friendlyError } from "../domain/firstRun/friendlyError";
+import { buttonClass } from "./buttonStyles";
 
 interface FriendlyErrorNoticeProps {
   error: string;
   onRetry?: () => void;
   onDismiss?: () => void;
+  /** A toast floats above the page, so nothing beneath it moves. */
+  floating?: boolean;
 }
 
 /** An error in plain language, with the raw text tucked away for helpers. */
-const FriendlyErrorNotice: React.FC<FriendlyErrorNoticeProps> = ({ error, onRetry, onDismiss }) => {
+const FriendlyErrorNotice: React.FC<FriendlyErrorNoticeProps> = ({
+  error,
+  onRetry,
+  onDismiss,
+  floating = false,
+}) => {
   const { message, detail } = friendlyError(error);
 
   return (
     <div
       role="alert"
-      className="mb-6 flex items-start gap-4 rounded-lg border border-amber-500 bg-amber-950 p-4 text-amber-50"
+      className={`flex items-start gap-4 rounded-2xl border border-amber/50 bg-panel p-5 text-paper ${
+        floating
+          ? "fixed inset-x-3 bottom-3 z-40 mx-auto max-w-lg shadow-2xl shadow-black/60 motion-safe:animate-rise sm:inset-x-auto sm:bottom-6 sm:right-6"
+          : ""
+      }`}
     >
-      <FaExclamationCircle className="mt-1 shrink-0 text-2xl text-amber-300" aria-hidden="true" />
-      <div className="flex-1">
-        <p className="text-lg">{message}</p>
+      <span
+        aria-hidden="true"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber text-ink"
+      >
+        <FaExclamation />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-lg leading-snug">{message}</p>
         {detail && (
-          <details className="mt-2 text-sm text-amber-100">
-            <summary className="cursor-pointer underline">Technical details</summary>
-            <p className="mt-1 font-mono break-words">{detail}</p>
+          <details className="group mt-2 text-sm text-muted">
+            <summary className="w-fit cursor-pointer rounded underline decoration-faint underline-offset-4 hover:text-paper">
+              Technical details
+            </summary>
+            <p className="mt-2 break-words rounded-lg bg-night p-3 font-pixel text-lg leading-snug text-muted">
+              {detail}
+            </p>
           </details>
         )}
         {onRetry && (
-          <button
-            type="button"
-            onClick={onRetry}
-            className="mt-3 rounded-md bg-blue-600 hover:bg-blue-700 px-4 py-2 font-semibold text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
-          >
+          <button type="button" onClick={onRetry} className={`${buttonClass("warn")} mt-4`}>
             Try again
           </button>
         )}
@@ -41,7 +58,7 @@ const FriendlyErrorNotice: React.FC<FriendlyErrorNoticeProps> = ({ error, onRetr
           type="button"
           onClick={onDismiss}
           aria-label="Close message"
-          className="rounded-md p-2 text-amber-100 hover:bg-amber-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300"
+          className={`${buttonClass("quiet", "sm")} -mr-2 -mt-1 w-9 px-0`}
         >
           <FaTimes aria-hidden="true" />
         </button>

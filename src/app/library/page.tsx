@@ -13,12 +13,42 @@ import { sortGames, LIBRARY_SORTS, LibrarySortKey } from "../../domain/library/s
 import { buildDownloadPayload, SITE_NAMES } from "../../domain/library/select";
 import { columnsForWidth } from "../../presentation/grid/virtualGrid";
 import { buildDisplayItems } from "../../presentation/grid/groupedRows";
-import { FaSearch, FaExclamationCircle, FaWifi } from "react-icons/fa";
+import { FaWifi, FaChevronDown } from "react-icons/fa";
+import { useLibrary } from "../../presentation/hooks/useLibrary";
+import SearchField from "../../components/SearchField";
+import SkeletonGrid from "../../components/SkeletonGrid";
+import EmptyState from "../../components/EmptyState";
 import FriendlyErrorNotice from "../../components/FriendlyErrorNotice";
 import { useOnlineStatus } from "../../presentation/hooks/useOnlineStatus";
 
 /** Rows of cards per category shelf when grouping across all categories. */
 const SHELF_ROWS = 2;
+
+const Select: React.FC<{
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  children: React.ReactNode;
+}> = ({ id, label, value, onChange, children }) => (
+  <div className="relative">
+    <label htmlFor={id} className="sr-only">
+      {label}
+    </label>
+    <select
+      id={id}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-12 appearance-none rounded-xl border border-field bg-panel pl-4 pr-10 text-sm font-semibold text-paper hover:border-muted focus:border-cyan"
+    >
+      {children}
+    </select>
+    <FaChevronDown
+      aria-hidden="true"
+      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-faint"
+    />
+  </div>
+);
 
 export default function LibraryPage() {
   const {
@@ -33,9 +63,7 @@ export default function LibraryPage() {
     cleanupDownloadListeners,
   } = useGameStore();
 
-  const [library, setLibrary] = useState<CanonicalGame[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { library, loading, error, retry } = useLibrary(loadLibrary);
   const online = useOnlineStatus();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,16 +80,6 @@ export default function LibraryPage() {
 
   useEffect(() => {
     fetchGames();
-    loadLibrary()
-      .then((games) => {
-        setLibrary(games);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.error("Error loading library:", e);
-        setError("Failed to load the game library");
-        setLoading(false);
-      });
   }, [fetchGames]);
 
   const installedIds = useMemo(() => new Set(games.map((g) => g.id)), [games]);
@@ -157,129 +175,138 @@ export default function LibraryPage() {
   const handlePlay = (gameId: string) => launchGame(gameId);
 
   return (
-    <div className="p-6 h-full">
+    <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-8 sm:px-8 sm:pt-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Library</h1>
-        <p className="text-gray-300">
+        <p className="font-pixel text-xl leading-none text-cyan">
           {library.length > 0
-            ? `${library.length.toLocaleString()} DOS games aggregated from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(" and ")}`
-            : "Browse and download classic DOS games"}
+            ? `${library.length.toLocaleString()} games to discover`
+            : "The archive"}
+        </p>
+        <h1 className="mt-1 font-display text-4xl font-extrabold tracking-tight text-paper sm:text-5xl">
+          Library
+        </h1>
+        <p className="mt-2 max-w-3xl text-muted">
+          {library.length > 0
+            ? `Classic DOS games gathered from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(", ")}.`
+            : "Browse and download classic DOS games."}
         </p>
       </div>
 
       {!online && (
         <div
           role="status"
-          className="mb-6 flex items-start gap-3 rounded-lg border border-sky-500 bg-sky-950 p-4 text-sky-50"
+          className="fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-lg items-start gap-3 rounded-2xl border border-cyan/50 bg-panel p-4 text-paper shadow-2xl shadow-black/60 motion-safe:animate-rise sm:inset-x-auto sm:bottom-6 sm:left-6"
         >
-          <FaWifi className="mt-1 shrink-0 text-xl text-sky-300" aria-hidden="true" />
-          <p className="text-lg">
+          <FaWifi className="mt-1 shrink-0 text-xl text-cyan" aria-hidden="true" />
+          <p>
             You are offline. The games on your stick still work: find them in My Games. Downloading
             new games here needs an internet connection.
           </p>
         </div>
       )}
 
-      {launchError && <FriendlyErrorNotice error={launchError} onDismiss={clearLaunchError} />}
-
-      <div className="flex flex-col lg:flex-row gap-3 mb-4">
-        <div className="relative flex-grow">
-          <label htmlFor="library-search" className="sr-only">
-            Search games
-          </label>
-          <input
-            id="library-search"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by title, description or tag..."
-            className="w-full p-3 pl-10 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <FaSearch
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            aria-hidden="true"
-          />
-        </div>
-
-        <label htmlFor="library-sort" className="sr-only">
-          Sort
-        </label>
-        <select
-          id="library-sort"
-          value={sort}
-          onChange={(e) => setSort(e.target.value as LibrarySortKey)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          {LIBRARY_SORTS.map((s) => (
-            <option key={s.key} value={s.key}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-
-        <label htmlFor="library-category" className="sr-only">
-          Category
-        </label>
-        <select
-          id="library-category"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-
-        <label htmlFor="library-source" className="sr-only">
-          Source
-        </label>
-        <select
-          id="library-source"
-          value={sourceFilter}
-          onChange={(e) => setSourceFilter(e.target.value)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All sources</option>
-          {sources.map((s) => (
-            <option key={s} value={s}>
-              {SITE_NAMES[s as keyof typeof SITE_NAMES]}
-            </option>
-          ))}
-        </select>
-
-        <button
-          onClick={() => setGrouped((g) => !g)}
-          aria-pressed={grouped}
-          className={`px-4 py-3 rounded-md text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-            grouped ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-          }`}
-        >
-          Group by category
-        </button>
-      </div>
-
-      {!loading && !error && (
-        <p className="text-gray-400 text-sm mb-4" aria-live="polite">
-          Showing {filtered.length.toLocaleString()} of {library.length.toLocaleString()} games
-        </p>
+      {launchError && (
+        <FriendlyErrorNotice error={launchError} onDismiss={clearLaunchError} floating />
       )}
 
-      {loading ? (
-        <div className="flex items-center justify-center h-48">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="sticky top-0 z-20 -mx-5 mb-2 border-b border-line/60 bg-night/90 px-5 py-3 backdrop-blur sm:-mx-8 sm:px-8">
+        <div className="flex flex-col gap-3 lg:flex-row">
+          <SearchField
+            id="library-search"
+            label="Search games"
+            placeholder="Search by title, description or tag…"
+            value={searchTerm}
+            onChange={setSearchTerm}
+            className="flex-1"
+          />
+          <div className="flex flex-wrap gap-3">
+            <Select
+              id="library-sort"
+              label="Sort"
+              value={sort}
+              onChange={(v) => setSort(v as LibrarySortKey)}
+            >
+              {LIBRARY_SORTS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </Select>
+            <Select
+              id="library-category"
+              label="Category"
+              value={categoryFilter}
+              onChange={setCategoryFilter}
+            >
+              <option value="">All categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </Select>
+            <Select
+              id="library-source"
+              label="Source"
+              value={sourceFilter}
+              onChange={setSourceFilter}
+            >
+              <option value="">All sources</option>
+              {sources.map((s) => (
+                <option key={s} value={s}>
+                  {SITE_NAMES[s as keyof typeof SITE_NAMES]}
+                </option>
+              ))}
+            </Select>
+            <button
+              type="button"
+              onClick={() => setGrouped((g) => !g)}
+              aria-pressed={grouped}
+              className="inline-flex h-12 items-center gap-3 whitespace-nowrap rounded-xl border border-field bg-panel px-4 text-sm font-semibold text-paper hover:border-muted"
+            >
+              <span
+                aria-hidden="true"
+                className={`relative h-5 w-9 rounded-full transition-colors ${grouped ? "bg-phosphor" : "bg-raised ring-1 ring-field"}`}
+              >
+                <span
+                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-paper transition-[left] ${grouped ? "left-[18px]" : "left-0.5"}`}
+                />
+              </span>
+              Group by category
+            </button>
+          </div>
         </div>
+        {!loading && !error && (
+          <p className="mt-3 font-pixel text-lg leading-none text-muted" aria-live="polite">
+            Showing {filtered.length.toLocaleString()} of {library.length.toLocaleString()} games
+          </p>
+        )}
+      </div>
+
+      {loading ? (
+        <SkeletonGrid
+          label="Loading the library"
+          className="grid grid-cols-1 gap-5 pt-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        />
       ) : error ? (
-        <div className="flex flex-col items-center justify-center h-48 text-center">
-          <FaExclamationCircle className="text-red-500 text-4xl mb-4" aria-hidden="true" />
-          <p className="text-red-400 mb-2">{error}</p>
+        <div className="pt-6">
+          <FriendlyErrorNotice error={error} onRetry={retry} />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-center">
-          <p className="text-gray-400">No games match your search.</p>
+        <div className="pt-6">
+          <EmptyState
+            art="question"
+            title="No games match"
+            text="Try a shorter word, another category, or all sources."
+            action={{
+              label: "Clear search and filters",
+              onClick: () => {
+                setSearchTerm("");
+                setCategoryFilter("");
+                setSourceFilter("");
+              },
+            }}
+          />
         </div>
       ) : (
         <div ref={gridRef}>
@@ -307,7 +334,7 @@ export default function LibraryPage() {
                       onSeeAll={showCategory}
                     />
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-5">
                       {item.items.map((game) => (
                         <LibraryCard
                           key={game.id}

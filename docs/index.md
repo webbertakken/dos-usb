@@ -20,3 +20,5 @@
   ship pre-installed, and the script that proves each one runs.
 - [Gift stick](./stick/assembly.md) - how `yarn make-stick` lays out a ready-to-gift USB stick, and
   what FAT32 and exFAT allow.
+- [Visual language](./design/visual-language.md) - colours, type, pieces and the screen tour behind
+  the redesign.
