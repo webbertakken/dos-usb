@@ -19,10 +19,14 @@ const ARTICLES = new Set(["the", "a", "an"]);
 
 /**
  * Normalise a game title to a comparable key: lowercase, no punctuation,
- * no leading article, roman numerals as digits, ampersands as "and".
+ * no leading article or catalogue prefix, roman numerals as digits,
+ * ampersands as "and".
  */
 export function normaliseTitle(title: string): string {
   let text = (title || "").toLowerCase();
+
+  // Drop catalogue prefixes such as "MS-DOS:" or "Shareware Game:".
+  text = text.replace(/^\s*(ms-dos|shareware)(\s+game)?\s*:\s*/, "");
 
   // Strip bracketed/parenthetical edition or version suffixes.
   text = text.replace(/[([{][^)\]}]*[)\]}]/g, " ");

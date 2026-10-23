@@ -146,6 +146,24 @@ function mergeCluster(listings: SourceListing[]): CanonicalGame {
 }
 
 /**
+ * A title ending in its own release year ("Oregon Trail The 1990") joins the
+ * plain title when another listing carries it; otherwise the year stays, as
+ * in yearly series ("NHL Hockey 1995").
+ */
+function bucketKey(
+  listing: SourceListing,
+  keyOf: (title: string) => string,
+  knownKeys: ReadonlySet<string>,
+): string {
+  const title = listing.title ?? "";
+  const ownYear = title.match(/^(.*\S)\s+(\d{4})$/);
+  if (ownYear && ownYear[2] === listing.year && knownKeys.has(keyOf(ownYear[1]))) {
+    return keyOf(ownYear[1]);
+  }
+  return keyOf(title);
+}
+
+/**
  * Merge listings into canonical games.
  * @param listings all source listings across every source
  * @param aliases optional manual remap of normalised title -> canonical title
@@ -154,9 +172,12 @@ export function mergeListings(
   listings: SourceListing[],
   aliases: Record<string, string> = {},
 ): CanonicalGame[] {
+  const keyOf = (title: string) => aliases[matchKey(title)] ?? matchKey(title);
+  const knownKeys = new Set(listings.map((listing) => keyOf(listing.title ?? "")));
+
   const buckets = new Map<string, SourceListing[]>();
   for (const listing of listings) {
-    const key = aliases[matchKey(listing.title ?? "")] ?? matchKey(listing.title ?? "");
+    const key = bucketKey(listing, keyOf, knownKeys);
     const arr = buckets.get(key) ?? [];
     arr.push(listing);
     buckets.set(key, arr);

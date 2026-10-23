@@ -28,6 +28,20 @@ describe("normaliseTitle", () => {
   });
 });
 
+describe("normaliseTitle catalogue prefixes", () => {
+  it("drops an Internet Archive platform or shareware prefix", () => {
+    expect(normaliseTitle("MS-DOS: Prince of Persia (CGA Graphics and PC Speaker)")).toBe(
+      "prince of persia",
+    );
+    expect(normaliseTitle("Shareware Game: Paranoid")).toBe("paranoid");
+    expect(normaliseTitle("MS-DOS Game: Stunts")).toBe("stunts");
+  });
+
+  it("keeps a colon that belongs to the title", () => {
+    expect(normaliseTitle("Dune II: The Building of a Dynasty")).toBe("dune 2 building of dynasty");
+  });
+});
+
 describe("sameYear", () => {
   it("treats years within +/-1 as the same", () => {
     expect(sameYear("1992", "1993")).toBe(true);

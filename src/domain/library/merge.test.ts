@@ -113,6 +113,31 @@ describe("mergeListings", () => {
     expect(games.find((g) => g.title === "Hit")!.popularity).toBe(1);
   });
 
+  it("merges a title carrying its own release year into the plain title", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Oregon Trail The 1990", year: "1990" }),
+      listing({ site: "abandonwaredos", url: "b", title: "The Oregon Trail", year: "1990" }),
+    ]);
+    expect(games).toHaveLength(1);
+    expect(games[0].sources).toHaveLength(2);
+  });
+
+  it("keeps a trailing year that is part of a title with no plain counterpart", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "NHL Hockey 1995", year: "1995" }),
+      listing({ site: "archive.org", url: "b", title: "NHL Hockey 1994", year: "1994" }),
+    ]);
+    expect(games).toHaveLength(2);
+  });
+
+  it("keeps a trailing year that differs from the release year", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Tennis 1995", year: "1993" }),
+      listing({ site: "archive.org", url: "b", title: "Tennis", year: "1993" }),
+    ]);
+    expect(games).toHaveLength(2);
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({
