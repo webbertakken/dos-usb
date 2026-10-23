@@ -13,8 +13,9 @@
  *     started from a fresh working directory; games land beside the executable
  *   node scripts/e2e/verify.mjs --portable-exe <stick>/DOSGamesPortable.exe
  *     the Windows portable exe, which unpacks itself to a temp folder and runs
- *     from there; driven over the DevTools protocol, it must still put games
- *     beside the exe and launch the DOSBox bundle in <stick>/bin
+ *     from there; driven over the DevTools protocol, it must list a game put in
+ *     <stick>/games (offline: CI runners are refused by the game archives)
+ *     and launch it with the DOSBox bundle in <stick>/bin
  *
  * Screenshots land in $E2E_ARTIFACTS (default /tmp/dos-usb-e2e).
  */
@@ -47,6 +48,7 @@ const resolveTarget = (argv) => {
         cwd: fs.mkdtempSync(path.join(os.tmpdir(), "dos-usb-portable-")),
       },
       gamesRoot: path.dirname(executablePath),
+      obtainGame: placeOfflineGame,
     };
   }
   const flag = argv.indexOf("--packaged");
@@ -425,7 +427,35 @@ async function verifyApp(app, target) {
     fail(`Renderer problems:\n${problems.join("\n")}`);
   }
 
-  // --- Pick a small game from the catalogue to download ---
+  const gameDir = await (target.obtainGame ?? downloadSmallestGame)(window, target);
+
+  // --- Launch the game in DOSBox ---
+  const dosboxBefore = new Set(dosboxPids());
+  log("Launching game in DOSBox...");
+  const launchResult = await window.evaluate(async (gamePath) => {
+    return await window.electron.launchGame(gamePath);
+  }, gameDir);
+  log("launchGame result:", JSON.stringify(launchResult));
+  if (!launchResult.success) {
+    fail(`Launch failed: ${launchResult.error}`);
+  }
+
+  // Give DOSBox a moment, then confirm a new DOSBox process is running.
+  await new Promise((r) => setTimeout(r, 4000));
+  const ours = dosboxPids().filter((pid) => !dosboxBefore.has(pid));
+  log("New DOSBox processes:", ours.join(", ") || "none");
+  if (ours.length === 0) {
+    fail("DOSBox process was not running after launch");
+  }
+  log("DOSBox is running the game.");
+  captureScreen(path.join(artifactsDir, `${target.name}-dosbox.png`));
+
+  // Clean up only the DOSBox we started, then the app.
+  for (const pid of ours) killTree(Number(pid));
+}
+
+/** Downloads the smallest catalogue game through the app; returns its folder. */
+async function downloadSmallestGame(window, target) {
   const catalogue = JSON.parse(
     fs.readFileSync(path.join(repoRoot, "public", "catalogue.json"), "utf8"),
   );
@@ -462,30 +492,36 @@ async function verifyApp(app, target) {
     fail("metadata.json did not persist runExe");
   }
   log("metadata.json persisted runExe:", meta.runExe);
+  return gameDir;
+}
 
-  // --- Launch the game in DOSBox ---
-  const dosboxBefore = new Set(dosboxPids());
-  log("Launching game in DOSBox...");
-  const launchResult = await window.evaluate(async (gamePath) => {
-    return await window.electron.launchGame(gamePath);
-  }, gameDir);
-  log("launchGame result:", JSON.stringify(launchResult));
-  if (!launchResult.success) {
-    fail(`Launch failed: ${launchResult.error}`);
-  }
+/**
+ * A DOS program that prints a line and waits for a key, keeping DOSBox open:
+ * mov dx,msg; mov ah,9; int 21h; mov ah,0; int 16h; int 20h; msg db "...$"
+ */
+const SMOKE_COM = Buffer.concat([
+  Buffer.from([0xba, 0x0d, 0x01, 0xb4, 0x09, 0xcd, 0x21, 0xb4, 0x00, 0xcd, 0x16, 0xcd, 0x20]),
+  Buffer.from("DOS USB smoke test: DOSBox runs from the stick.$", "ascii"),
+]);
 
-  // Give DOSBox a moment, then confirm a new DOSBox process is running.
-  await new Promise((r) => setTimeout(r, 4000));
-  const ours = dosboxPids().filter((pid) => !dosboxBefore.has(pid));
-  log("New DOSBox processes:", ours.join(", ") || "none");
-  if (ours.length === 0) {
-    fail("DOSBox process was not running after launch");
-  }
-  log("DOSBox is running the game.");
-  captureScreen(path.join(artifactsDir, `${target.name}-dosbox.png`));
-
-  // Clean up only the DOSBox we started, then the app.
-  for (const pid of ours) killTree(Number(pid));
+/**
+ * Puts a game in <stick>/games as the starter pack does, without a network,
+ * and requires the app to list it: proof it reads games beside the exe.
+ */
+async function placeOfflineGame(window, target) {
+  const gameDir = path.join(target.gamesRoot, "games", "smoke-test");
+  fs.rmSync(gameDir, { recursive: true, force: true });
+  fs.mkdirSync(gameDir, { recursive: true });
+  fs.writeFileSync(path.join(gameDir, "SMOKE.COM"), SMOKE_COM);
+  fs.writeFileSync(
+    path.join(gameDir, "metadata.json"),
+    JSON.stringify({ title: "Smoke test", runExe: "SMOKE.COM" }),
+  );
+  const games = await window.evaluate(() => window.electron.getGames());
+  const listed = games.find((game) => game.id === "smoke-test");
+  log("App lists games:", games.map((game) => `${game.id} (${game.path})`).join(", ") || "none");
+  if (!listed) fail(`The app does not list the game placed in ${gameDir}`);
+  return listed.path;
 }
 
 main().catch((error) => {
