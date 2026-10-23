@@ -13,22 +13,26 @@ export const SITE_NAMES: Record<SiteId, string> = {
   abandonwaredos: "Abandonware DOS",
 };
 
-/** Preference order for which source to download from (most launchable first). */
+/**
+ * The sites the app can download from, most launchable first. Abandonware DOS
+ * is absent: its download links serve nothing outside a visit to its own pages.
+ */
 const DOWNLOAD_PRIORITY: SiteId[] = [
   "dosgames",
   "myabandonware",
   "dosgamesarchive",
   "rgbclassic",
-  "abandonwaredos",
   "archive.org",
 ];
 
 /**
  * Pick the best source to download from. Prefers a dosgames DOSBox-ready build,
- * then any downloadable source by priority.
+ * then any source the app can download from, by priority.
  */
 export function chooseDownloadSource(game: CanonicalGame): SourceListing | null {
-  const downloadable = game.sources.filter((s) => s.downloadUrl);
+  const downloadable = game.sources.filter(
+    (s) => s.downloadUrl && DOWNLOAD_PRIORITY.includes(s.site),
+  );
   if (downloadable.length === 0) {
     return null;
   }
