@@ -28,6 +28,8 @@ export default defineConfig({
         "scripts/lib/ingestCache.ts",
         "electron/protocol/**/*.mjs",
         "electron/portable/**/*.mjs",
+        "electron/gift/**/*.mjs",
+        "src/presentation/hooks/useOnlineStatus.ts",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
       ],

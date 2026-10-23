@@ -11,6 +11,7 @@ import {
   FaStar,
   FaTimes,
   FaExternalLinkAlt,
+  FaWifi,
 } from "react-icons/fa";
 import { CanonicalGame } from "../domain/library/types";
 import { DownloadStatus } from "../types";
@@ -21,6 +22,8 @@ interface LibraryDetailModalProps {
   installed: boolean;
   downloadStatus?: DownloadStatus;
   onDownload: (game: CanonicalGame) => void;
+  /** Downloads need the internet; offline they say so instead of failing. */
+  online?: boolean;
   onPlay: (gameId: string) => void;
   onClose: () => void;
 }
@@ -47,6 +50,7 @@ const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
   onDownload,
   onPlay,
   onClose,
+  online = true,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -155,7 +159,7 @@ const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
               >
                 <FaStar className="mr-1" aria-hidden="true" />
                 {game.rating}
-                <span className="text-gray-500 text-sm ml-1">/ 5</span>
+                <span className="text-gray-400 text-sm ml-1">/ 5</span>
               </span>
             )}
           </div>
@@ -164,9 +168,17 @@ const LibraryDetailModal: React.FC<LibraryDetailModalProps> = ({
             {isInstalled ? (
               <button
                 onClick={() => onPlay(game.id)}
-                className="flex items-center bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-300"
+                className="flex items-center bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-300"
               >
                 <FaPlay className="mr-2" aria-hidden="true" /> Play
+              </button>
+            ) : downloadSource && !online && !isProcessing ? (
+              <button
+                disabled
+                className="flex items-center bg-gray-700 text-gray-200 px-5 py-2 rounded-md cursor-not-allowed"
+              >
+                <FaWifi className="mr-2" aria-hidden="true" />
+                Needs internet
               </button>
             ) : downloadSource ? (
               <button

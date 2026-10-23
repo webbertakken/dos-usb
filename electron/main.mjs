@@ -27,6 +27,7 @@ import {
 } from "./protocol/staticExport.mjs";
 import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
 import { resolvePortableRoot } from "./portable/root.mjs";
+import { readGiftMessage } from "./gift/giftMessage.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -153,6 +154,15 @@ ipcMain.handle("log-error", async (event, errorData) => {
   console.error("[Renderer Error]", errorData);
   return { received: true };
 });
+
+// The optional birthday message in gift.json beside the app.
+ipcMain.handle("get-gift-message", () =>
+  readGiftMessage({
+    root: portableRoot,
+    readFile: (giftPath) => fs.readFileSync(giftPath, "utf8"),
+    logger: console,
+  }),
+);
 
 // Resolve the bundled store catalogue: public/ in dev (fresh from the
 // scraper), out/ in the packaged app (public/ is not packaged).

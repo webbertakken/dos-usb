@@ -1,3 +1,5 @@
+import type { GiftMessage } from "../domain/firstRun/welcome";
+
 export interface Game {
   id: string;
   title: string;
@@ -54,6 +56,8 @@ declare global {
       logError: (error: ErrorData) => Promise<{ received: boolean }>;
       /** URL of a remote image through the app's offline image cache. */
       cachedImageUrl: (src: string) => string;
+      /** The birthday message in `gift.json` beside the app, or null. */
+      getGiftMessage: () => Promise<GiftMessage | null>;
     };
   }
 }

@@ -41,4 +41,5 @@ contextBridge.exposeInMainWorld("electron", {
   },
   logError: (error) => ipcRenderer.invoke("log-error", error),
   cachedImageUrl: (src) => cachedImageUrl(String(src)),
+  getGiftMessage: () => ipcRenderer.invoke("get-gift-message"),
 });

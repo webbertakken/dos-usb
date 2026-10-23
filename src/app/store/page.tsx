@@ -13,7 +13,9 @@ import { sortGames, LIBRARY_SORTS, LibrarySortKey } from "../../domain/library/s
 import { buildDownloadPayload, SITE_NAMES } from "../../domain/library/select";
 import { columnsForWidth } from "../../presentation/grid/virtualGrid";
 import { buildDisplayItems } from "../../presentation/grid/groupedRows";
-import { FaSearch, FaExclamationCircle } from "react-icons/fa";
+import { FaSearch, FaExclamationCircle, FaWifi } from "react-icons/fa";
+import FriendlyErrorNotice from "../../components/FriendlyErrorNotice";
+import { useOnlineStatus } from "../../presentation/hooks/useOnlineStatus";
 
 /** Rows of cards per category shelf when grouping across all categories. */
 const SHELF_ROWS = 2;
@@ -25,6 +27,8 @@ export default function StorePage() {
     fetchGames,
     downloadGame,
     launchGame,
+    launchError,
+    clearLaunchError,
     setupDownloadListeners,
     cleanupDownloadListeners,
   } = useGameStore();
@@ -32,6 +36,7 @@ export default function StorePage() {
   const [library, setLibrary] = useState<CanonicalGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const online = useOnlineStatus();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -155,12 +160,27 @@ export default function StorePage() {
     <div className="p-6 h-full">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-white mb-2">Game library</h1>
-        <p className="text-gray-400">
+        <p className="text-gray-300">
           {library.length > 0
             ? `${library.length.toLocaleString()} DOS games aggregated from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(" and ")}`
             : "Browse and download classic DOS games"}
         </p>
       </div>
+
+      {!online && (
+        <div
+          role="status"
+          className="mb-6 flex items-start gap-3 rounded-lg border border-sky-500 bg-sky-950 p-4 text-sky-50"
+        >
+          <FaWifi className="mt-1 shrink-0 text-xl text-sky-300" aria-hidden="true" />
+          <p className="text-lg">
+            You are offline. The games on your stick still work: find them in My Games. Downloading
+            new games here needs an internet connection.
+          </p>
+        </div>
+      )}
+
+      {launchError && <FriendlyErrorNotice error={launchError} onDismiss={clearLaunchError} />}
 
       <div className="flex flex-col lg:flex-row gap-3 mb-4">
         <div className="relative flex-grow">
@@ -243,7 +263,7 @@ export default function StorePage() {
       </div>
 
       {!loading && !error && (
-        <p className="text-gray-500 text-sm mb-4" aria-live="polite">
+        <p className="text-gray-400 text-sm mb-4" aria-live="polite">
           Showing {filtered.length.toLocaleString()} of {library.length.toLocaleString()} games
         </p>
       )}
@@ -297,6 +317,7 @@ export default function StorePage() {
                           onDownload={handleDownload}
                           onPlay={handlePlay}
                           onOpen={setSelectedGame}
+                          online={online}
                         />
                       ))}
                     </div>
@@ -316,6 +337,7 @@ export default function StorePage() {
           onDownload={handleDownload}
           onPlay={handlePlay}
           onClose={() => setSelectedGame(null)}
+          online={online}
         />
       )}
     </div>

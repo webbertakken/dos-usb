@@ -102,7 +102,7 @@ const Navigation: React.FC = () => {
             ))}
           </ul>
         </div>
-        <div className="p-4 text-center text-xs text-gray-500">
+        <div className="p-4 text-center text-xs text-gray-400">
           <p>DOS USB v0.1.0</p>
           <p>Running from portable drive</p>
         </div>
