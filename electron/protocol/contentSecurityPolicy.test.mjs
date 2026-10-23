@@ -60,10 +60,16 @@ describe("buildContentSecurityPolicy", () => {
     expect(directive(policy, "script-src")).toBe("script-src 'self'");
   });
 
-  it("allows hotlinked https screenshots and same-origin images in production", () => {
+  it("allows hotlinked https, cached and same-origin images in production", () => {
     const policy = buildContentSecurityPolicy({ isDev: false, scriptHashes: [] });
 
-    expect(directive(policy, "img-src")).toBe("img-src 'self' data: https:");
+    expect(directive(policy, "img-src")).toBe("img-src 'self' data: https: dosusb-image:");
+  });
+
+  it("allows cached images in development", () => {
+    const policy = buildContentSecurityPolicy({ isDev: true });
+
+    expect(directive(policy, "img-src")).toBe("img-src 'self' data: https: dosusb-image:");
   });
 
   it("locks down plugins and base-URI hijacking in production", () => {

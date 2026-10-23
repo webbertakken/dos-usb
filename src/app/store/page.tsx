@@ -5,6 +5,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGameStore } from "../../store/gameStore";
 import LibraryCard from "../../components/LibraryCard";
 import LibraryDetailModal from "../../components/LibraryDetailModal";
+import CategoryShelfHeader from "../../components/CategoryShelfHeader";
 import { DosgamesListItem } from "../../types";
 import { CanonicalGame } from "../../domain/library/types";
 import { loadLibrary } from "../../domain/library/loadLibrary";
@@ -13,6 +14,9 @@ import { buildDownloadPayload, SITE_NAMES } from "../../domain/library/select";
 import { columnsForWidth } from "../../presentation/grid/virtualGrid";
 import { buildDisplayItems } from "../../presentation/grid/groupedRows";
 import { FaSearch, FaExclamationCircle } from "react-icons/fa";
+
+/** Rows of cards per category shelf when grouping across all categories. */
+const SHELF_ROWS = 2;
 
 export default function StorePage() {
   const {
@@ -91,10 +95,27 @@ export default function StorePage() {
   const [columns, setColumns] = useState(4);
   const [scrollMargin, setScrollMargin] = useState(0);
 
+  // Grouped across all categories, each category is a shelf of its top rows;
+  // with one category chosen, its section shows every game.
   const displayItems = useMemo(
-    () => buildDisplayItems(filtered, columns, grouped ? (g) => g.category : undefined),
-    [filtered, columns, grouped],
+    () =>
+      buildDisplayItems(
+        filtered,
+        columns,
+        grouped
+          ? {
+              groupOf: (g) => g.category,
+              shelfRows: categoryFilter ? undefined : SHELF_ROWS,
+            }
+          : undefined,
+      ),
+    [filtered, columns, grouped, categoryFilter],
   );
+
+  const showCategory = (category: string) => {
+    setCategoryFilter(category);
+    scrollElRef.current?.scrollTo({ top: 0 });
+  };
 
   useEffect(() => {
     const measure = () => {
@@ -259,10 +280,12 @@ export default function StorePage() {
                   }}
                 >
                   {item.kind === "header" ? (
-                    <h2 className="text-xl font-bold text-white pt-4 pb-3">
-                      {item.label}{" "}
-                      <span className="text-gray-500 text-sm font-normal">({item.count})</span>
-                    </h2>
+                    <CategoryShelfHeader
+                      label={item.label}
+                      count={item.count}
+                      hasMore={item.hasMore}
+                      onSeeAll={showCategory}
+                    />
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
                       {item.items.map((game) => (

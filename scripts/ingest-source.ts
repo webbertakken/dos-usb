@@ -1,7 +1,8 @@
 /**
  * Ingest one scrape-only source into a cache file that build-library reads.
  *
- * Heavy scrapes run once here (resumable cache) so `build-library` stays fast.
+ * Heavy scrapes run once here (incremental cache) so `build-library` stays fast.
+ * A run refreshes listings by URL and keeps cached ones it did not reach.
  *
  * Run:  tsx scripts/ingest-source.ts <source> [--limit=N]
  *   sources: abandonwaredos, dosgamesarchive
@@ -11,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { PoliteFetcher } from "./lib/fetcher.js";
+import { mergeIngested } from "./lib/ingestCache.js";
 import { fetchAbandonwareDosListings } from "./sources/abandonwareDos.js";
 import { fetchDosgamesArchiveListings } from "./sources/dosgamesArchive.js";
 import type { SourceListing } from "../src/domain/library/types.js";
@@ -40,11 +42,18 @@ async function main(): Promise<void> {
   fs.mkdirSync(cacheDir, { recursive: true });
   const fetcher = new PoliteFetcher({ minIntervalMs: 350, respectRobots: true, retries: 3 });
   console.log(`Ingesting ${source}...`);
-  const listings = await FETCHERS[source](fetcher, { limit });
+  const fresh = await FETCHERS[source](fetcher, { limit });
 
   const out = path.join(cacheDir, `${source}.json`);
-  fs.writeFileSync(out, JSON.stringify(listings));
-  console.log(`Wrote ${listings.length} ${source} listings to ${out}`);
+  const cached: SourceListing[] = fs.existsSync(out)
+    ? (JSON.parse(fs.readFileSync(out, "utf8")) as SourceListing[])
+    : [];
+  const { listings, added, kept } = mergeIngested(cached, fresh);
+  fs.writeFileSync(out, `${JSON.stringify(listings, null, 2)}\n`);
+  console.log(
+    `Wrote ${listings.length} ${source} listings to ${out} ` +
+      `(${fresh.length} fetched, ${added} new, ${kept} kept from cache)`,
+  );
 }
 
 main().catch((error) => {

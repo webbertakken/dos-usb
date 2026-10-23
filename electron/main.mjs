@@ -17,6 +17,7 @@ import {
   buildTerminationCommand,
 } from "./dosbox/platform.mjs";
 import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
   APP_ORIGIN,
   APP_SCHEME,
@@ -48,7 +49,10 @@ console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
 
 // The packaged renderer loads from app://dos-usb/, not file://, so the static
 // export's absolute asset paths and routes resolve. Must precede `ready`.
-protocol.registerSchemesAsPrivileged([{ scheme: APP_SCHEME, privileges: APP_SCHEME_PRIVILEGES }]);
+protocol.registerSchemesAsPrivileged([
+  { scheme: APP_SCHEME, privileges: APP_SCHEME_PRIVILEGES },
+  { scheme: IMAGE_CACHE_SCHEME, privileges: { standard: true, secure: true } },
+]);
 
 const isFile = (candidate) => {
   try {
@@ -201,6 +205,15 @@ ipcMain.handle("get-library", async () => {
 
 app.whenReady().then(() => {
   if (!isDev) serveStaticExport();
+  // Store-seen screenshots live beside the games, so they travel on the stick.
+  protocol.handle(
+    IMAGE_CACHE_SCHEME,
+    createImageCacheHandler({
+      cacheDir: path.join(portableRoot, "image-cache"),
+      fetchImage: (url) => net.fetch(url),
+      log: console,
+    }),
+  );
   createWindow();
 });
 

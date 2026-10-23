@@ -29,6 +29,22 @@ describe("parseAwdGamePage", () => {
     expect(listing.metrics.rating).toBeCloseTo(4.06, 2);
   });
 
+  it("uses the page view count as its popularity signal", () => {
+    expect(listing.metrics.views).toBe(14192);
+    expect(listing.rawPopularity).toBe(14192);
+  });
+
+  it("reads a view count written with thousands separators", () => {
+    const html = "<h1>X</h1><strong>Abandonware DOS views</strong>: 1,234,567<br>";
+    expect(parseAwdGamePage(html, "u").rawPopularity).toBe(1234567);
+  });
+
+  it("leaves popularity unknown when the page shows no view count", () => {
+    const listing = parseAwdGamePage("<h1>X</h1>", "u");
+    expect(listing.metrics.views).toBeUndefined();
+    expect(listing.rawPopularity).toBeUndefined();
+  });
+
   it("captures a download URL", () => {
     expect(listing.downloadUrl).toMatch(/aw-download\.php/);
   });

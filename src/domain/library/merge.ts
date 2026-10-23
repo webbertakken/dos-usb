@@ -1,14 +1,14 @@
 /**
  * Merge per-source listings into deduplicated canonical games.
  *
- * Steps: assign per-source normalised popularity, group by normalised title,
- * cluster each group by year (+/-1), then merge each cluster into one
- * `CanonicalGame`, preferring richer sources for descriptive fields.
+ * Steps: group by normalised title, cluster each group by year (+/-1), rank
+ * each cluster within every source it is listed on, then merge each cluster
+ * into one `CanonicalGame`, preferring richer sources for descriptive fields.
  */
 
 import { CanonicalGame, SiteId, SourceListing } from "./types";
 import { canonicalId, matchKey, normaliseTitle } from "./normalise";
-import { percentileRanks, combinePopularity } from "./popularity";
+import { percentileRanks, combinePopularity, combineWithinSource } from "./popularity";
 import { unifyCategory } from "./category";
 
 // Richer sources first - used when picking a single value for a field.
@@ -37,21 +37,41 @@ function pick<T>(
   return undefined;
 }
 
-/** Assign each listing a normalised popularity (percentile within its source). */
-function assignNormalisedPopularity(listings: SourceListing[]): void {
-  const bySite = new Map<SiteId, SourceListing[]>();
-  for (const listing of listings) {
-    if (typeof listing.rawPopularity !== "number") continue;
-    const arr = bySite.get(listing.site) ?? [];
-    arr.push(listing);
-    bySite.set(listing.site, arr);
-  }
-  for (const [, arr] of bySite) {
-    const ranks = percentileRanks(arr.map((l) => l.rawPopularity as number));
-    for (const listing of arr) {
-      listing.normalisedPopularity = ranks.get(listing.rawPopularity as number);
+/**
+ * Rank every cluster (game) within each source it is listed on. A game's raw
+ * value per source combines its items there; each listing then carries the
+ * game's percentile within that source.
+ */
+function withNormalisedPopularity(clusters: SourceListing[][]): SourceListing[][] {
+  const rawBySite = new Map<SiteId, Map<number, number>>();
+  clusters.forEach((cluster, index) => {
+    const valuesBySite = new Map<SiteId, number[]>();
+    for (const listing of cluster) {
+      if (typeof listing.rawPopularity !== "number") continue;
+      valuesBySite.set(listing.site, [
+        ...(valuesBySite.get(listing.site) ?? []),
+        listing.rawPopularity,
+      ]);
     }
-  }
+    for (const [site, values] of valuesBySite) {
+      const perCluster = rawBySite.get(site) ?? new Map<number, number>();
+      perCluster.set(index, combineWithinSource(site, values));
+      rawBySite.set(site, perCluster);
+    }
+  });
+
+  const ranksBySite = new Map(
+    [...rawBySite].map(([site, perCluster]) => [site, percentileRanks([...perCluster.values()])]),
+  );
+
+  return clusters.map((cluster, index) =>
+    cluster.map((listing) => {
+      const raw = rawBySite.get(listing.site)?.get(index);
+      return raw === undefined || typeof listing.rawPopularity !== "number"
+        ? listing
+        : { ...listing, normalisedPopularity: ranksBySite.get(listing.site)?.get(raw) };
+    }),
+  );
 }
 
 /** Cluster listings (same title) into groups whose years are within +/-1. */
@@ -81,15 +101,29 @@ function clusterByYear(listings: SourceListing[]): SourceListing[][] {
   return clusters;
 }
 
+// Sites that refuse image requests from other origins (hotlink protection).
+// Their images are never shown, out of respect for that choice.
+const HOTLINK_BLOCKED_SITES: ReadonlySet<SiteId> = new Set(["abandonwaredos"]);
+
+// The Internet Archive's descriptions are uploader text (often pasted manuals
+// or catalogue boilerplate), so curated sources' descriptions win over them.
+const isBulkArchive = (listing: SourceListing) => listing.site === "archive.org";
+
+const longestDescription = (listings: SourceListing[]): string =>
+  listings
+    .map((l) => l.description ?? "")
+    .reduce((best, d) => (d.length > best.length ? d : best), "");
+
 function mergeCluster(listings: SourceListing[]): CanonicalGame {
   const title = pick(listings, (l) => l.title) ?? listings[0].title ?? "Untitled";
   const year = pick(listings, (l) => l.year) ?? "";
-  const description = listings
-    .map((l) => l.description ?? "")
-    .reduce((best, d) => (d.length > best.length ? d : best), "");
+  const description =
+    longestDescription(listings.filter((l) => !isBulkArchive(l))) ||
+    longestDescription(listings.filter(isBulkArchive));
+  const displayable = listings.filter((l) => !HOTLINK_BLOCKED_SITES.has(l.site));
   const image =
-    listings.find((l) => l.image && l.image.startsWith("/"))?.image ??
-    pick(listings, (l) => l.image);
+    displayable.find((l) => l.image && l.image.startsWith("/"))?.image ??
+    pick(displayable, (l) => l.image);
   const tags = [...new Set(listings.flatMap((l) => l.tags ?? []))];
   const ratings = listings
     .map((l) => l.metrics.rating)
@@ -126,6 +160,26 @@ function mergeCluster(listings: SourceListing[]): CanonicalGame {
 }
 
 /**
+ * A title ending in its own release year ("Oregon Trail The 1990") joins the
+ * plain title when another listing carries it; otherwise the year stays, as
+ * in yearly series ("NHL Hockey 1995"). A source without a year is taken to
+ * mean the title's year.
+ */
+function bucketKey(
+  listing: SourceListing,
+  aliasOf: (key: string) => string,
+  knownKeys: ReadonlySet<string>,
+): string {
+  const key = matchKey(listing.title ?? "");
+  const ownYear = key.match(/^(.+) (\d{4})$/);
+  const isReleaseYear = ownYear && (!listing.year || ownYear[2] === listing.year);
+  if (ownYear && isReleaseYear && knownKeys.has(aliasOf(ownYear[1]))) {
+    return aliasOf(ownYear[1]);
+  }
+  return aliasOf(key);
+}
+
+/**
  * Merge listings into canonical games.
  * @param listings all source listings across every source
  * @param aliases optional manual remap of normalised title -> canonical title
@@ -134,25 +188,21 @@ export function mergeListings(
   listings: SourceListing[],
   aliases: Record<string, string> = {},
 ): CanonicalGame[] {
-  assignNormalisedPopularity(listings);
+  const aliasOf = (key: string) => aliases[key] ?? key;
+  const knownKeys = new Set(listings.map((listing) => aliasOf(matchKey(listing.title ?? ""))));
 
   const buckets = new Map<string, SourceListing[]>();
   for (const listing of listings) {
-    const key = aliases[matchKey(listing.title ?? "")] ?? matchKey(listing.title ?? "");
+    const key = bucketKey(listing, aliasOf, knownKeys);
     const arr = buckets.get(key) ?? [];
     arr.push(listing);
     buckets.set(key, arr);
   }
 
-  const games: CanonicalGame[] = [];
-  for (const [, bucket] of buckets) {
-    for (const cluster of clusterByYear(bucket)) {
-      if (cluster.length > 0) {
-        games.push(mergeCluster(cluster));
-      }
-    }
-  }
-  return games;
+  const clusters = [...buckets.values()]
+    .flatMap(clusterByYear)
+    .filter((cluster) => cluster.length > 0);
+  return withNormalisedPopularity(clusters).map(mergeCluster);
 }
 
 // Re-exported for callers that want the title key.

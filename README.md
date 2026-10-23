@@ -99,7 +99,9 @@ The build yields ~10,400 games across these four sources (~2,700 listed on more 
 
 This repository stores **metadata, provenance and links only** - it never bundles or mirrors
 copyrighted game binaries; those are fetched on demand from the originating source. Screenshots from
-DOSGames.com are cached locally in `public/screens/`; the other sources' images are hotlinked.
+DOSGames.com are bundled in `public/screens/`; other screenshots are cached on your machine once
+shown, so they also work offline. Sites that forbid hotlinking (Abandonware DOS) are never fetched
+for images.
 
 Rights holders: to request removal of a title, add its canonical id to `scripts/data/denylist.json`
 (or open an issue) and rebuild - denied games are excluded from the library.

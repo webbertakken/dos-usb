@@ -26,7 +26,7 @@ const DEVELOPMENT_POLICY = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https:",
+  "img-src 'self' data: https: dosusb-image:",
   "connect-src 'self' ws: wss: http: https:",
 ];
 
@@ -42,7 +42,7 @@ export function buildContentSecurityPolicy({ isDev, scriptHashes = [] }) {
     "default-src 'self'",
     ["script-src 'self'", ...scriptHashes].join(" "),
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
+    "img-src 'self' data: https: dosusb-image:",
     "font-src 'self'",
     "connect-src 'self' https:",
     "object-src 'none'",

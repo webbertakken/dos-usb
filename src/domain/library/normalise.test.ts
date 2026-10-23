@@ -28,6 +28,35 @@ describe("normaliseTitle", () => {
   });
 });
 
+describe("normaliseTitle catalogue prefixes", () => {
+  it("drops an Internet Archive platform or shareware prefix", () => {
+    expect(normaliseTitle("MS-DOS: Prince of Persia (CGA Graphics and PC Speaker)")).toBe(
+      "prince of persia",
+    );
+    expect(normaliseTitle("Shareware Game: Paranoid")).toBe("paranoid");
+    expect(normaliseTitle("MS-DOS Game: Stunts")).toBe("stunts");
+  });
+
+  it("drops a trailing platform label", () => {
+    expect(normaliseTitle("The Oregon Trail 1990 MS-DOS")).toBe("oregon trail 1990");
+    expect(normaliseTitle("Super Street Fighter 2 Turbo DOS")).toBe("super street fighter 2 turbo");
+    expect(normaliseTitle("Dyna Blaster (Bomberman) - DOS")).toBe("dyna blaster");
+    expect(normaliseTitle("Tetris for DOS")).toBe("tetris");
+  });
+
+  it("drops a generic trailing version", () => {
+    expect(normaliseTitle("Lemmings Version")).toBe("lemmings");
+  });
+
+  it("keeps a title that is only a platform word", () => {
+    expect(normaliseTitle("DOS")).toBe("dos");
+  });
+
+  it("keeps a colon that belongs to the title", () => {
+    expect(normaliseTitle("Dune II: The Building of a Dynasty")).toBe("dune 2 building of dynasty");
+  });
+});
+
 describe("sameYear", () => {
   it("treats years within +/-1 as the same", () => {
     expect(sameYear("1992", "1993")).toBe(true);

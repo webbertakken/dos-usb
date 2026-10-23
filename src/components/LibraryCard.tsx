@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { displayImageUrl } from "../presentation/images/displayImageUrl";
 import {
   FaDownload,
   FaSpinner,
@@ -64,7 +65,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
         <div className="relative h-40 w-full bg-gray-900">
           {game.image ? (
             <Image
-              src={game.image}
+              src={displayImageUrl(game.image)}
               alt={`${game.title} screenshot`}
               className="object-cover"
               fill

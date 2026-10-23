@@ -19,10 +19,14 @@ const ARTICLES = new Set(["the", "a", "an"]);
 
 /**
  * Normalise a game title to a comparable key: lowercase, no punctuation,
- * no leading article, roman numerals as digits, ampersands as "and".
+ * no leading article or catalogue prefix, roman numerals as digits,
+ * ampersands as "and".
  */
 export function normaliseTitle(title: string): string {
   let text = (title || "").toLowerCase();
+
+  // Drop catalogue prefixes such as "MS-DOS:" or "Shareware Game:".
+  text = text.replace(/^\s*(ms-dos|shareware)(\s+game)?\s*:\s*/, "");
 
   // Strip bracketed/parenthetical edition or version suffixes.
   text = text.replace(/[([{][^)\]}]*[)\]}]/g, " ");
@@ -41,9 +45,15 @@ export function normaliseTitle(title: string): string {
   // Drop articles anywhere, but never reduce to nothing.
   const withoutArticles = words.filter((word) => !ARTICLES.has(word));
   const kept = withoutArticles.length > 0 ? withoutArticles : words;
-  // Drop a generic trailing "version".
+  // Drop a generic trailing "version" and a trailing platform label
+  // ("... DOS", "... MS-DOS", "... for DOS").
   while (kept.length > 1 && kept[kept.length - 1] === "version") {
     kept.pop();
+  }
+  if (kept.length > 1 && kept[kept.length - 1] === "dos") {
+    kept.pop();
+    if (kept.length > 1 && kept[kept.length - 1] === "ms") kept.pop();
+    if (kept.length > 1 && kept[kept.length - 1] === "for") kept.pop();
   }
 
   return kept.join(" ").trim();

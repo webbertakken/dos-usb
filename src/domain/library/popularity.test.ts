@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { percentileRanks, combinePopularity } from "./popularity";
+import { percentileRanks, combinePopularity, combineWithinSource } from "./popularity";
 
 describe("percentileRanks", () => {
   it("maps the smallest value near 0 and the largest to 1", () => {
@@ -36,5 +36,15 @@ describe("combinePopularity", () => {
   it("returns 0 when nothing is known", () => {
     expect(combinePopularity([undefined, undefined])).toBe(0);
     expect(combinePopularity([])).toBe(0);
+  });
+});
+
+describe("combineWithinSource", () => {
+  it("sums counts for a count-based source", () => {
+    expect(combineWithinSource("archive.org", [3, 4])).toBe(7);
+  });
+
+  it("keeps the best rank for a rank-based source", () => {
+    expect(combineWithinSource("dosgames", [-150, -101])).toBe(-101);
   });
 });

@@ -76,4 +76,16 @@ describe("buildDownloadPayload", () => {
     expect(payload.runExe).toBe("WOLF3D.EXE");
     expect(payload.title).toBe("Wolfenstein 3D");
   });
+
+  it("uses the game's chosen image, never the download source's own", () => {
+    const g = game([
+      src({
+        site: "abandonwaredos",
+        downloadUrl: "https://www.abandonwaredos.com/aw-download.php?gid=1",
+        image: "https://www.abandonwaredos.com/x.jpg",
+      }),
+    ]);
+    expect(buildDownloadPayload(g)!.image).toBe("");
+    expect(buildDownloadPayload({ ...g, image: "/screens/w.png" })!.image).toBe("/screens/w.png");
+  });
 });

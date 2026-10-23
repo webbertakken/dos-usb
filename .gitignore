@@ -33,6 +33,8 @@
 
 # The games that are downloaded
 /games
+# Screenshots the store has shown, cached for offline use
+/image-cache
 
 # misc
 .DS_Store

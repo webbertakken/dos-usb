@@ -79,6 +79,161 @@ describe("mergeListings", () => {
     expect(small.popularity).toBeCloseTo(0.5, 5);
   });
 
+  it("sums a source's counts across several items of the same game before ranking", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a1", title: "Split", year: "1993", rawPopularity: 60 }),
+      listing({ site: "archive.org", url: "a2", title: "Split", year: "1993", rawPopularity: 60 }),
+      listing({ site: "archive.org", url: "b", title: "Single", year: "1993", rawPopularity: 100 }),
+    ]);
+    const split = games.find((g) => g.title === "Split")!;
+    const single = games.find((g) => g.title === "Single")!;
+    expect(split.popularity).toBe(1);
+    expect(single.popularity).toBeCloseTo(0.5, 5);
+    expect(split.sources.every((s) => s.normalisedPopularity === 1)).toBe(true);
+  });
+
+  it("keeps the best rank, not a sum, for a rank-based source", () => {
+    const games = mergeListings([
+      listing({ site: "dosgames", url: "d1", title: "Ranked", year: "1993", rawPopularity: -101 }),
+      listing({ site: "dosgames", url: "d2", title: "Ranked", year: "1993", rawPopularity: -102 }),
+      listing({ site: "dosgames", url: "e", title: "Other", year: "1993", rawPopularity: -150 }),
+    ]);
+    const ranked = games.find((g) => g.title === "Ranked")!;
+    const other = games.find((g) => g.title === "Other")!;
+    expect(ranked.popularity).toBe(1);
+    expect(other.popularity).toBeCloseTo(0.5, 5);
+  });
+
+  it("takes the most popular source's percentile when a game has several sources", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Hit", year: "1993", rawPopularity: 1 }),
+      listing({ site: "archive.org", url: "b", title: "Big", year: "1993", rawPopularity: 9 }),
+      listing({ site: "abandonwaredos", url: "c", title: "Hit", year: "1993", rawPopularity: 500 }),
+    ]);
+    expect(games.find((g) => g.title === "Hit")!.popularity).toBe(1);
+  });
+
+  it("merges a title carrying its own release year into the plain title", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Oregon Trail The 1990", year: "1990" }),
+      listing({ site: "abandonwaredos", url: "b", title: "The Oregon Trail", year: "1990" }),
+    ]);
+    expect(games).toHaveLength(1);
+    expect(games[0].sources).toHaveLength(2);
+  });
+
+  it("finds the own year behind a platform label", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "The Oregon Trail 1990 MS-DOS",
+        year: "1990",
+      }),
+      listing({ site: "abandonwaredos", url: "b", title: "The Oregon Trail", year: "1990" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
+  it("reads a trailing year as the release year when the source gives none", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Xmas Lemmings 1992", year: "" }),
+      listing({ site: "dosgamesarchive", url: "b", title: "Xmas Lemmings", year: "1992" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
+  it("keeps a trailing year that is part of a title with no plain counterpart", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "NHL Hockey 1995", year: "1995" }),
+      listing({ site: "archive.org", url: "b", title: "NHL Hockey 1994", year: "1994" }),
+    ]);
+    expect(games).toHaveLength(2);
+  });
+
+  it("keeps a trailing year that differs from the release year", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Tennis 1995", year: "1993" }),
+      listing({ site: "archive.org", url: "b", title: "Tennis", year: "1993" }),
+    ]);
+    expect(games).toHaveLength(2);
+  });
+
+  it("prefers a curated description over a longer Internet Archive one", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        description: "Click here for the manual. Also for Amiga, Mac and more.",
+      }),
+      listing({
+        site: "abandonwaredos",
+        url: "b",
+        title: "Doom",
+        year: "1993",
+        description: "Rip and tear.",
+      }),
+    ]);
+    expect(games[0].description).toBe("Rip and tear.");
+  });
+
+  it("uses the Internet Archive description when no curated source has one", () => {
+    const games = mergeListings([
+      listing({
+        site: "archive.org",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        description: "From IA.",
+      }),
+      listing({ site: "abandonwaredos", url: "b", title: "Doom", year: "1993" }),
+    ]);
+    expect(games[0].description).toBe("From IA.");
+  });
+
+  it("never shows an image from a source that forbids hotlinking", () => {
+    const games = mergeListings([
+      listing({
+        site: "abandonwaredos",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        image: "https://www.abandonwaredos.com/x.jpg",
+      }),
+      listing({
+        site: "archive.org",
+        url: "b",
+        title: "Doom",
+        year: "1993",
+        image: "https://archive.org/services/img/doom",
+      }),
+    ]);
+    expect(games[0].image).toBe("https://archive.org/services/img/doom");
+  });
+
+  it("shows no image when only a hotlink-blocking source has one", () => {
+    const games = mergeListings([
+      listing({
+        site: "abandonwaredos",
+        url: "a",
+        title: "Doom",
+        year: "1993",
+        image: "https://www.abandonwaredos.com/x.jpg",
+      }),
+    ]);
+    expect(games[0].image).toBeUndefined();
+  });
+
+  it("keeps listings of one title without any year together", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Undated", year: "" }),
+      listing({ site: "dosgamesarchive", url: "b", title: "Undated", year: "" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({
