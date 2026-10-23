@@ -182,7 +182,7 @@ how DOSBox, the catalogue and the library work.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Acknowledgments
 

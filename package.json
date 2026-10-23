@@ -5,6 +5,7 @@
   "main": "electron/main.mjs",
   "description": "A modern UI for playing DOS games from a USB stick",
   "author": "Webber Takken",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "node scripts/ensure-husky.mjs && next dev",
