@@ -6,6 +6,11 @@
  * when NODE_OPTIONS carries `--require` (as VS Code's debugger terminals and
  * tool harnesses set it), and honouring it would let any environment inject
  * code into the app. Development (`electron .`) is unaffected.
+ *
+ * RunAsNode stays on: the stick's AGENTS-README tells the recipient's agents
+ * to run TypeScript scripts with the bundled runtime
+ * (ELECTRON_RUN_AS_NODE=1 <app> --experimental-strip-types script.ts), so
+ * nothing needs installing on the host.
  */
 
 import path from "path";
@@ -31,6 +36,7 @@ export function fuseConfigFor(electronPlatformName) {
     version: FuseVersion.V1,
     resetAdHocDarwinSignature: electronPlatformName === "darwin",
     [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+    [FuseV1Options.RunAsNode]: true,
   };
 }
 
@@ -46,7 +52,11 @@ export function createAfterPack({ flipFuses, getCurrentFuseWire, log }) {
         `EnableNodeOptionsEnvironmentVariable fuse is ${nodeOptions}, expected disabled: ${electronPath}`,
       );
     }
-    log(`[fuses] ${electronPath}: NODE_OPTIONS ignored`);
+    const runAsNode = wire[FuseV1Options.RunAsNode];
+    if (runAsNode !== FuseState.ENABLE) {
+      throw new Error(`RunAsNode fuse is ${runAsNode}, expected enabled: ${electronPath}`);
+    }
+    log(`[fuses] ${electronPath}: NODE_OPTIONS ignored, ELECTRON_RUN_AS_NODE honoured`);
   };
 }
 
