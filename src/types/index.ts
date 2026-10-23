@@ -6,6 +6,12 @@ export interface Game {
   category: string;
   image: string;
   path: string;
+  /** "custom": the user copied it into games-custom/; "download": fetched by the app. */
+  source?: "download" | "custom";
+  /** A custom game the app could not detect a program for; `attention` says why. */
+  status?: "ready" | "needs-attention";
+  attention?: string;
+  libraryId?: string;
 }
 
 // Single source of truth for the catalogue item shape lives in the domain.

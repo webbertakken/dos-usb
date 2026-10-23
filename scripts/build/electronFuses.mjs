@@ -22,13 +22,16 @@ import {
   getCurrentFuseWire,
 } from "@electron/fuses";
 
-/** The binary (or macOS bundle) whose fuses are flipped. */
+/**
+ * The binary (or macOS bundle) whose fuses are flipped. appOutDir is on the
+ * build host, so it joins the host's way: a Windows build cross-built on
+ * Linux still lives at a POSIX path.
+ */
 export function packagedElectronPath({ electronPlatformName, appOutDir, packager }) {
   const { productFilename } = packager.appInfo;
-  if (electronPlatformName === "win32") return path.win32.join(appOutDir, `${productFilename}.exe`);
-  if (electronPlatformName === "darwin")
-    return path.posix.join(appOutDir, `${productFilename}.app`);
-  return path.posix.join(appOutDir, packager.executableName);
+  if (electronPlatformName === "win32") return path.join(appOutDir, `${productFilename}.exe`);
+  if (electronPlatformName === "darwin") return path.join(appOutDir, `${productFilename}.app`);
+  return path.join(appOutDir, packager.executableName);
 }
 
 export function fuseConfigFor(electronPlatformName) {

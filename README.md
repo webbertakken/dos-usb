@@ -44,15 +44,16 @@ The app runs on **Windows, Linux, and macOS**. It locates DOSBox per platform:
 
 - **Windows**: uses the portable DOSBox in `bin/DOSBoxPortable`, or any `dosbox` on `PATH` as a
   fallback.
-- **Linux**: install a DOSBox from your package manager so one of `dosbox-staging`, `dosbox-x`, or
-  `dosbox` is on `PATH` (e.g. `sudo apt install dosbox-staging` or `sudo apt install dosbox`).
+- **Linux**: uses the DOSBox Staging in `bin/dosbox-staging-linux` (a gift stick carries one; see
+  [Making a gift stick](#making-a-gift-stick)), or a DOSBox from your package manager so one of
+  `dosbox-staging`, `dosbox-x`, or `dosbox` is on `PATH` (e.g. `sudo apt install dosbox-staging`).
 - **macOS**: install via Homebrew, e.g. `brew install dosbox-staging`.
 
 DOSBox is discovered in the order `dosbox-staging` -> `dosbox-x` -> `dosbox`. If none is found,
 launching a game reports a clear error with an install hint instead of failing silently.
 
-Downloaded games are stored in a `games` folder beside the app, and `bin/DOSBoxPortable` is resolved
-from the same folder, so the whole folder travels on a USB stick.
+Downloaded games are stored in a `games` folder beside the app, and the bundled DOSBoxes in `bin/`
+are resolved from the same folder, so the whole folder travels on a USB stick.
 
 ### Toolchain
 
@@ -68,6 +69,29 @@ The home screen displays all your installed DOS games. You can:
 - Search for games by title, description, or category
 - Launch games with a single click
 - Edit game metadata: title, description, year, category, and image
+
+#### Add your own games
+
+Own a DOS game already? Copy it into the `games-custom` folder beside the app (on the stick, next to
+`games`). Next time you open the app, or switch back to it, the game is in My Games, marked **Your
+game**, ready to play.
+
+- Copy the game's folder, or its `.zip`. Folders inside folders are fine, and so are several games
+  in one folder (Commander Keen 1-3 come as `KEEN1.EXE`, `KEEN2.EXE`, `KEEN3.EXE` together and show
+  up as three games).
+- Installers and setup programs beside the game (`INSTALL.EXE`, `SETUP.EXE`) are left alone.
+- Well-known games get their proper title, year, description and screenshot from the library.
+- If the app cannot tell how to start a game, its card says **Needs attention** and why.
+- The app never changes your game folders; only the game itself writes there (its saves). Zips are
+  unpacked into `games-custom-unpacked`.
+
+To help a game the app gets wrong, put a `game.json` in its folder:
+
+```json
+{ "title": "Commander Keen 4", "runExe": "KEEN4E.EXE" }
+```
+
+See [Your own games](./docs/library/custom-games.md) for every detail.
 
 ### Game Store
 
@@ -148,7 +172,9 @@ fetches the Internet Archive collection live; pass `--no-ia` to skip it.
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
 downloads a game and launches it in DOSBox - a full cross-platform smoke test. It needs a display
 and a DOSBox on the machine. After `yarn electron-pack`, `yarn e2e:packaged` runs the same checks
-against the packaged app.
+against the packaged app. `node scripts/e2e/custom-games.mjs dist/linux-unpacked/dos-usb` lays out
+real shareware Keen 1 and 4 plus every messy layout in `games-custom`, screenshots My Games and
+plays Keen 1.
 
 ### Building for production
 
@@ -164,6 +190,17 @@ for how it serves the static export.
 build commit; [AGENTS-README.md](./AGENTS-README.md), copied to the stick root, tells the
 recipient's AI agent how to fix games. See [Source on the stick](./docs/electron/source-on-stick.md)
 and [per-game DOSBox overrides](./docs/dosbox/overrides.md).
+
+### Making a gift stick
+
+```bash
+yarn make-stick /media/$USER/STICK          # both apps; --skip windows|linux for one
+node scripts/e2e/stick.mjs /media/$USER/STICK # Linux: play a starter game from it
+```
+
+Lays out a ready-to-gift stick from the builds in `dist/`: both apps with obvious names, a DOSBox
+for each OS, the starter games pre-installed and a `START-HERE.html` welcome page. See
+[Gift stick](./docs/stick/assembly.md).
 
 ## Technical details
 

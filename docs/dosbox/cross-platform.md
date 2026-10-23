@@ -6,8 +6,11 @@ The app runs DOS games on Windows, Linux and macOS by resolving a DOSBox binary 
 
 `electron/dosbox/platform.mjs` (pure, unit-tested) decides what to run:
 
-1. The bundled Windows portable build (`bin/DOSBoxPortable/DOSBoxPortable.exe`, beside the app; see
-   [portable root](../electron/packaging.md#portable-root)).
+1. The DOSBox bundled beside the app (see [portable root](../electron/packaging.md#portable-root)),
+   so a stick needs nothing installed:
+   - Windows (any architecture): `bin/DOSBoxPortable/DOSBoxPortable.exe`.
+   - Linux x86_64: DOSBox Staging in `bin/dosbox-staging-linux/dosbox`, which
+     [`yarn make-stick`](../stick/assembly.md) puts on the stick.
 2. Otherwise a binary on `PATH`, searched in order: `dosbox-staging` -> `dosbox-x` -> `dosbox`.
 
 If none is found, launching a game returns a clear error with a per-OS install hint instead of

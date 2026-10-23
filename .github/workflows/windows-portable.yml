@@ -1,0 +1,113 @@
+name: Windows portable
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  windows-portable:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read Node version from mise.toml
+        id: node
+        run:
+          echo "version=$(grep -E '^node\s*=' mise.toml | sed -E 's/.*"([^"]+)".*/\1/')" >>
+          "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+
+      - name: Install package manager (from package.json)
+        run: |
+          corepack enable
+          corepack install
+
+      - name: Resolve yarn cache folder
+        id: yarn-config
+        run: echo "cacheFolder=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore yarn install cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ${{ steps.yarn-config.outputs.cacheFolder }}
+            .yarn/install-state.gz
+          key:
+            yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-${{ hashFiles('yarn.lock')
+            }}
+          restore-keys: |
+            yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-
+
+      - name: Install deps
+        env:
+          YARN_ENABLE_HARDENED_MODE: "false"
+        run: yarn install --immutable
+
+      - name: Build static export
+        run: yarn build
+
+      - name: Build DOSGamesPortable.exe
+        run: yarn electron-builder --win portable --x64 --publish never
+
+      - name: Lay out a stick (exe with bin/DOSBoxPortable beside it)
+        run: |
+          mkdir -p stick/bin
+          cp dist/DOSGamesPortable.exe stick/
+          cp -r bin/DOSBoxPortable stick/bin/
+
+      - name: Smoke test the portable exe
+        env:
+          E2E_ARTIFACTS: ${{ runner.temp }}/e2e
+        run: node scripts/e2e/verify.mjs --portable-exe stick/DOSGamesPortable.exe
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable-screenshots
+          path: ${{ runner.temp }}/e2e
+          if-no-files-found: warn
+
+      - name: Upload DOSGamesPortable.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: DOSGamesPortable
+          path: dist/DOSGamesPortable.exe
+          if-no-files-found: error
+
+  attach-to-release:
+    if: github.event_name == 'release'
+    needs: windows-portable
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: DOSGamesPortable
+
+      - name: Attach DOSGamesPortable.exe to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload "${{ github.event.release.tag_name }}" DOSGamesPortable.exe --clobber
+          --repo "${{ github.repository }}"
