@@ -1,4 +1,5 @@
 import React from "react";
+import { FaArrowRight } from "react-icons/fa";
 
 interface CategoryShelfHeaderProps {
   label: string;
@@ -8,7 +9,7 @@ interface CategoryShelfHeaderProps {
   onSeeAll: (category: string) => void;
 }
 
-/** Heading of one category section, with a way into the whole category. */
+/** Heading of one category shelf, with a way into the whole category. */
 export default function CategoryShelfHeader({
   label,
   count,
@@ -16,18 +17,24 @@ export default function CategoryShelfHeader({
   onSeeAll,
 }: CategoryShelfHeaderProps) {
   return (
-    <div className="flex items-baseline gap-4 pt-4 pb-3">
-      <h2 className="text-xl font-bold text-white">
-        {label} <span className="text-gray-400 text-sm font-normal">({count})</span>
+    <div className="flex items-center gap-4 pb-4 pt-8">
+      <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-paper">
+        {label}{" "}
+        <span className="font-pixel text-xl font-normal leading-none text-faint">({count})</span>
       </h2>
+      <span aria-hidden="true" className="h-px flex-1 bg-line" />
       {hasMore && (
         <button
           type="button"
           onClick={() => onSeeAll(label)}
           aria-label={`See all ${count} ${label} games`}
-          className="text-sm font-medium text-blue-300 underline underline-offset-4 hover:text-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+          className="group inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-cyan hover:bg-cyan/10"
         >
           See all {count}
+          <FaArrowRight
+            aria-hidden="true"
+            className="text-xs motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5"
+          />
         </button>
       )}
     </div>

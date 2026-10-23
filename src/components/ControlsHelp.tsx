@@ -1,11 +1,15 @@
 import React from "react";
 
 const Keys: React.FC<{ keys: ReadonlyArray<string> }> = ({ keys }) => (
-  <span className="inline-flex items-center gap-1 whitespace-nowrap">
+  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
     {keys.map((key, index) => (
       <React.Fragment key={key}>
-        {index > 0 && <span>+</span>}
-        <kbd className="px-2 py-1 rounded-md bg-gray-700 border border-gray-500 text-white font-mono text-sm">
+        {index > 0 && (
+          <span aria-hidden="true" className="font-pixel text-xl text-faint">
+            +
+          </span>
+        )}
+        <kbd className="inline-flex min-w-11 items-center justify-center rounded-md border border-field bg-raised px-2 pb-0.5 text-xl leading-7 text-paper shadow-[inset_0_-3px_0_rgb(0_0_0/0.35)]">
           {key}
         </kbd>
       </React.Fragment>
@@ -29,22 +33,25 @@ const CONTROLS: ReadonlyArray<{ keys: ReadonlyArray<string>; does: string }> = [
 const ControlsHelp: React.FC = () => (
   <section
     aria-labelledby="controls-help-heading"
-    className="rounded-lg bg-gray-800 border border-gray-700 p-5"
+    className="rounded-2xl border border-line bg-panel/60 p-6 sm:p-8"
   >
-    <h2 id="controls-help-heading" className="text-xl font-bold text-white mb-1">
+    <h2
+      id="controls-help-heading"
+      className="font-display text-xl font-bold tracking-tight text-paper"
+    >
       Game controls
     </h2>
-    <p className="text-gray-300 mb-4">
+    <p className="mt-1 text-muted">
       Games open in their own window. These keys work in every game:
     </p>
-    <dl className="grid gap-3 sm:grid-cols-[auto_1fr] sm:items-center">
+    <dl className="mt-6 grid gap-6 md:grid-cols-3">
       {CONTROLS.map(({ keys, does }) => (
-        <React.Fragment key={keys.join("+")}>
+        <div key={keys.join("+")} className="flex flex-col gap-3">
           <dt>
             <Keys keys={keys} />
           </dt>
-          <dd className="text-gray-200 mb-2 sm:mb-0">{does}</dd>
-        </React.Fragment>
+          <dd className="text-sm leading-relaxed text-muted">{does}</dd>
+        </div>
       ))}
     </dl>
   </section>

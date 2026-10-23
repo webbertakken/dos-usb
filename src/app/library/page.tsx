@@ -157,10 +157,12 @@ export default function LibraryPage() {
   const handlePlay = (gameId: string) => launchGame(gameId);
 
   return (
-    <div className="p-6 h-full">
+    <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-8 sm:px-8 sm:pt-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Library</h1>
-        <p className="text-gray-300">
+        <h1 className="font-display text-4xl font-extrabold tracking-tight text-paper mb-2 sm:text-5xl">
+          Library
+        </h1>
+        <p className="text-muted">
           {library.length > 0
             ? `${library.length.toLocaleString()} DOS games aggregated from ${sources.map((s) => SITE_NAMES[s as keyof typeof SITE_NAMES]).join(" and ")}`
             : "Browse and download classic DOS games"}
@@ -170,9 +172,9 @@ export default function LibraryPage() {
       {!online && (
         <div
           role="status"
-          className="mb-6 flex items-start gap-3 rounded-lg border border-sky-500 bg-sky-950 p-4 text-sky-50"
+          className="mb-6 flex items-start gap-3 rounded-lg border border-cyan/50 bg-panel p-4 text-paper"
         >
-          <FaWifi className="mt-1 shrink-0 text-xl text-sky-300" aria-hidden="true" />
+          <FaWifi className="mt-1 shrink-0 text-xl text-cyan" aria-hidden="true" />
           <p className="text-lg">
             You are offline. The games on your stick still work: find them in My Games. Downloading
             new games here needs an internet connection.
@@ -193,10 +195,10 @@ export default function LibraryPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by title, description or tag..."
-            className="w-full p-3 pl-10 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 pl-10 rounded-xl border border-field bg-panel text-paper hover:border-muted focus:border-cyan"
           />
           <FaSearch
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-faint"
             aria-hidden="true"
           />
         </div>
@@ -208,7 +210,7 @@ export default function LibraryPage() {
           id="library-sort"
           value={sort}
           onChange={(e) => setSort(e.target.value as LibrarySortKey)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 rounded-xl border border-field bg-panel text-paper hover:border-muted focus:border-cyan"
         >
           {LIBRARY_SORTS.map((s) => (
             <option key={s.key} value={s.key}>
@@ -224,7 +226,7 @@ export default function LibraryPage() {
           id="library-category"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 rounded-xl border border-field bg-panel text-paper hover:border-muted focus:border-cyan"
         >
           <option value="">All categories</option>
           {categories.map((c) => (
@@ -241,7 +243,7 @@ export default function LibraryPage() {
           id="library-source"
           value={sourceFilter}
           onChange={(e) => setSourceFilter(e.target.value)}
-          className="p-3 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 rounded-xl border border-field bg-panel text-paper hover:border-muted focus:border-cyan"
         >
           <option value="">All sources</option>
           {sources.map((s) => (
@@ -254,8 +256,10 @@ export default function LibraryPage() {
         <button
           onClick={() => setGrouped((g) => !g)}
           aria-pressed={grouped}
-          className={`px-4 py-3 rounded-md text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-            grouped ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+          className={`px-4 py-3 rounded-md text-sm font-medium whitespace-nowrap  ${
+            grouped
+              ? "bg-raised text-paper ring-1 ring-phosphor"
+              : "bg-panel text-muted ring-1 ring-field hover:text-paper"
           }`}
         >
           Group by category
@@ -263,23 +267,23 @@ export default function LibraryPage() {
       </div>
 
       {!loading && !error && (
-        <p className="text-gray-400 text-sm mb-4" aria-live="polite">
+        <p className="text-faint text-sm mb-4" aria-live="polite">
           Showing {filtered.length.toLocaleString()} of {library.length.toLocaleString()} games
         </p>
       )}
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan"></div>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <FaExclamationCircle className="text-red-500 text-4xl mb-4" aria-hidden="true" />
-          <p className="text-red-400 mb-2">{error}</p>
+          <FaExclamationCircle className="text-amber text-4xl mb-4" aria-hidden="true" />
+          <p className="text-amber mb-2">{error}</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <p className="text-gray-400">No games match your search.</p>
+          <p className="text-faint">No games match your search.</p>
         </div>
       ) : (
         <div ref={gridRef}>
@@ -307,7 +311,7 @@ export default function LibraryPage() {
                       onSeeAll={showCategory}
                     />
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-5">
                       {item.items.map((game) => (
                         <LibraryCard
                           key={game.id}

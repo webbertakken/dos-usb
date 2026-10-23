@@ -165,7 +165,7 @@ const firstLaunchWithGift = async (userDataDir) => {
 
     await page.getByRole("link", { name: "Library" }).first().click();
     await page
-      .getByRole("heading", { level: 1, name: "Game library" })
+      .getByRole("heading", { level: 1, name: "Library", exact: true })
       .waitFor({ timeout: 30_000 });
     await page.locator("h3").first().waitFor({ timeout: 60_000 });
     const cdp = await page.context().newCDPSession(page);

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Game, GameMetadata } from "../types";
-import { FaSave, FaTimes } from "react-icons/fa";
+import Dialog from "./Dialog";
+import { buttonClass } from "./buttonStyles";
 
 interface GameEditModalProps {
   game: Game | null;
@@ -9,26 +10,41 @@ interface GameEditModalProps {
   isLoading: boolean;
 }
 
+const CATEGORIES = [
+  "Action",
+  "Adventure",
+  "Educational",
+  "FPS",
+  "Other",
+  "Platformer",
+  "Puzzle",
+  "Racing",
+  "RPG",
+  "Simulation",
+  "Strategy",
+];
+
+const FIELD =
+  "w-full rounded-xl border border-field bg-night px-4 py-3 text-paper placeholder:text-faint transition-colors hover:border-muted focus:border-cyan";
+const LABEL = "mb-1.5 block text-sm font-semibold text-muted";
+
+/** Edit a downloaded game's title, description, year, category and screenshot. */
 const GameEditModal: React.FC<GameEditModalProps> = ({ game, onClose, onSave, isLoading }) => {
   const [formData, setFormData] = useState<GameMetadata>({
-    title: "",
-    description: "",
-    year: "",
-    category: "",
-    image: "",
+    title: game?.title ?? "",
+    description: game?.description ?? "",
+    year: game?.year ?? "",
+    category: game?.category ?? "",
+    image: game?.image ?? "",
   });
 
-  useEffect(() => {
-    if (game) {
-      setFormData({
-        title: game.title,
-        description: game.description,
-        year: game.year,
-        category: game.category,
-        image: game.image,
-      });
-    }
-  }, [game]);
+  if (!game) return null;
+
+  // The game's own category stays choosable, even when the list does not name it.
+  const categories =
+    game.category && !CATEGORIES.includes(game.category)
+      ? [game.category, ...CATEGORIES]
+      : CATEGORIES;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -39,135 +55,114 @@ const GameEditModal: React.FC<GameEditModalProps> = ({ game, onClose, onSave, is
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (game) {
-      onSave(game.id, formData);
-    }
+    onSave(game.id, formData);
   };
 
-  if (!game) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">Edit Game Details</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <FaTimes size={20} />
-          </button>
+    <Dialog title={`Edit ${game.title}`} onClose={onClose}>
+      <form onSubmit={handleSubmit} className="grid gap-5">
+        <div>
+          <label htmlFor="title" className={LABEL}>
+            Title
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className={FIELD}
+            data-autofocus
+            required
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4">
-          <div className="grid gap-4 mb-6">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+        <div>
+          <label htmlFor="description" className={LABEL}>
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={4}
+            className={`${FIELD} resize-y leading-relaxed`}
+          />
+        </div>
 
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="year" className="block text-sm font-medium text-gray-300 mb-1">
-                  Year
-                </label>
-                <input
-                  type="text"
-                  id="year"
-                  name="year"
-                  value={formData.year}
-                  onChange={handleChange}
-                  className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  <option value="Adventure">Adventure</option>
-                  <option value="Action">Action</option>
-                  <option value="FPS">FPS</option>
-                  <option value="RPG">RPG</option>
-                  <option value="Strategy">Strategy</option>
-                  <option value="Puzzle">Puzzle</option>
-                  <option value="Educational">Educational</option>
-                  <option value="Platformer">Platformer</option>
-                  <option value="Simulation">Simulation</option>
-                  <option value="Racing">Racing</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-300 mb-1">
-                Image URL
-              </label>
-              <input
-                type="url"
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                className="w-full p-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor="year" className={LABEL}>
+              Year
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              id="year"
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              className={FIELD}
+            />
           </div>
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition-colors"
-              disabled={isLoading}
+          <div>
+            <label htmlFor="category" className={LABEL}>
+              Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className={FIELD}
             >
-              <FaTimes className="mr-2" />
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-              disabled={isLoading}
-            >
-              <FaSave className="mr-2" />
-              {isLoading ? "Saving..." : "Save Changes"}
-            </button>
+              <option value="">No category</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        <div>
+          <label htmlFor="image" className={LABEL}>
+            Screenshot
+          </label>
+          <input
+            type="text"
+            inputMode="url"
+            id="image"
+            name="image"
+            value={formData.image}
+            onChange={handleChange}
+            placeholder="https://example.com/screenshot.png"
+            aria-describedby="image-hint"
+            className={FIELD}
+          />
+          <p id="image-hint" className="mt-1.5 text-sm text-faint">
+            A web address, or a path on the stick such as /screens/doom.gif.
+          </p>
+        </div>
+
+        <div className="mt-2 flex flex-wrap justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className={buttonClass("quiet")}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button type="submit" className={buttonClass("play")} disabled={isLoading}>
+            {isLoading ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
+    </Dialog>
   );
 };
 

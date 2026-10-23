@@ -1,8 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import { displayImageUrl } from "../presentation/images/displayImageUrl";
-import { FaPlay, FaEdit, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import { FaPlay, FaPen } from "react-icons/fa";
 import { Game } from "../types";
+import PixelArt from "./PixelArt";
+import PixelSpinner from "./PixelSpinner";
+import { buttonClass } from "./buttonStyles";
 
 interface GameCardProps {
   game: Game;
@@ -11,89 +14,88 @@ interface GameCardProps {
   starting?: boolean;
 }
 
+/** One game on your shelf: its screen, its name, and a big Play button. */
 const GameCard: React.FC<GameCardProps> = ({ game, onPlay, onEdit, starting = false }) => {
   const isCustom = game.source === "custom";
   const needsAttention = game.status === "needs-attention";
-  const details = [game.year, game.category].filter(Boolean).join(" • ");
+  const details = [game.year, game.category].filter(Boolean).join(" · ");
 
   return (
-    <div className="w-full flex flex-col bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
-      <div className="relative h-44 w-full bg-gray-700">
+    <article
+      className={`group flex w-full flex-col rounded-2xl border bg-panel p-3 transition-[box-shadow,transform,border-color] motion-safe:hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 ${
+        needsAttention ? "border-dashed border-amber/60" : "border-line hover:border-field"
+      }`}
+    >
+      <div className="crt aspect-[16/10] w-full rounded-xl">
         {game.image ? (
           <Image
             src={displayImageUrl(game.image)}
             alt=""
-            className="object-cover"
+            className="pixelated object-cover"
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized
           />
         ) : (
-          <div
-            className="w-full h-full flex items-center justify-center text-5xl"
-            aria-hidden="true"
-          >
-            🕹️
+          <div className="flex h-full w-full items-center justify-center bg-raised/40">
+            <PixelArt name={needsAttention ? "question" : "joystick"} scale={5} />
           </div>
         )}
         {isCustom && (
-          <span className="absolute top-2 left-2 rounded-full bg-amber-300 px-2 py-0.5 text-xs font-semibold text-gray-900">
+          <span className="absolute left-2 top-2 z-10 -rotate-3 rounded-md bg-amber px-2 py-0.5 text-sm font-bold text-ink shadow-md shadow-black/40">
             Your game
           </span>
         )}
       </div>
 
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-xl font-bold text-white mb-1">{game.title}</h3>
+      <div className="flex flex-1 flex-col px-1 pt-3">
+        <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-paper">
+          {game.title}
+        </h3>
         {needsAttention ? (
-          <p role="status" className="flex gap-2 text-amber-200 text-sm mb-4 flex-1">
-            <FaExclamationTriangle aria-hidden className="mt-0.5 shrink-0" />
-            <span>
-              <span className="font-semibold">Needs attention: </span>
-              {game.attention}
-            </span>
+          <p className="mt-2 flex-1 border-l-2 border-amber pl-3 text-sm leading-relaxed text-amber">
+            {`Needs attention: ${game.attention ?? "the app could not tell how to start it."}`}
           </p>
         ) : (
           <>
-            {details && <p className="text-gray-300 text-sm mb-2">{details}</p>}
-            <p className="text-gray-300 text-sm mb-4 line-clamp-2 flex-1">{game.description}</p>
+            <p className="mb-4 mt-0.5 flex-1 font-pixel text-lg leading-tight text-faint">
+              {details}
+            </p>
+            <button
+              type="button"
+              onClick={() => onPlay(game.id)}
+              disabled={starting}
+              aria-label={`Play ${game.title}`}
+              className={`${buttonClass("play", "lg")} w-full font-display font-extrabold tracking-wide`}
+            >
+              {starting ? (
+                <>
+                  <PixelSpinner />
+                  Starting…
+                </>
+              ) : (
+                <>
+                  <FaPlay aria-hidden="true" className="text-base" />
+                  Play
+                </>
+              )}
+            </button>
           </>
         )}
-
-        <button
-          type="button"
-          onClick={() => onPlay(game.id)}
-          disabled={starting || needsAttention}
-          aria-label={`Play ${game.title}`}
-          className="w-full flex items-center justify-center gap-3 rounded-lg bg-green-700 hover:bg-green-800 disabled:cursor-wait disabled:bg-green-900 px-4 py-3 text-xl font-bold text-white transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 data-[attention=true]:bg-gray-600 data-[attention=true]:text-gray-200 data-[attention=true]:cursor-not-allowed"
-          data-attention={needsAttention}
-        >
-          {starting ? (
-            <>
-              <FaSpinner className="animate-spin" aria-hidden="true" />
-              Starting…
-            </>
-          ) : (
-            <>
-              <FaPlay aria-hidden="true" />
-              Play
-            </>
-          )}
-        </button>
 
         {!isCustom && (
           <button
             type="button"
             onClick={() => onEdit(game)}
             aria-label={`Edit details of ${game.title}`}
-            className="mt-2 self-end inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+            className={`${buttonClass("quiet", "sm")} mt-2 self-center`}
           >
-            <FaEdit aria-hidden="true" />
+            <FaPen aria-hidden="true" className="text-xs" />
             Edit details
           </button>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
