@@ -20,7 +20,7 @@ import path from "path";
 import os from "os";
 import { fileURLToPath } from "url";
 import fs from "fs";
-import { execFileSync, execSync } from "child_process";
+import { execFileSync, execSync, spawn } from "child_process";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const artifactsDir = process.env.E2E_ARTIFACTS ?? path.join(os.tmpdir(), "dos-usb-e2e");
@@ -93,9 +93,58 @@ const captureScreen = (file) => {
   }
 };
 
+/**
+ * Playwright strips NODE_OPTIONS from the app it launches, so start the
+ * packaged executable directly with a `--require` in it (as VS Code's debug
+ * terminals set) and require it to reach `ready` and serve app://.
+ */
+const verifyStartsDespiteNodeOptions = ({ executablePath, cwd }) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(executablePath, [], {
+      cwd,
+      detached: true, // own process group: the AppImage runtime spawns the app as a child
+      env: {
+        ...process.env,
+        DISPLAY: display,
+        NODE_OPTIONS: '--require "/nonexistent/dos-usb-e2e-hook.cjs"',
+      },
+    });
+    let output = "";
+    const stop = () => {
+      try {
+        process.kill(-child.pid, "SIGTERM");
+      } catch {
+        /* already gone */
+      }
+    };
+    const timer = setTimeout(() => {
+      stop();
+      reject(new Error(`No app:// start within 30s under NODE_OPTIONS:\n${output}`));
+    }, 30000);
+    const onData = (chunk) => {
+      output += chunk;
+      if (!output.includes("[app protocol] serving")) return;
+      clearTimeout(timer);
+      child.removeAllListeners("exit");
+      stop();
+      resolve();
+    };
+    child.stdout.on("data", onData);
+    child.stderr.on("data", onData);
+    child.on("exit", (code, signal) => {
+      clearTimeout(timer);
+      reject(new Error(`Exited (${code ?? signal}) under NODE_OPTIONS:\n${output}`));
+    });
+  });
+
 async function main() {
   const target = resolveTarget(process.argv.slice(2));
   fs.mkdirSync(artifactsDir, { recursive: true });
+  if (target.name === "packaged") {
+    log("Starting directly with a --require in NODE_OPTIONS...");
+    await verifyStartsDespiteNodeOptions(target.launch).catch((error) => fail(error.message));
+    log("Started and served app:// despite NODE_OPTIONS");
+  }
   log(`Launching Electron app (${target.name}) from ${target.launch.cwd}...`);
   const app = await electron.launch({
     ...target.launch,
@@ -139,6 +188,9 @@ async function verifyApp(app, target) {
   window.on("console", (msg) => {
     log("renderer:", msg.text());
     if (/Content Security Policy/i.test(msg.text())) problems.push(`CSP: ${msg.text()}`);
+    if (/preloaded using link preload but not used/i.test(msg.text())) {
+      problems.push(`unused preload: ${msg.text()}`);
+    }
   });
   window.on("pageerror", (err) => {
     log("pageerror:", err.message);
@@ -181,14 +233,40 @@ async function verifyApp(app, target) {
     fail(`Body background ${surface.actual} overrides bg-gray-900 (${surface.expected})`);
   }
 
+  // The text renders in Geist, the font the layout loads, and that font loaded.
+  const font = await window.evaluate(async () => {
+    await document.fonts.ready;
+    const family = getComputedStyle(document.body).fontFamily;
+    const primary = family.split(",")[0].replaceAll(/["']/g, "").trim();
+    const loaded = [...document.fonts].some(
+      (face) => face.family.replaceAll(/["']/g, "").trim() === primary && face.status === "loaded",
+    );
+    return { family, primary, loaded };
+  });
+  log("Body font:", font.family, font.loaded ? "(loaded)" : "(not loaded)");
+  if (font.primary !== "Geist" || !font.loaded) {
+    fail(`Body font is ${font.family}, expected a loaded Geist`);
+  }
+
   // --- Navigate to the store the way a user does ---
   // A marker on `window` survives only a client-side navigation, which proves
   // the app hydrated and the router fetched the route's RSC payload.
   await window.evaluate(() => {
     window.__e2eSameDocument = true;
   });
-  await window.getByRole("link", { name: "Game Store" }).filter({ visible: true }).first().click();
-  await window.waitForURL(`${target.origin}/store`, { timeout: 15000 });
+  try {
+    // Narrow windows (dev docks DevTools) collapse the sidebar into a menu.
+    const storeLink = window.getByRole("link", { name: "Game Store" }).filter({ visible: true });
+    if ((await storeLink.count()) === 0) {
+      log("Sidebar collapsed; opening the menu");
+      await window.getByRole("button", { name: "Menu" }).click({ timeout: 15000 });
+    }
+    await storeLink.first().click({ timeout: 15000 });
+    await window.waitForURL(`${target.origin}/store`, { timeout: 15000 });
+  } catch (error) {
+    await window.screenshot({ path: path.join(artifactsDir, "navigation-fail.png") });
+    fail(`Could not navigate to the store: ${error.message.split("\n")[0]}`);
+  }
   const sameDocument = await window.evaluate(() => window.__e2eSameDocument === true);
   log("Navigated to", window.url(), sameDocument ? "(client-side)" : "(full reload)");
   if (!sameDocument) {
