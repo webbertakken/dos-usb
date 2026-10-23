@@ -6,7 +6,7 @@
  * then launches it in DOSBox. Fails loudly on any problem.
  *
  * Two targets:
- *   node scripts/e2e/verify.mjs
+ *   yarn e2e
  *     the unpackaged app against the dev server on http://localhost:3000
  *   node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb
  *     a packaged executable, serving the static export on app://dos-usb/,
