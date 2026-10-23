@@ -1,11 +1,20 @@
 /**
  * Build the flat list of display items (category headers + card rows) that the
  * virtualiser renders. Keeps grouping compatible with row virtualisation.
+ *
+ * Grouped as shelves, each group shows only its first few rows; its header
+ * keeps the full count and says whether there is more to see.
  */
 
 export type DisplayItem<T> =
-  | { kind: "header"; label: string; count: number }
+  | { kind: "header"; label: string; count: number; hasMore: boolean }
   | { kind: "row"; items: T[] };
+
+export interface Grouping<T> {
+  groupOf: (item: T) => string;
+  /** Rows shown per group; all rows when omitted. */
+  shelfRows?: number;
+}
 
 function chunk<T>(items: T[], columns: number): T[][] {
   const rows: T[][] = [];
@@ -16,16 +25,16 @@ function chunk<T>(items: T[], columns: number): T[][] {
 }
 
 /**
- * @param items   already-sorted items
- * @param columns grid columns
- * @param groupOf optional grouping accessor; when omitted, returns plain rows
+ * @param items    already-sorted items
+ * @param columns  grid columns
+ * @param grouping optional grouping; when omitted, returns plain rows
  */
 export function buildDisplayItems<T>(
   items: T[],
   columns: number,
-  groupOf?: (item: T) => string,
+  grouping?: Grouping<T>,
 ): DisplayItem<T>[] {
-  if (!groupOf) {
+  if (!grouping) {
     return chunk(items, columns).map((row) => ({ kind: "row", items: row }));
   }
 
@@ -33,7 +42,7 @@ export function buildDisplayItems<T>(
   const order: string[] = [];
   const groups = new Map<string, T[]>();
   for (const item of items) {
-    const key = groupOf(item);
+    const key = grouping.groupOf(item);
     if (!groups.has(key)) {
       groups.set(key, []);
       order.push(key);
@@ -48,9 +57,15 @@ export function buildDisplayItems<T>(
 
   const result: DisplayItem<T>[] = [];
   for (const key of order) {
-    const groupItems = groups.get(key)!;
-    result.push({ kind: "header", label: key, count: groupItems.length });
-    for (const row of chunk(groupItems, columns)) {
+    const groupRows = chunk(groups.get(key)!, columns);
+    const shown = groupRows.slice(0, grouping.shelfRows ?? groupRows.length);
+    result.push({
+      kind: "header",
+      label: key,
+      count: groups.get(key)!.length,
+      hasMore: shown.length < groupRows.length,
+    });
+    for (const row of shown) {
       result.push({ kind: "row", items: row });
     }
   }
