@@ -1,14 +1,14 @@
 /**
  * Merge per-source listings into deduplicated canonical games.
  *
- * Steps: assign per-source normalised popularity, group by normalised title,
- * cluster each group by year (+/-1), then merge each cluster into one
- * `CanonicalGame`, preferring richer sources for descriptive fields.
+ * Steps: group by normalised title, cluster each group by year (+/-1), rank
+ * each cluster within every source it is listed on, then merge each cluster
+ * into one `CanonicalGame`, preferring richer sources for descriptive fields.
  */
 
 import { CanonicalGame, SiteId, SourceListing } from "./types";
 import { canonicalId, matchKey, normaliseTitle } from "./normalise";
-import { percentileRanks, combinePopularity } from "./popularity";
+import { percentileRanks, combinePopularity, combineWithinSource } from "./popularity";
 import { unifyCategory } from "./category";
 
 // Richer sources first - used when picking a single value for a field.
@@ -37,21 +37,41 @@ function pick<T>(
   return undefined;
 }
 
-/** Assign each listing a normalised popularity (percentile within its source). */
-function assignNormalisedPopularity(listings: SourceListing[]): void {
-  const bySite = new Map<SiteId, SourceListing[]>();
-  for (const listing of listings) {
-    if (typeof listing.rawPopularity !== "number") continue;
-    const arr = bySite.get(listing.site) ?? [];
-    arr.push(listing);
-    bySite.set(listing.site, arr);
-  }
-  for (const [, arr] of bySite) {
-    const ranks = percentileRanks(arr.map((l) => l.rawPopularity as number));
-    for (const listing of arr) {
-      listing.normalisedPopularity = ranks.get(listing.rawPopularity as number);
+/**
+ * Rank every cluster (game) within each source it is listed on. A game's raw
+ * value per source combines its items there; each listing then carries the
+ * game's percentile within that source.
+ */
+function withNormalisedPopularity(clusters: SourceListing[][]): SourceListing[][] {
+  const rawBySite = new Map<SiteId, Map<number, number>>();
+  clusters.forEach((cluster, index) => {
+    const valuesBySite = new Map<SiteId, number[]>();
+    for (const listing of cluster) {
+      if (typeof listing.rawPopularity !== "number") continue;
+      valuesBySite.set(listing.site, [
+        ...(valuesBySite.get(listing.site) ?? []),
+        listing.rawPopularity,
+      ]);
     }
-  }
+    for (const [site, values] of valuesBySite) {
+      const perCluster = rawBySite.get(site) ?? new Map<number, number>();
+      perCluster.set(index, combineWithinSource(site, values));
+      rawBySite.set(site, perCluster);
+    }
+  });
+
+  const ranksBySite = new Map(
+    [...rawBySite].map(([site, perCluster]) => [site, percentileRanks([...perCluster.values()])]),
+  );
+
+  return clusters.map((cluster, index) =>
+    cluster.map((listing) => {
+      const raw = rawBySite.get(listing.site)?.get(index);
+      return raw === undefined || typeof listing.rawPopularity !== "number"
+        ? listing
+        : { ...listing, normalisedPopularity: ranksBySite.get(listing.site)?.get(raw) };
+    }),
+  );
 }
 
 /** Cluster listings (same title) into groups whose years are within +/-1. */
@@ -134,8 +154,6 @@ export function mergeListings(
   listings: SourceListing[],
   aliases: Record<string, string> = {},
 ): CanonicalGame[] {
-  assignNormalisedPopularity(listings);
-
   const buckets = new Map<string, SourceListing[]>();
   for (const listing of listings) {
     const key = aliases[matchKey(listing.title ?? "")] ?? matchKey(listing.title ?? "");
@@ -144,15 +162,10 @@ export function mergeListings(
     buckets.set(key, arr);
   }
 
-  const games: CanonicalGame[] = [];
-  for (const [, bucket] of buckets) {
-    for (const cluster of clusterByYear(bucket)) {
-      if (cluster.length > 0) {
-        games.push(mergeCluster(cluster));
-      }
-    }
-  }
-  return games;
+  const clusters = [...buckets.values()]
+    .flatMap(clusterByYear)
+    .filter((cluster) => cluster.length > 0);
+  return withNormalisedPopularity(clusters).map(mergeCluster);
 }
 
 // Re-exported for callers that want the title key.

@@ -79,6 +79,40 @@ describe("mergeListings", () => {
     expect(small.popularity).toBeCloseTo(0.5, 5);
   });
 
+  it("sums a source's counts across several items of the same game before ranking", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a1", title: "Split", year: "1993", rawPopularity: 60 }),
+      listing({ site: "archive.org", url: "a2", title: "Split", year: "1993", rawPopularity: 60 }),
+      listing({ site: "archive.org", url: "b", title: "Single", year: "1993", rawPopularity: 100 }),
+    ]);
+    const split = games.find((g) => g.title === "Split")!;
+    const single = games.find((g) => g.title === "Single")!;
+    expect(split.popularity).toBe(1);
+    expect(single.popularity).toBeCloseTo(0.5, 5);
+    expect(split.sources.every((s) => s.normalisedPopularity === 1)).toBe(true);
+  });
+
+  it("keeps the best rank, not a sum, for a rank-based source", () => {
+    const games = mergeListings([
+      listing({ site: "dosgames", url: "d1", title: "Ranked", year: "1993", rawPopularity: -101 }),
+      listing({ site: "dosgames", url: "d2", title: "Ranked", year: "1993", rawPopularity: -102 }),
+      listing({ site: "dosgames", url: "e", title: "Other", year: "1993", rawPopularity: -150 }),
+    ]);
+    const ranked = games.find((g) => g.title === "Ranked")!;
+    const other = games.find((g) => g.title === "Other")!;
+    expect(ranked.popularity).toBe(1);
+    expect(other.popularity).toBeCloseTo(0.5, 5);
+  });
+
+  it("takes the most popular source's percentile when a game has several sources", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Hit", year: "1993", rawPopularity: 1 }),
+      listing({ site: "archive.org", url: "b", title: "Big", year: "1993", rawPopularity: 9 }),
+      listing({ site: "abandonwaredos", url: "c", title: "Hit", year: "1993", rawPopularity: 500 }),
+    ]);
+    expect(games.find((g) => g.title === "Hit")!.popularity).toBe(1);
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({
