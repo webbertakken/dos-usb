@@ -7,6 +7,8 @@ const filesIn = (...relativePaths) => {
   const files = new Set(relativePaths.map((relative) => path.join(root, relative)));
   return (candidate) => files.has(candidate);
 };
+const onlyFileAt = (absolutePath) => (candidate) => candidate === absolutePath;
+const request = (url) => new Request(url);
 const exportedSite = filesIn(
   "index.html",
   "index.txt",
@@ -91,7 +93,7 @@ describe("resolveStaticAsset", () => {
   });
 
   it("refuses encoded path traversal out of the export root", () => {
-    const isFile = (candidate) => candidate === "/etc/passwd";
+    const isFile = onlyFileAt("/etc/passwd");
     expect(resolveStaticAsset({ root, pathname: "/..%2F..%2F..%2Fetc%2Fpasswd", isFile })).toEqual({
       filePath: null,
       status: 404,
@@ -99,7 +101,7 @@ describe("resolveStaticAsset", () => {
   });
 
   it("refuses a sibling directory sharing the root's name prefix", () => {
-    const isFile = (candidate) => candidate === "/app/out-secrets/key";
+    const isFile = onlyFileAt("/app/out-secrets/key");
     expect(resolveStaticAsset({ root, pathname: "/..%2Fout-secrets%2Fkey", isFile })).toEqual({
       filePath: null,
       status: 404,
@@ -138,7 +140,6 @@ describe("createStaticExportHandler", () => {
     });
     return { handler, fetchFile, log };
   };
-  const request = (url) => new Request(url);
 
   it("serves HTML documents with a CSP that allows exactly their inline scripts", async () => {
     const { handler } = setup();

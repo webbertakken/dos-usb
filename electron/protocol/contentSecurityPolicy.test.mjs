@@ -41,13 +41,13 @@ describe("inlineScriptHashes", () => {
   });
 });
 
-describe("buildContentSecurityPolicy", () => {
-  const directive = (policy, name) =>
-    policy
-      .split(";")
-      .map((part) => part.trim())
-      .find((part) => part.startsWith(`${name} `));
+const directive = (policy, name) =>
+  policy
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name} `));
 
+describe("buildContentSecurityPolicy", () => {
   it("allows only same-origin scripts plus the given hashes in production", () => {
     const policy = buildContentSecurityPolicy({ isDev: false, scriptHashes: ["'sha256-abc='"] });
 
