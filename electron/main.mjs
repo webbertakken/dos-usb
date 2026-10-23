@@ -405,8 +405,10 @@ async function setupDOSBox({ gameId, gameRoot, gameDir, gameExe }) {
       fs.writeFileSync(customConfigPath, launchConfig.text);
       console.log(`Wrote DOSBox launch config for ${gameId}: ${customConfigPath}`);
 
-      // Launch DOSBox with the custom config
+      // Run DOSBox from games/<id>, so an override can mount the game with a
+      // relative `mount c "."` that survives the stick's path changing.
       const child = execFile(resolved.command, ["-conf", customConfigPath], {
+        cwd: gameRoot,
         windowsHide: false,
       });
       activeDosboxChild = child;
