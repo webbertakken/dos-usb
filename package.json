@@ -21,6 +21,7 @@
     "build-library": "tsx scripts/build-library.ts",
     "ingest": "tsx scripts/ingest-source.ts",
     "ingest-references": "tsx scripts/ingest-references.ts",
+    "export-source": "tsx scripts/export-source.ts",
     "e2e": "node scripts/e2e/verify.mjs",
     "e2e:packaged": "node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb",
     "test:watch": "vitest",

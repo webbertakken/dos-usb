@@ -30,6 +30,7 @@ export default defineConfig({
         "electron/portable/**/*.mjs",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
+        "scripts/source/**/*.ts",
       ],
       exclude: [
         "src/**/*.test.ts",
@@ -38,6 +39,7 @@ export default defineConfig({
         "src/**/index.ts",
         "electron/**/*.test.mjs",
         "scripts/**/*.test.mjs",
+        "scripts/**/*.test.ts",
       ],
     },
   },
