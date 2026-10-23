@@ -64,3 +64,9 @@ jobs:
 
       - name: Test
         run: yarn coverage
+
+      - name: Build static export
+        run: yarn build
+
+      - name: Package app (unpacked)
+        run: yarn electron-builder --dir --publish never
