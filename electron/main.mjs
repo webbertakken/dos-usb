@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, net, protocol, session } from "electron";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import isDev from "electron-is-dev";
 import { execFile } from "child_process";
 import fs from "fs";
@@ -18,11 +18,14 @@ import {
 } from "./dosbox/platform.mjs";
 import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
-
-// Must be registered before the app is ready.
-protocol.registerSchemesAsPrivileged([
-  { scheme: IMAGE_CACHE_SCHEME, privileges: { standard: true, secure: true } },
-]);
+import {
+  APP_ORIGIN,
+  APP_SCHEME,
+  APP_SCHEME_PRIVILEGES,
+  createStaticExportHandler,
+} from "./protocol/staticExport.mjs";
+import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
+import { resolvePortableRoot } from "./portable/root.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -32,20 +35,62 @@ const __dirname = path.dirname(__filename);
 
 let mainWindow;
 
+// Games (and the Windows DOSBox bundle) live beside the app, wherever it was
+// put - not in the working directory, which depends on how it was started.
+const portableRoot = resolvePortableRoot({
+  isPackaged: !isDev,
+  platform: process.platform,
+  env: process.env,
+  execPath: process.execPath,
+  cwd: process.cwd(),
+});
+const gamesDir = path.join(portableRoot, "games");
+console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
+
+// The packaged renderer loads from app://dos-usb/, not file://, so the static
+// export's absolute asset paths and routes resolve. Must precede `ready`.
+protocol.registerSchemesAsPrivileged([
+  { scheme: APP_SCHEME, privileges: APP_SCHEME_PRIVILEGES },
+  { scheme: IMAGE_CACHE_SCHEME, privileges: { standard: true, secure: true } },
+]);
+
+const isFile = (candidate) => {
+  try {
+    return fs.statSync(candidate).isFile();
+  } catch {
+    return false;
+  }
+};
+
+/** Serve `out/` (inside app.asar when packaged) on app://dos-usb/. */
+function serveStaticExport() {
+  const root = path.join(__dirname, "..", "out");
+  protocol.handle(
+    APP_SCHEME,
+    createStaticExportHandler({
+      root,
+      isFile,
+      readText: (filePath) => fs.promises.readFile(filePath, "utf8"),
+      fetchFile: (filePath) => net.fetch(pathToFileURL(filePath).href),
+      log: console,
+    }),
+  );
+  console.log(`[app protocol] serving ${root} on ${APP_ORIGIN}/`);
+}
+
 function createWindow() {
-  // Set up CSP - more permissive in development mode, stricter in production
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        "Content-Security-Policy": [
-          isDev
-            ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://* dosusb-image:; connect-src 'self' ws: wss: http: https:;"
-            : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://* dosusb-image:; connect-src 'self' https://*;",
-        ],
-      },
+  // The dev server's documents get the permissive dev policy here; packaged
+  // documents carry their own hash-based policy from the app:// handler.
+  if (isDev) {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          "Content-Security-Policy": [buildContentSecurityPolicy({ isDev: true })],
+        },
+      });
     });
-  });
+  }
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -59,9 +104,7 @@ function createWindow() {
     },
   });
 
-  const startUrl = isDev
-    ? "http://localhost:3000"
-    : `file://${path.join(__dirname, "../out/index.html")}`;
+  const startUrl = isDev ? "http://localhost:3000" : `${APP_ORIGIN}/`;
 
   mainWindow.loadURL(startUrl);
 
@@ -110,13 +153,12 @@ ipcMain.handle("log-error", async (event, errorData) => {
   return { received: true };
 });
 
-// Resolve the bundled store catalogue. Works in dev (public/) and in the
-// packaged app (out/), avoiding fetch() which is unreliable under file://.
+// Resolve the bundled store catalogue: public/ in dev (fresh from the
+// scraper), out/ in the packaged app (public/ is not packaged).
 function resolveCataloguePath() {
   const candidates = [
-    path.join(process.cwd(), "public", "catalogue.json"),
-    path.join(__dirname, "..", "out", "catalogue.json"),
     path.join(__dirname, "..", "public", "catalogue.json"),
+    path.join(__dirname, "..", "out", "catalogue.json"),
   ];
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
@@ -139,9 +181,8 @@ ipcMain.handle("get-store-catalogue", async () => {
 
 function resolveLibraryPath() {
   const candidates = [
-    path.join(process.cwd(), "public", "library.json"),
-    path.join(__dirname, "..", "out", "library.json"),
     path.join(__dirname, "..", "public", "library.json"),
+    path.join(__dirname, "..", "out", "library.json"),
   ];
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
@@ -163,11 +204,12 @@ ipcMain.handle("get-library", async () => {
 });
 
 app.whenReady().then(() => {
+  if (!isDev) serveStaticExport();
   // Store-seen screenshots live beside the games, so they travel on the stick.
   protocol.handle(
     IMAGE_CACHE_SCHEME,
     createImageCacheHandler({
-      cacheDir: path.join(process.cwd(), "image-cache"),
+      cacheDir: path.join(portableRoot, "image-cache"),
       fetchImage: (url) => net.fetch(url),
       log: console,
     }),
@@ -253,7 +295,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
     // Resolve the DOSBox executable for the current platform:
     // bundled portable build on Windows, a PATH binary elsewhere.
-    const baseDir = process.cwd();
+    const baseDir = portableRoot;
     const resolved = resolveDosbox({
       platform: process.platform,
       baseDir,
@@ -698,8 +740,6 @@ pause
 // Get available games from the games directory
 ipcMain.handle("get-games", async () => {
   try {
-    const gamesDir = path.join(process.cwd(), "games");
-
     // Create games directory if it doesn't exist
     if (!fs.existsSync(gamesDir)) {
       fs.mkdirSync(gamesDir, { recursive: true });
@@ -751,7 +791,7 @@ ipcMain.handle("get-games", async () => {
 // Save game metadata
 ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
   try {
-    const gamePath = path.join(process.cwd(), "games", gameId);
+    const gamePath = path.join(gamesDir, gameId);
     const metadataPath = path.join(gamePath, "metadata.json");
 
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
@@ -776,8 +816,6 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
       progress: 0,
     });
 
-    // Create games directory if it doesn't exist - store in ./games instead of userData
-    const gamesDir = path.join(process.cwd(), "games");
     await mkdir(gamesDir, { recursive: true });
 
     // Create directory for this specific game

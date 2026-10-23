@@ -12,6 +12,7 @@ export default defineConfig({
       "src/**/*.test.tsx",
       "electron/**/*.test.mjs",
       "scripts/**/*.test.ts",
+      "scripts/**/*.test.mjs",
     ],
     exclude: ["**/node_modules/**", "**/.next/**", "**/out/**"],
     coverage: {
@@ -24,7 +25,10 @@ export default defineConfig({
         "electron/dosbox/**/*.mjs",
         "electron/imageCache/**/*.mjs",
         "scripts/lib/ingestCache.ts",
+        "electron/protocol/**/*.mjs",
+        "electron/portable/**/*.mjs",
         "scripts/catalogue/**/*.ts",
+        "scripts/build/**/*.mjs",
       ],
       exclude: [
         "src/**/*.test.ts",
@@ -32,6 +36,7 @@ export default defineConfig({
         "src/**/types.ts",
         "src/**/index.ts",
         "electron/**/*.test.mjs",
+        "scripts/**/*.test.mjs",
       ],
     },
   },
