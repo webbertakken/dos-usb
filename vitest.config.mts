@@ -21,6 +21,7 @@ export default defineConfig({
         "src/domain/**/*.ts",
         "src/presentation/grid/**/*.ts",
         "electron/dosbox/**/*.mjs",
+        "electron/download/**/*.mjs",
         "scripts/catalogue/**/*.ts",
       ],
       exclude: [

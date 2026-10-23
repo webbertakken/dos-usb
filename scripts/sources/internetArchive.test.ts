@@ -19,7 +19,8 @@ describe("mapIaItem", () => {
     expect(listing.url).toBe("https://archive.org/details/msdos_Wolfenstein_3D_1992");
     expect(listing.playUrl).toBe("https://archive.org/details/msdos_Wolfenstein_3D_1992");
     expect(listing.image).toBe("https://archive.org/services/img/msdos_Wolfenstein_3D_1992");
-    expect(listing.downloadUrl).toMatch(/\/download\/msdos_Wolfenstein_3D_1992\//);
+    // The item's zip has a name of its own; the downloader reads it from the item's metadata.
+    expect(listing.downloadUrl).toBe("https://archive.org/download/msdos_Wolfenstein_3D_1992/");
     expect(listing.metrics.downloads).toBe(1406698);
     expect(listing.rawPopularity).toBe(1406698);
     expect(listing.category).toBe("Action");
