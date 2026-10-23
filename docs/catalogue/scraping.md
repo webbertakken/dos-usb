@@ -2,7 +2,7 @@
 
 ## Source
 
-The store catalogue is scraped from dosgames.com using the listing endpoint:
+The Library catalogue is scraped from dosgames.com using the listing endpoint:
 
 ```
 https://www.dosgames.com/listing.php?sortby=<sort>&page=<n>
@@ -42,8 +42,8 @@ The scraper is incremental and resumable: existing entries and screenshots are r
   (`get-store-catalogue`, robust under `file://`) and falls back to fetching the static
   `/catalogue.json`.
 - `src/domain/gameStore/ranking.ts` sorts by the chosen listing rank or A-Z.
-- The store page (`src/app/store/page.tsx`) renders sort tabs, a result count, category filter and
-  search, installed badges, ratings, file sizes and a Play action for already-installed games.
+- The Library page (`src/app/library/page.tsx`) renders sort tabs, a result count, category filter
+  and search, installed badges, ratings, file sizes and a Play action for already-installed games.
 
 ## Download + play
 

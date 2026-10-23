@@ -3,12 +3,12 @@
  * category as a short shelf, and "See all" opens the whole category.
  *
  * Run with the dev server listening (default http://localhost:3000):
- *   STORE_URL=http://127.0.0.1:3311/store node scripts/e2e/store-shelves.mjs
+ *   STORE_URL=http://127.0.0.1:3311/library node scripts/e2e/store-shelves.mjs
  */
 
 import { chromium } from "playwright";
 
-const storeUrl = process.env.STORE_URL ?? "http://localhost:3000/store";
+const storeUrl = process.env.STORE_URL ?? "http://localhost:3000/library";
 const log = (...args) => console.log("[e2e:shelves]", ...args);
 const fail = (message) => {
   throw new Error(`[e2e:shelves] FAIL: ${message}`);

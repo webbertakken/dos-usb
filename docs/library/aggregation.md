@@ -1,6 +1,6 @@
 # Multi-source library aggregation
 
-The store is backed by an aggregated library (`public/library.json`) built from multiple sources,
+The Library is backed by an aggregated library (`public/library.json`) built from multiple sources,
 deduplicated into canonical games.
 
 ## Model
@@ -97,10 +97,11 @@ sources agree with each other on 55-78% of shared games, Wikidata on 74% and des
 
 ## UI
 
-`src/app/store/page.tsx` renders the library: sort (downloads default, rating, year, A-Z), category
-filter + "group by category", source filter, search, a virtualised grid (`LibraryCard`), and a
-detail modal (`LibraryDetailModal`) with multi-source "Listed on" credits, per-source play-online
-links, and download via the best source (`chooseDownloadSource`, prefers a dosgames DOSBox build).
+`src/app/library/page.tsx` renders the library: sort (downloads default, rating, year, A-Z),
+category filter + "group by category", source filter, search, a virtualised grid (`LibraryCard`),
+and a detail modal (`LibraryDetailModal`) with multi-source "Listed on" credits, per-source
+play-online links, and download via the best source (`chooseDownloadSource`, prefers a dosgames
+DOSBox build).
 
 "Group by category" shows shelves: two rows per category (`buildDisplayItems` with `shelfRows`)
 under a `CategoryShelfHeader` whose "See all" sets the category filter, which then shows that whole

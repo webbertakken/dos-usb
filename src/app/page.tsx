@@ -142,14 +142,14 @@ export default function Home() {
           <p className="text-gray-300 text-lg mb-4">
             {searchTerm
               ? `No games found matching "${searchTerm}"`
-              : "There are no games on this stick yet. You can find more in the Game Store when you are connected to the internet, or copy games you own into the games-custom folder."}
+              : "There are no games on this stick yet. You can find more in the Library when you are connected to the internet, or copy games you own into the games-custom folder."}
           </p>
           {!searchTerm && (
             <Link
-              href="/store"
+              href="/library"
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
             >
-              Go to Game Store
+              Go to the Library
             </Link>
           )}
         </div>

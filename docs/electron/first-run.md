@@ -31,7 +31,7 @@ An optional `gift.json` sits beside the app, in the portable root (see
 - `src/domain/firstRun/friendlyError.ts` turns raw errors into plain language; the raw text stays
   behind a **Technical details** disclosure for whoever helps.
 - A failed launch shows a dismissable notice; the games list stays usable.
-- The store follows `navigator.onLine`: offline, it says the stick's games still work and every
+- The Library follows `navigator.onLine`: offline, it says the stick's games still work and every
   download button reads **Needs internet** instead of failing.
 
 ## Verify
