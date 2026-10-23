@@ -17,6 +17,8 @@ import {
   buildTerminationCommand,
 } from "./dosbox/platform.mjs";
 import { selectExecutable, buildAutoexec } from "./dosbox/launch.mjs";
+import { isDirectFileLink } from "./download/directLink.mjs";
+import { gameMetadata } from "./download/gameMetadata.mjs";
 import { resolveArchiveDownload } from "./download/archiveOrg.mjs";
 import { createImageCacheHandler, IMAGE_CACHE_SCHEME } from "./imageCache/imageCache.mjs";
 import {
@@ -294,12 +296,12 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
     console.log(`Primary screen dimensions: ${width}x${height}`);
     console.log(`Setting up DOSBox for gameId: ${gameId}, dir: ${gameDir}, exe: ${gameExe}`);
 
-    // Resolve the DOSBox executable for the current platform:
-    // bundled portable build on Windows, a PATH binary elsewhere.
-    const baseDir = portableRoot;
+    // Resolve the DOSBox executable for the current platform: the build
+    // bundled beside the portable root first, then a PATH binary.
     const resolved = resolveDosbox({
       platform: process.platform,
-      baseDir,
+      arch: process.arch,
+      baseDir: portableRoot,
       fileExists: (candidate) => fs.existsSync(candidate),
       canRunFromPath: (command) =>
         findOnPath({
@@ -315,8 +317,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
       // Directory for DOSBox configuration
       const dosboxDataDir = getDosboxDataDir({
-        source: resolved.source,
-        baseDir,
+        resolved,
         userDataDir: app.getPath("userData"),
       });
 
@@ -844,15 +845,9 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
         }
         const requestedUrl = archiveZipUrl ?? gameInfo.downloadUrl;
 
-        // Check if the URL points to a game page or directly to a file
-        // (case-insensitive: catalogue URLs use .ZIP).
-        const lowerUrl = requestedUrl.toLowerCase();
-        const isDirectFileLink =
-          lowerUrl.endsWith(".zip") || lowerUrl.endsWith(".exe") || lowerUrl.includes("file=");
-
         let downloadUrl = "";
 
-        if (isDirectFileLink) {
+        if (isDirectFileLink(requestedUrl)) {
           // If it's already a direct link, use it as is
           downloadUrl = requestedUrl;
           console.log("Using direct file URL:", downloadUrl);
@@ -1139,22 +1134,7 @@ echo Running ${gameInfo.title}
 
           // Create metadata file
           const metadataPath = path.join(gameDir, "metadata.json");
-          fs.writeFileSync(
-            metadataPath,
-            JSON.stringify(
-              {
-                title: gameInfo.title,
-                description: gameInfo.description,
-                year: gameInfo.year,
-                category: gameInfo.category,
-                thumbnail: gameInfo.thumbnail || gameInfo.image,
-                downloadUrl: gameInfo.downloadUrl,
-                runExe: gameInfo.runExe,
-              },
-              null,
-              2,
-            ),
-          );
+          fs.writeFileSync(metadataPath, JSON.stringify(gameMetadata(gameInfo), null, 2));
 
           // Inform renderer that download is complete
           mainWindow.webContents.send("download-status", {
