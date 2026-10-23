@@ -46,6 +46,13 @@ describe("buildDisplayItems (grouped)", () => {
   });
 });
 
+describe("buildDisplayItems (Uncategorised first in the input)", () => {
+  it("still puts Uncategorised last", () => {
+    const items = buildDisplayItems([games[3], games[0], games[2]], 2, { groupOf: byCategory });
+    expect(headers(items).map((h) => h.label)).toEqual(["Action", "Puzzle", "Uncategorised"]);
+  });
+});
+
 describe("buildDisplayItems (shelves)", () => {
   const many: Game[] = Array.from({ length: 7 }, (_, i) => ({ id: `a${i}`, category: "Action" }));
   const items = buildDisplayItems([...many, ...games.slice(2)], 2, {

@@ -63,6 +63,18 @@ describe("createImageCacheHandler", () => {
     expect(log.warn).toHaveBeenCalled();
   });
 
+  it("refuses a request without a source", async () => {
+    const response = await handle(new Request("dosusb-image://cache/"));
+    expect(response.status).toBe(403);
+  });
+
+  it("stores nothing when the upstream gives no content type", async () => {
+    fetchImage.mockResolvedValueOnce(new Response(new Uint8Array([1]), { status: 200 }));
+    const response = await handle(request(IA));
+    expect(response.status).toBe(502);
+    expect(fs.readdirSync(cacheDir)).toHaveLength(0);
+  });
+
   it("passes on an upstream failure and stores nothing", async () => {
     fetchImage.mockResolvedValueOnce(new Response("gone", { status: 404 }));
     const response = await handle(request(IA));
@@ -77,6 +89,13 @@ describe("createImageCacheHandler", () => {
     const response = await handle(request(IA));
     expect(response.status).toBe(502);
     expect(fs.readdirSync(cacheDir)).toHaveLength(0);
+  });
+
+  it("logs a failure that is not an Error", async () => {
+    fetchImage.mockRejectedValueOnce("socket hang up");
+    const response = await handle(request(IA));
+    expect(response.status).toBe(502);
+    expect(log.warn).toHaveBeenCalledWith(expect.stringContaining("socket hang up"));
   });
 
   it("answers 502 when the network is down and nothing is stored", async () => {

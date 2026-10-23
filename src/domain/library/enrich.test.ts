@@ -77,6 +77,14 @@ describe("enrichGames", () => {
     expect(enriched.category).toBe("Simulation");
   });
 
+  it("reads the descriptions of the sources that have one", () => {
+    const [enriched] = enrichGames(
+      [game({ sources: [{ ...source(""), description: undefined }, source("A racing game.")] })],
+      [],
+    );
+    expect(enriched.category).toBe("Driving & Racing");
+  });
+
   it("leaves a game uncategorised when nothing names a genre", () => {
     const [enriched] = enrichGames(
       [game({ sources: [source("Published in 1987.")] })],

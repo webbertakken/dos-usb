@@ -20,7 +20,10 @@ export default defineConfig({
       include: [
         "src/domain/**/*.ts",
         "src/presentation/grid/**/*.ts",
+        "src/presentation/images/**/*.ts",
         "electron/dosbox/**/*.mjs",
+        "electron/imageCache/**/*.mjs",
+        "scripts/lib/ingestCache.ts",
         "scripts/catalogue/**/*.ts",
       ],
       exclude: [

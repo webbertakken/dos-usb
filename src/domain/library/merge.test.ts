@@ -226,6 +226,14 @@ describe("mergeListings", () => {
     expect(games[0].image).toBeUndefined();
   });
 
+  it("keeps listings of one title without any year together", () => {
+    const games = mergeListings([
+      listing({ site: "archive.org", url: "a", title: "Undated", year: "" }),
+      listing({ site: "dosgamesarchive", url: "b", title: "Undated", year: "" }),
+    ]);
+    expect(games).toHaveLength(1);
+  });
+
   it("unions tags and ORs the mature flag", () => {
     const games = mergeListings([
       listing({

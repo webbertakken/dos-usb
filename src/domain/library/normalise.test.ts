@@ -44,6 +44,10 @@ describe("normaliseTitle catalogue prefixes", () => {
     expect(normaliseTitle("Tetris for DOS")).toBe("tetris");
   });
 
+  it("drops a generic trailing version", () => {
+    expect(normaliseTitle("Lemmings Version")).toBe("lemmings");
+  });
+
   it("keeps a title that is only a platform word", () => {
     expect(normaliseTitle("DOS")).toBe("dos");
   });
