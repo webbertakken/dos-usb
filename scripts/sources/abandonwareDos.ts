@@ -2,7 +2,8 @@
  * Abandonware DOS source adapter.
  *
  * Game URLs come from the site's XML games feed; each game page is parsed for
- * title, year, screenshot, description, genre, rating and a download link.
+ * title, year, screenshot, description, genre, rating, view count (its
+ * popularity signal) and a download link.
  */
 
 import * as cheerio from "cheerio";
@@ -32,6 +33,8 @@ export function parseAwdGamePage(html: string, url: string): SourceListing {
   const image = $('meta[property="og:image"]').attr("content");
   const description = $('meta[name="description"]').attr("content")?.trim();
   const ratingMatch = html.match(/"ratingValue"\s*:\s*"?([\d.]+)/i);
+  const viewsMatch = text.match(/Abandonware DOS views\s*:\s*([\d,]+)/i);
+  const views = viewsMatch ? Number(viewsMatch[1].replace(/,/g, "")) : undefined;
   // The game's genre is position 1 of the JSON-LD BreadcrumbList (not the nav menu).
   const genreMatch = html.match(
     /"position"\s*:\s*1\s*,\s*"item"\s*:\s*\{[^}]*"name"\s*:\s*"([^"]+)"/i,
@@ -50,7 +53,8 @@ export function parseAwdGamePage(html: string, url: string): SourceListing {
     category: genreMatch ? genreMatch[1].replace(/-/g, " ") : undefined,
     downloadUrl: downloadHref ? abs(downloadHref.replace(/&amp;/g, "&")) : undefined,
     license: "Abandonware",
-    metrics: { rating: ratingMatch ? Number(ratingMatch[1]) : undefined },
+    metrics: { rating: ratingMatch ? Number(ratingMatch[1]) : undefined, views },
+    rawPopularity: views,
   };
 }
 
