@@ -603,23 +603,9 @@ ${buildAutoexec({ gameDir, executable: gameExe })}`;
           activeDosboxChild = null;
         }
 
-        // Clean up any leftover detached processes (Windows portable launcher).
-        const termination = buildTerminationCommand(process.platform);
-        if (!termination) {
-          return;
-        }
-        try {
-          const cleanup = execFile(termination.command, termination.args, {
-            windowsHide: true,
-            shell: true,
-          });
-
-          cleanup.on("close", (cleanupCode) => {
-            console.log(`DOSBox cleanup exited with code ${cleanupCode}`);
-          });
-        } catch (cleanupError) {
-          console.error("Error during DOSBox cleanup:", cleanupError);
-        }
+        // On Windows this child is the PortableApps launcher, which starts
+        // DOSBox.exe and exits at once (WaitForProgram=false): its exit is not
+        // the game's. Leftover DOSBox is closed before the next launch instead.
       });
 
       // Wait a moment to ensure the process starts
