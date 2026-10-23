@@ -26,3 +26,11 @@ export function mergeIngested(cached: SourceListing[], fresh: SourceListing[]): 
     kept: cached.filter((listing) => !freshByUrl.has(listing.url)).length,
   };
 }
+
+/**
+ * A full refresh that loses more than half of the previous entries is more
+ * likely a truncated upstream answer than a real removal.
+ */
+export function isSuspiciousShrink(previousCount: number, nextCount: number): boolean {
+  return previousCount > 0 && nextCount < previousCount / 2;
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mergeIngested } from "./ingestCache.js";
+import { isSuspiciousShrink, mergeIngested } from "./ingestCache.js";
 import type { SourceListing } from "../../src/domain/library/types.js";
 
 const listing = (url: string, title: string): SourceListing => ({
@@ -28,5 +28,18 @@ describe("mergeIngested", () => {
     const result = mergeIngested([], [listing("a", "A")]);
     expect(result.listings).toHaveLength(1);
     expect(result.added).toBe(1);
+  });
+});
+
+describe("isSuspiciousShrink", () => {
+  it("flags a refresh that loses more than half of what was there", () => {
+    expect(isSuspiciousShrink(2686, 1200)).toBe(true);
+    expect(isSuspiciousShrink(2686, 0)).toBe(true);
+  });
+
+  it("accepts a refresh of similar size, growth, or a first run", () => {
+    expect(isSuspiciousShrink(2686, 2600)).toBe(false);
+    expect(isSuspiciousShrink(2686, 3000)).toBe(false);
+    expect(isSuspiciousShrink(0, 10)).toBe(false);
   });
 });
