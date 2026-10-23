@@ -8,3 +8,5 @@
   into one canonical, credited, sortable library.
 - [Packaged app](./electron/packaging.md) - how the packaged app serves the static export on
   `app://`, its Content Security Policy, and how to build and verify it.
+- [First run](./electron/first-run.md) - the recipient's welcome, the optional `gift.json` birthday
+  message, plain-language errors and the offline store.

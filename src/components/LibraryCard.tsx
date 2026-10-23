@@ -66,7 +66,6 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
       <button
         type="button"
         onClick={() => onOpen(game)}
-        aria-label={`View details for ${game.title}`}
         className="text-left focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
       >
         <div className="relative h-40 w-full bg-gray-900">

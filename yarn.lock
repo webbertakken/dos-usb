@@ -3069,6 +3069,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axe-core@npm:4.14.0":
+  version: 4.14.0
+  resolution: "axe-core@npm:4.14.0"
+  checksum: 10c0/8aaa0bf748e0dcf202e8f837951a37b28b4b62d639bed58c07a6890bf035ed6a11ede9f4006db9ca8041db821dc80476c27cff08fd70afa9195ee58fb995a958
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.6.1, axios@npm:^1.8.4":
   version: 1.8.4
   resolution: "axios@npm:1.8.4"
@@ -4042,6 +4049,7 @@ __metadata:
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
     "@vitejs/plugin-react-swc": "npm:^4.3.0"
     "@vitest/coverage-istanbul": "npm:^3"
+    axe-core: "npm:4.14.0"
     axios: "npm:^1.8.4"
     cheerio: "npm:^1.0.0"
     concurrently: "npm:^8.2.2"
