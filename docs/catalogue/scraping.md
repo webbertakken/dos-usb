@@ -49,4 +49,8 @@ The scraper is incremental and resumable: existing entries and screenshots are r
 
 - On download, the chosen game's files are fetched (with redirect support) and extracted into
   `games/<id>/`, and `runExe` is persisted into `metadata.json`.
+- Internet Archive items name their zip themselves, so `electron/download/archiveOrg.mjs` reads it
+  from the item's metadata (`archive.org/metadata/<item>`) before downloading.
+- A failed download is reported as a failure and leaves no empty game folder behind; nothing is ever
+  installed in its place.
 - On launch, `runExe` is used directly to start the game in DOSBox.
