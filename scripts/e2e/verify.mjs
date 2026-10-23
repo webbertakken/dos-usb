@@ -114,6 +114,23 @@ const windowsDosboxPids = () =>
     .filter(([image]) => /dosbox/i.test(image ?? ""))
     .map(([, pid]) => pid);
 
+/** Image names of every running process on Windows, for diagnosing a missing DOSBox. */
+const windowsProcessNames = () =>
+  execFileSync("tasklist", ["/FO", "CSV", "/NH"], { encoding: "utf8" })
+    .split(/\r?\n/)
+    .map((line) => line.split('","')[0].replace(/"/g, ""))
+    .filter(Boolean);
+
+/** New DOSBox PIDs within 20s; the first sighting needs to survive a second look. */
+const waitForNewDosbox = async (before) => {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await new Promise((r) => setTimeout(r, 1000));
+    const fresh = dosboxPids().filter((pid) => !before.has(pid));
+    if (fresh.length > 0 && attempt >= 3) return fresh;
+  }
+  return [];
+};
+
 const captureWindowsScreen = (file) => {
   const script = [
     "Add-Type -AssemblyName System.Windows.Forms, System.Drawing",
@@ -440,11 +457,12 @@ async function verifyApp(app, target) {
     fail(`Launch failed: ${launchResult.error}`);
   }
 
-  // Give DOSBox a moment, then confirm a new DOSBox process is running.
-  await new Promise((r) => setTimeout(r, 4000));
-  const ours = dosboxPids().filter((pid) => !dosboxBefore.has(pid));
+  // DOSBox may start through a launcher (DOSBoxPortable.exe), so allow it time.
+  const ours = await waitForNewDosbox(dosboxBefore);
   log("New DOSBox processes:", ours.join(", ") || "none");
   if (ours.length === 0) {
+    captureScreen(path.join(artifactsDir, `${target.name}-dosbox-fail.png`));
+    if (process.platform === "win32") log("Processes:", windowsProcessNames().join(", "));
     fail("DOSBox process was not running after launch");
   }
   log("DOSBox is running the game.");
