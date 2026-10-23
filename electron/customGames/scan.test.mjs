@@ -83,7 +83,7 @@ describe("scanCustomGames", () => {
       `log Custom game custom-keen-4: KEEN4E.EXE in ${path.join(customDir, "Keen 4")}, matched commander-keen-4-secret-of-oracle-1991 by executable KEEN4E.EXE`,
     );
     expect(logged).toContain(
-      "log Custom games: skipped INSTALL.EXE in Keen 4 (installer or setup program)",
+      "log Custom games: skipped INSTALL.EXE in Keen 4 (installer, setup or shareware extra, not the game)",
     );
   });
 
@@ -191,7 +191,7 @@ describe("scanCustomGames", () => {
     expect(games.map((game) => game.id)).toEqual(["custom-keen4e", "custom-a"]);
     expect(games[1].status).toBe("needs-attention");
     expect(logged).toContain(
-      "log Custom games: skipped SETUP.EXE in games-custom (installer or setup program)",
+      "log Custom games: skipped SETUP.EXE in games-custom (installer, setup or shareware extra, not the game)",
     );
   });
 

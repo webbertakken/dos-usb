@@ -69,6 +69,29 @@ The home screen displays all your installed DOS games. You can:
 - Launch games with a single click
 - Edit game metadata: title, description, year, category, and image
 
+### Add your own games
+
+Own a DOS game already? Copy it into the `games-custom` folder beside the app (on the stick, next to
+`games`). Next time you open the app, or switch back to it, the game is in My Games, marked **Your
+game**, ready to play.
+
+- Copy the game's folder, or its `.zip`. Folders inside folders are fine, and so are several games
+  in one folder (Commander Keen 1-3 come as `KEEN1.EXE`, `KEEN2.EXE`, `KEEN3.EXE` together and show
+  up as three games).
+- Installers and setup programs beside the game (`INSTALL.EXE`, `SETUP.EXE`) are left alone.
+- Well-known games get their proper title, year, description and screenshot from the library.
+- If the app cannot tell how to start a game, its card says **Needs attention** and why.
+- The app never changes your game folders; only the game itself writes there (its saves). Zips are
+  unpacked into `games-custom-unpacked`.
+
+To help a game the app gets wrong, put a `game.json` in its folder:
+
+```json
+{ "title": "Commander Keen 4", "runExe": "KEEN4E.EXE" }
+```
+
+See [Your own games](./docs/library/custom-games.md) for every detail.
+
 ### Game Store
 
 The Game Store lets you browse and download from a library of **10,000+ classic DOS games**,
@@ -148,7 +171,9 @@ fetches the Internet Archive collection live; pass `--no-ia` to skip it.
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
 downloads a game and launches it in DOSBox - a full cross-platform smoke test. It needs a display
 and a DOSBox on the machine. After `yarn electron-pack`, `yarn e2e:packaged` runs the same checks
-against the packaged app.
+against the packaged app. `node scripts/e2e/custom-games.mjs dist/linux-unpacked/dos-usb` lays out
+real shareware Keen 1 and 4 plus every messy layout in `games-custom`, screenshots My Games and
+plays Keen 1.
 
 ### Building for production
 

@@ -26,7 +26,6 @@ or switch back to it.
 If a game shows up as "needs attention", the card says why. To help it, put a
 file called game.json in the game's folder, for example:
   { "title": "Commander Keen 4", "runExe": "KEEN4E.EXE" }
-A dosbox.conf in the game's folder changes DOSBox settings for that game.
 `;
 const CONFIG_FILE = "game.json";
 const STAMP_FILE = ".unpacked-from";
@@ -148,7 +147,7 @@ export async function scanCustomGames({ customDir, unpackDir, library, log, extr
   });
   for (const { folder, files } of detected.skipped) {
     log.log(
-      `Custom games: skipped ${files.join(", ")} in ${folder || "games-custom"} (installer or setup program)`,
+      `Custom games: skipped ${files.join(", ")} in ${folder || "games-custom"} (installer, setup or shareware extra, not the game)`,
     );
   }
   for (const item of detected.needsAttention) {
