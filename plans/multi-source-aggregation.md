@@ -18,9 +18,11 @@ normalised download popularity.
       committed/mirrored.
 - [x] Polite fetcher: descriptive User-Agent, per-host rate limit + retries, optional robots.txt
       respect (tested).
-- [~] Cache screenshots locally - dosgames local; IA thumbnails hotlinked from archive.org to keep
-  repo size sane (localise later if going fully offline). Per-source attribution ("Listed on ...")
-  done.
+- [x] Screenshots: dosgames bundled; remote images (IA, DOS Games Archive) go through a runtime
+      cache (`dosusb-image://`) that stores each one beside the games once shown, so seen art works
+      offline and the repo stays lean. Abandonware DOS forbids hotlinking (403 for foreign
+      referrers), so its images are never shown or fetched; another source's image or a placeholder
+      is used. Per-source attribution ("Listed on ...") done.
 - [x] Per-source `license` flag.
 - [x] `denylist.json` (by canonical id) honoured at build (tested filter).
 - [x] README disclaimer + takedown instructions.
@@ -58,8 +60,8 @@ normalised download popularity.
 ## Phase 2 - Internet Archive adapter
 
 - [x] `scripts/sources/internetArchive.ts` - paginate `advancedsearch` over
-      `collection:softwarelibrary_msdos_games` (+ related collections), fields: identifier, title,
-      year, downloads, subject.
+      `collection:softwarelibrary_msdos_games` (the only IA collection; see settled questions),
+      fields: identifier, title, year, downloads, subject, description.
 - [~] Per-item `metadata` API skipped at this scale (8.8k items); the bulk scrape API already yields
   title/year/downloads/subject. IA-only games therefore have no long description. Revisit if richer
   IA detail is wanted.
@@ -114,8 +116,15 @@ at a time, deliberately.
       was earlier mistaken for JS-driven; it resolves to a clean static zip URL.
 - [~] **RGB Classic Games** - deferred: thin pages (no parseable year/genre/description), mixed
   DOS+Windows; low matching value.
-- [ ] Extend `categoryMap` + overrides as needed.
-- [ ] Optional: MobyGames/IGDB enrichment to fix IA "Uncategorised" + canonical ids.
+- [x] Extend `categoryMap` + title rules: fixed two keyword bugs ("Educational", "Space Shooting"),
+      mapped DGA "Traditional", added IA subject keywords (AGI/AGT/SCI adventures, educational
+      series, classic board games). Titles drop "MS-DOS:"/"Shareware Game:" prefixes and trailing
+      platform labels; a trailing own release year joins the plain title when one exists.
+      Abandonware DOS "application" entries (non-games) are excluded at build.
+- [x] Enrichment for "Uncategorised" + canonical ids, keyless: Wikidata (CC0) genres and
+      MobyGames/IGDB/Wikidata ids (`yarn ingest-references`), then the genre IA descriptions state.
+      Uncategorised 5,893 -> 2,662 (top 1000: 413 -> 94). IGDB/MobyGames not used (credentials /
+      paid key).
 
 ## Phase 7 - verification + docs
 
@@ -128,10 +137,26 @@ at a time, deliberately.
 - [x] Docs: `docs/library/aggregation.md`; README sources + attribution + disclaimer; DECISIONS
       updated.
 
-## Open questions to resolve while planning
+## Settled questions
 
-- [ ] Which extra IA collections beyond `softwarelibrary_msdos_games` to include (e.g.
-      `softwarelibrary_msdos`, `classicpcgames`)?
-- [ ] Popularity combine: max-of-percentiles vs weighted mean (weight by source size/credibility)?
-- [ ] Category grouping UX: hard sections vs a "group by category" toggle on top of the virtualised
-      grid.
+Measured on the catalogue (10,372 games) and the live sources, then decided by Webber.
+
+- [x] **Extra IA collections: none.** `softwarelibrary_msdos` (+14.3k) is mostly demoscene, cryptic
+      Frostbyte shareware, ZZT worlds, apps and a malware museum; `classicpcgames` (16.1k) is not
+      specific to DOS (Windows demos, patches) and 60% has no emulator;
+      `softwarelibrary_msdos_shareware` has about 285 game-like items, nearly all without a year.
+- [x] **Popularity: max of per-source percentiles**, plus Abandonware DOS page views as a third
+      signal. A mean collapses known classics (Prince of Persia #5 -> #517, Prehistorik 2 #11 ->
+      #3791) because dosgames ranks only its own curated top list. Within a source, a game's items
+      are summed (downloads split across uploads); rank-based dosgames keeps its best rank. Games
+      without any signal: 2,040 -> 720 (all DOS Games Archive-only). Day of the Tentacle #8830 ->
+      #487, X-COM #1520 -> #136.
+- [x] **Grouping UX: the toggle opens shelves.** Full sections made the grouped page 1.18M px tall
+      (Uncategorised alone 1,474 rows); shelves show two rows per category with "See all", which
+      sets the category filter and shows that whole section (page ~14k px).
+
+## Follow-ups
+
+- [ ] Internet Archive download links are `/download/<id>/<id>.zip`, which 404s (the zip inside an
+      item has its own name, e.g. `ZZT_1991.zip` in `msdos_ZZT_1991`), so IA-only games cannot be
+      downloaded. Resolve the zip from the item's metadata - separate PR.

@@ -116,7 +116,8 @@ Refresh a scrape-only source with `yarn ingest <abandonwaredos|dosgamesarchive>`
 
 This repository stores **metadata, provenance and links only** - it never bundles or mirrors
 copyrighted game binaries; those are fetched on demand from the originating source. Screenshots from
-dosgames are cached locally; Internet Archive thumbnails are hotlinked.
+dosgames are bundled; other screenshots are cached on your machine once shown, so they also work
+offline. Sites that forbid hotlinking (Abandonware DOS) are never fetched for images.
 
 Rights holders: to request removal of a title, add its canonical id to `scripts/data/denylist.json`
 (or open an issue) and rebuild - denied games are excluded from the library.
