@@ -27,8 +27,16 @@ const Navigation: React.FC = () => {
       {/* Mobile Navigation */}
       <div className="md:hidden bg-gray-900 p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-white">DOS USB</h1>
-        <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none">
+        <button
+          type="button"
+          aria-label="Menu"
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-white rounded focus-visible:outline-2 focus-visible:outline-blue-400"
+        >
           <svg
+            aria-hidden="true"
             className="w-6 h-6"
             fill="none"
             stroke="currentColor"
@@ -47,7 +55,7 @@ const Navigation: React.FC = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-gray-800 p-4">
+        <div id="mobile-menu" className="md:hidden bg-gray-800 p-4">
           <ul>
             {navItems.map((item) => (
               <li key={item.path} className="mb-2">

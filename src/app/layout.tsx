@@ -25,12 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white`}
-      >
+    // The font variables sit on <html> so Tailwind's root font stack can resolve them.
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased bg-gray-900 text-white">
         <ErrorBoundary>
-          <div className="flex h-screen">
+          <div className="flex flex-col md:flex-row h-screen">
             <Navigation />
             <main className="flex-1 overflow-y-auto">{children}</main>
           </div>

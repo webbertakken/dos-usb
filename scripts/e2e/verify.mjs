@@ -1,22 +1,56 @@
 /**
  * Real end-to-end verification of the Electron app on this platform.
  *
- * Launches the actual Electron app (pointed at the running dev server),
- * exercises the store catalogue, downloads a real game, then launches it in
- * DOSBox. Fails loudly on any problem.
+ * Launches the actual Electron app, navigates to the store the way a user
+ * does, checks the library and its screenshots render, downloads a real game,
+ * then launches it in DOSBox. Fails loudly on any problem.
  *
- * Run with the dev server already listening on http://localhost:3000:
- *   npx playwright test? no - run directly:  node scripts/e2e/verify.mjs
+ * Two targets:
+ *   node scripts/e2e/verify.mjs
+ *     the unpackaged app against the dev server on http://localhost:3000
+ *   node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb
+ *     a packaged executable, serving the static export on app://dos-usb/,
+ *     started from a fresh working directory; games land beside the executable
+ *
+ * Screenshots land in $E2E_ARTIFACTS (default /tmp/dos-usb-e2e).
  */
 
 import { _electron as electron } from "playwright";
 import path from "path";
+import os from "os";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import { execFileSync, execSync, spawn } from "child_process";
 
 const repoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const artifactsDir = process.env.E2E_ARTIFACTS ?? path.join(os.tmpdir(), "dos-usb-e2e");
+const display = process.env.DISPLAY || ":0";
 
 const log = (...args) => console.log("[e2e]", ...args);
+
+/** Where and how to launch the app under test, from the command line. */
+const resolveTarget = (argv) => {
+  const flag = argv.indexOf("--packaged");
+  if (flag === -1) {
+    return {
+      name: "dev",
+      origin: "http://localhost:3000",
+      launch: { args: ["."], cwd: repoRoot },
+      gamesRoot: repoRoot,
+    };
+  }
+  const executable = argv[flag + 1];
+  if (!executable) throw new Error("--packaged needs the path to the packaged executable");
+  // Started from an unrelated directory: games must still land beside the executable.
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), "dos-usb-packaged-"));
+  const executablePath = path.resolve(executable);
+  return {
+    name: "packaged",
+    origin: "app://dos-usb",
+    launch: { executablePath, args: [], cwd: workDir },
+    gamesRoot: path.dirname(executablePath),
+  };
+};
 
 /** Parse a dosgames size string (e.g. "2,303k", "1.2m") to kilobytes. */
 const parseSize = (s) => {
@@ -36,20 +70,104 @@ const fail = (message) => {
   throw new Error(message);
 };
 
-async function main() {
-  log("Launching Electron app...");
-  const app = await electron.launch({
-    args: ["."],
-    cwd: repoRoot,
-    env: { ...process.env, DISPLAY: process.env.DISPLAY || ":0" },
+/**
+ * PIDs of running DOSBox processes. No shell: a `sh -c "pgrep -f dosbox"`
+ * wrapper would match its own command line and fake a running DOSBox.
+ */
+const dosboxPids = () => {
+  try {
+    return execFileSync("pgrep", ["-f", "dosbox"], { encoding: "utf8" })
+      .split("\n")
+      .filter(Boolean);
+  } catch {
+    return []; // pgrep exits 1 when nothing matches
+  }
+};
+
+const captureScreen = (file) => {
+  try {
+    execSync(`import -window root ${file}`, { env: { ...process.env, DISPLAY: display } });
+    log("Saved screen capture to", file);
+  } catch (error) {
+    log("Screen capture skipped:", error.message);
+  }
+};
+
+/**
+ * Playwright strips NODE_OPTIONS from the app it launches, so start the
+ * packaged executable directly with a `--require` in it (as VS Code's debug
+ * terminals set) and require it to reach `ready` and serve app://.
+ */
+const verifyStartsDespiteNodeOptions = ({ executablePath, cwd }) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(executablePath, [], {
+      cwd,
+      detached: true, // own process group: the AppImage runtime spawns the app as a child
+      env: {
+        ...process.env,
+        DISPLAY: display,
+        NODE_OPTIONS: '--require "/nonexistent/dos-usb-e2e-hook.cjs"',
+      },
+    });
+    let output = "";
+    const stop = () => {
+      try {
+        process.kill(-child.pid, "SIGTERM");
+      } catch {
+        /* already gone */
+      }
+    };
+    const timer = setTimeout(() => {
+      stop();
+      reject(new Error(`No app:// start within 30s under NODE_OPTIONS:\n${output}`));
+    }, 30000);
+    const onData = (chunk) => {
+      output += chunk;
+      if (!output.includes("[app protocol] serving")) return;
+      clearTimeout(timer);
+      child.removeAllListeners("exit");
+      stop();
+      resolve();
+    };
+    child.stdout.on("data", onData);
+    child.stderr.on("data", onData);
+    child.on("exit", (code, signal) => {
+      clearTimeout(timer);
+      reject(new Error(`Exited (${code ?? signal}) under NODE_OPTIONS:\n${output}`));
+    });
   });
 
+async function main() {
+  const target = resolveTarget(process.argv.slice(2));
+  fs.mkdirSync(artifactsDir, { recursive: true });
+  if (target.name === "packaged") {
+    log("Starting directly with a --require in NODE_OPTIONS...");
+    await verifyStartsDespiteNodeOptions(target.launch).catch((error) => fail(error.message));
+    log("Started and served app:// despite NODE_OPTIONS");
+  }
+  log(`Launching Electron app (${target.name}) from ${target.launch.cwd}...`);
+  const app = await electron.launch({
+    ...target.launch,
+    colorScheme: "dark",
+    env: { ...process.env, DISPLAY: display },
+  });
+  app.process().stdout?.on("data", (chunk) => log("main:", String(chunk).trimEnd()));
+  app.process().stderr?.on("data", (chunk) => log("main!:", String(chunk).trimEnd()));
+  try {
+    await verifyApp(app, target);
+  } finally {
+    await app.close();
+  }
+  log("PASS: store + download + launch all verified.");
+}
+
+async function verifyApp(app, target) {
   // The app opens a DevTools window in dev; select the real app window by URL.
   const findAppWindow = async () => {
     for (let i = 0; i < 40; i++) {
       for (const win of app.windows()) {
         try {
-          if (win.url().startsWith("http://localhost:3000")) {
+          if (win.url().startsWith(target.origin)) {
             return win;
           }
         } catch {
@@ -62,15 +180,98 @@ async function main() {
   };
   const window = await findAppWindow();
   if (!window) {
-    fail("Could not find the app window on localhost:3000");
+    fail(`Could not find the app window on ${target.origin}`);
   }
-  await window.waitForLoadState("domcontentloaded");
-  window.on("console", (msg) => log("renderer:", msg.text()));
-  window.on("pageerror", (err) => log("pageerror:", err.message));
+
+  // Anything the renderer could not load, or that the CSP blocked, is a failure.
+  const problems = [];
+  window.on("console", (msg) => {
+    log("renderer:", msg.text());
+    if (/Content Security Policy/i.test(msg.text())) problems.push(`CSP: ${msg.text()}`);
+    if (/preloaded using link preload but not used/i.test(msg.text())) {
+      problems.push(`unused preload: ${msg.text()}`);
+    }
+  });
+  window.on("pageerror", (err) => {
+    log("pageerror:", err.message);
+    problems.push(`pageerror: ${err.message}`);
+  });
+  window.on("requestfailed", (req) => {
+    if (req.url().startsWith(target.origin)) problems.push(`request failed: ${req.url()}`);
+  });
+  window.on("response", (res) => {
+    if (res.url().startsWith(target.origin) && res.status() >= 400) {
+      problems.push(`HTTP ${res.status()}: ${res.url()}`);
+    }
+  });
+
+  await window.waitForLoadState("load");
   log("App window opened:", window.url());
 
-  // --- Library store (virtualised) ---
-  await window.goto("http://localhost:3000/store", { waitUntil: "load" });
+  // Parsed stylesheets prove the absolute /_next/ asset paths resolved.
+  const stylesheets = await window.evaluate(() =>
+    [...document.querySelectorAll('link[rel="stylesheet"]')].map((link) => ({
+      href: link.href,
+      rules: link.sheet?.cssRules.length ?? 0,
+    })),
+  );
+  log("Stylesheets:", JSON.stringify(stylesheets));
+  if (stylesheets.length === 0 || stylesheets.some((sheet) => sheet.rules === 0)) {
+    fail(`Stylesheets did not load: ${JSON.stringify(stylesheets)}`);
+  }
+
+  // The layout's own surface utility must win over any global body rule.
+  const surface = await window.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.className = "bg-gray-900";
+    document.body.append(probe);
+    const expected = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return { expected, actual: getComputedStyle(document.body).backgroundColor };
+  });
+  if (surface.actual !== surface.expected) {
+    fail(`Body background ${surface.actual} overrides bg-gray-900 (${surface.expected})`);
+  }
+
+  // The text renders in Geist, the font the layout loads, and that font loaded.
+  const font = await window.evaluate(async () => {
+    await document.fonts.ready;
+    const family = getComputedStyle(document.body).fontFamily;
+    const primary = family.split(",")[0].replaceAll(/["']/g, "").trim();
+    const loaded = [...document.fonts].some(
+      (face) => face.family.replaceAll(/["']/g, "").trim() === primary && face.status === "loaded",
+    );
+    return { family, primary, loaded };
+  });
+  log("Body font:", font.family, font.loaded ? "(loaded)" : "(not loaded)");
+  if (font.primary !== "Geist" || !font.loaded) {
+    fail(`Body font is ${font.family}, expected a loaded Geist`);
+  }
+
+  // --- Navigate to the store the way a user does ---
+  // A marker on `window` survives only a client-side navigation, which proves
+  // the app hydrated and the router fetched the route's RSC payload.
+  await window.evaluate(() => {
+    window.__e2eSameDocument = true;
+  });
+  try {
+    // Narrow windows (dev docks DevTools) collapse the sidebar into a menu.
+    const storeLink = window.getByRole("link", { name: "Game Store" }).filter({ visible: true });
+    if ((await storeLink.count()) === 0) {
+      log("Sidebar collapsed; opening the menu");
+      await window.getByRole("button", { name: "Menu" }).click({ timeout: 15000 });
+    }
+    await storeLink.first().click({ timeout: 15000 });
+    await window.waitForURL(`${target.origin}/store`, { timeout: 15000 });
+  } catch (error) {
+    await window.screenshot({ path: path.join(artifactsDir, "navigation-fail.png") });
+    fail(`Could not navigate to the store: ${error.message.split("\n")[0]}`);
+  }
+  const sameDocument = await window.evaluate(() => window.__e2eSameDocument === true);
+  log("Navigated to", window.url(), sameDocument ? "(client-side)" : "(full reload)");
+  if (!sameDocument) {
+    fail("Navigation to /store reloaded the page: the app did not hydrate");
+  }
 
   // The grid is virtualised, so assert via the "Showing X of Y games" total
   // and that at least some cards rendered - not a fixed card count.
@@ -85,7 +286,7 @@ async function main() {
       { timeout: 30000 },
     );
   } catch {
-    await window.screenshot({ path: "/tmp/e2e-store-fail.png" }).catch(() => {});
+    await window.screenshot({ path: path.join(artifactsDir, "store-fail.png") }).catch(() => {});
     const snippet = await window.evaluate(() => document.body.innerText.slice(0, 400));
     fail(`Library did not render. Body text:\n${snippet}`);
   }
@@ -98,15 +299,38 @@ async function main() {
     fail(`Expected the aggregated library (>=1000 games), got ${total}`);
   }
 
-  // Verify at least one screenshot actually loaded (naturalWidth > 0).
-  const imageOk = await window.evaluate(() => {
-    const imgs = [...document.querySelectorAll("img")];
-    return imgs.some((img) => img.naturalWidth > 0 && img.naturalHeight > 0);
+  // Every screenshot in the viewport must load, not just one. Cards in the
+  // virtualiser's overscan are lazy-loaded, so they are not expected to.
+  await window.evaluate(() => {
+    window.__e2eImagesInView = () =>
+      [...document.querySelectorAll("img")].filter((img) => {
+        const box = img.getBoundingClientRect();
+        return box.width > 0 && box.bottom > 0 && box.top < window.innerHeight;
+      });
   });
-  if (!imageOk) {
-    fail("No store screenshot image loaded (naturalWidth was 0)");
+  await window
+    .waitForFunction(() => window.__e2eImagesInView().every((img) => img.complete), null, {
+      timeout: 15000,
+    })
+    .catch(() => log("Some screenshots in view were still loading after 15s"));
+  const images = await window.evaluate(() =>
+    window.__e2eImagesInView().map((img) => ({
+      src: img.currentSrc,
+      loaded: img.complete && img.naturalWidth > 0 && img.naturalHeight > 0,
+    })),
+  );
+  const broken = images.filter((img) => !img.loaded);
+  log(`${images.length - broken.length}/${images.length} screenshots loaded`);
+  if (images.length === 0 || broken.length > 0) {
+    fail(`Screenshots failed to load: ${broken.map((img) => img.src).join(", ") || "none shown"}`);
   }
-  log("At least one screenshot image loaded successfully");
+  const storeShot = path.join(artifactsDir, `${target.name}-store.png`);
+  await window.screenshot({ path: storeShot });
+  log("Saved store screenshot to", storeShot);
+
+  if (problems.length > 0) {
+    fail(`Renderer problems:\n${problems.join("\n")}`);
+  }
 
   // --- Pick a small game from the catalogue to download ---
   const catalogue = JSON.parse(
@@ -118,7 +342,7 @@ async function main() {
   log(`Chosen download target: ${candidate.id} (${candidate.fileSize}) runExe=${candidate.runExe}`);
 
   // Remove any previous copy so we test a fresh download.
-  const gameDir = path.join(repoRoot, "games", candidate.id);
+  const gameDir = path.join(target.gamesRoot, "games", candidate.id);
   fs.rmSync(gameDir, { recursive: true, force: true });
 
   // Trigger the real download via the app's IPC bridge from the renderer.
@@ -147,6 +371,7 @@ async function main() {
   log("metadata.json persisted runExe:", meta.runExe);
 
   // --- Launch the game in DOSBox ---
+  const dosboxBefore = new Set(dosboxPids());
   log("Launching game in DOSBox...");
   const launchResult = await window.evaluate(async (gamePath) => {
     return await window.electron.launchGame(gamePath);
@@ -156,42 +381,24 @@ async function main() {
     fail(`Launch failed: ${launchResult.error}`);
   }
 
-  // Give DOSBox a moment, then confirm the process is running.
+  // Give DOSBox a moment, then confirm a new DOSBox process is running.
   await new Promise((r) => setTimeout(r, 4000));
-  const { execSync } = await import("child_process");
-  let dosboxRunning = false;
-  try {
-    const out = execSync("pgrep -af dosbox || true", { encoding: "utf8" });
-    log("dosbox processes:\n" + out.trim());
-    dosboxRunning = /dosbox/i.test(out);
-  } catch {
-    /* ignore */
-  }
-  if (!dosboxRunning) {
+  const ours = dosboxPids().filter((pid) => !dosboxBefore.has(pid));
+  log("New DOSBox processes:", ours.join(", ") || "none");
+  if (ours.length === 0) {
     fail("DOSBox process was not running after launch");
   }
   log("DOSBox is running the game.");
+  captureScreen(path.join(artifactsDir, `${target.name}-dosbox.png`));
 
-  // Capture a screenshot of the screen for visual proof.
-  try {
-    const { execSync } = await import("child_process");
-    execSync(`import -window root /tmp/e2e-dosbox.png`, {
-      env: { ...process.env, DISPLAY: process.env.DISPLAY || ":0" },
-    });
-    log("Saved screenshot to /tmp/e2e-dosbox.png");
-  } catch (e) {
-    log("Screenshot capture skipped:", e.message);
+  // Clean up only the DOSBox we started, then the app.
+  for (const pid of ours) {
+    try {
+      process.kill(Number(pid), "SIGTERM");
+    } catch {
+      /* already gone */
+    }
   }
-
-  // Clean up DOSBox + app.
-  try {
-    const { execSync } = await import("child_process");
-    execSync("pkill -f dosbox || true");
-  } catch {
-    /* ignore */
-  }
-  await app.close();
-  log("PASS: store + download + launch all verified.");
 }
 
 main().catch((error) => {

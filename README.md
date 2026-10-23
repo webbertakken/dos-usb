@@ -49,7 +49,8 @@ launching a game reports a clear error with an install hint instead of failing s
 
 1. Download the latest release from the
    [Releases page](https://github.com/webbertakken/dos-usb/releases)
-2. Extract the contents to your USB drive (or anywhere you like)
+2. Extract the contents to your USB drive (or anywhere you like); downloaded games are stored in a
+   `games` folder beside the app
 3. Launch the app:
    - **Windows**: run `DOSGamesPortable.exe`
    - **Linux / macOS**: run the bundled app for your platform
@@ -126,7 +127,8 @@ Rebuild the aggregated library with `yarn build-library`.
 ### End-to-end verification
 
 With a dev server running (`yarn dev`), `yarn e2e` launches the real Electron app, loads the store,
-downloads a game and launches it in DOSBox - a full cross-platform smoke test.
+downloads a game and launches it in DOSBox - a full cross-platform smoke test. After
+`yarn electron-pack`, `yarn e2e:packaged` runs the same checks against the packaged app.
 
 ### Settings
 
@@ -140,11 +142,13 @@ Configure your DOS USB environment:
 
 To build the application for production:
 
-```
-npm run electron-build
+```bash
+yarn electron-build
 ```
 
-This will create a portable executable that can be run directly from a USB drive.
+This creates a portable build in `dist/` that runs directly from a USB drive: `DOSGamesPortable.exe`
+on Windows, `DOSGamesPortable.AppImage` on Linux. See [Packaged app](./docs/electron/packaging.md)
+for how it serves the static export.
 
 ## Technical Details
 
