@@ -94,6 +94,38 @@ describe("detectCustomGames", () => {
     ]);
   });
 
+  it("skips the shareware extras Apogee shipped beside the game", () => {
+    const files = [
+      "APOGEE.BAT",
+      "CATALOG.EXE",
+      "DEALERS.EXE",
+      "KEEN4E.EXE",
+      "SWCBBS.EXE",
+      "ORDER.FRM",
+    ];
+
+    const { games, skipped } = detectCustomGames(root([], [dir("Keen4", files)]));
+
+    expect(games.map((game) => game.executable)).toEqual(["KEEN4E.EXE"]);
+    expect(skipped[0].files).toEqual(["APOGEE.BAT", "CATALOG.EXE", "DEALERS.EXE", "SWCBBS.EXE"]);
+  });
+
+  it("prefers an executable the library knows as a game", () => {
+    const files = ["AAA.EXE", "PRINCE.EXE"];
+
+    const { games } = detectCustomGames(root([], [dir("Pop", files)]), {
+      knownExecutables: new Set(["PRINCE.EXE"]),
+    });
+
+    expect(games.map((game) => game.executable)).toEqual(["PRINCE.EXE"]);
+  });
+
+  it("prefers an executable named like its folder", () => {
+    const { games } = detectCustomGames(root([], [dir("Duke Nukem", ["AAA.EXE", "DUKE1.EXE"])]));
+
+    expect(games.map((game) => game.executable)).toEqual(["DUKE1.EXE"]);
+  });
+
   it("prefers a START launcher over other executables", () => {
     const { games } = detectCustomGames(
       root([], [dir("Dreams", ["KDREAMS.EXE", "START.EXE", "LOADSCN.EXE"])]),

@@ -9,7 +9,12 @@
 import fs from "fs";
 import path from "path";
 import { detectCustomGames } from "./detect.mjs";
-import { createLibraryMatcher, presentCustomGame, presentNeedsAttention } from "./match.mjs";
+import {
+  createLibraryMatcher,
+  knownGameExecutables,
+  presentCustomGame,
+  presentNeedsAttention,
+} from "./match.mjs";
 
 const HOW_TO_FILE = "HOW TO ADD GAMES.txt";
 const HOW_TO = `Add your own DOS games here.
@@ -128,7 +133,9 @@ export async function scanCustomGames({ customDir, unpackDir, library, log, extr
     log.log(`Custom games: created ${customDir}`);
   }
 
-  const detected = detectCustomGames(await readEntries({ customDir, unpackDir, extractZip, log }));
+  const detected = detectCustomGames(await readEntries({ customDir, unpackDir, extractZip, log }), {
+    knownExecutables: knownGameExecutables(library),
+  });
   const match = createLibraryMatcher(library);
 
   const ready = detected.games.map((game) => {

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   createLibraryMatcher,
+  knownGameExecutables,
   normaliseTitle,
   presentCustomGame,
   presentNeedsAttention,
@@ -118,6 +119,21 @@ describe("createLibraryMatcher", () => {
 
   it("returns null when nothing matches", () => {
     expect(match(game({ title: "My Homework", folder: "Homework" }))).toBeNull();
+  });
+});
+
+describe("knownGameExecutables", () => {
+  it("lists the well-known and the library's own game executables, not generic launchers", () => {
+    const known = knownGameExecutables(library);
+
+    expect(known.has("KEEN1.EXE")).toBe(true);
+    expect(known.has("KEEN4E.EXE")).toBe(true);
+    expect(known.has("WOLF3D.EXE")).toBe(true);
+    expect(known.has("START.EXE")).toBe(false);
+  });
+
+  it("copes with library entries without sources", () => {
+    expect(knownGameExecutables([{ id: "x", title: "X" }]).has("KDREAMS.EXE")).toBe(true);
   });
 });
 

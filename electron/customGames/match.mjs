@@ -64,6 +64,18 @@ const indexRunExecutables = (library) => {
   );
 };
 
+/** Upper-case names of programs the library knows to be a game, for picking among several. */
+export function knownGameExecutables(library) {
+  const runExecutables = library.flatMap((game) =>
+    (game.sources ?? []).map((source) => source.runExe?.toUpperCase()),
+  );
+  return new Set(
+    [...Object.keys(KNOWN_EXECUTABLES), ...runExecutables].filter(
+      (name) => name && !GENERIC_EXECUTABLES.has(name),
+    ),
+  );
+}
+
 /**
  * @returns {(game: { title: string, folder: string, executable: string }) => { entry: object, via: string } | null}
  */

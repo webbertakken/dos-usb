@@ -15,7 +15,7 @@ const MAX_DEPTH = 3;
 
 const PROGRAM = /\.(exe|com|bat)$/i;
 const NOT_THE_GAME =
-  /^(install|instal|setup|config|configur|uninst|uninstal|unins\d*|insthelp|deice|catalog|order|register|vendor|setsound|setblast|readme|help|pkunzip|unzip|lha)\.(exe|com|bat)$/i;
+  /^(install|instal|setup|config|configur|uninst|uninstal|unins\d*|insthelp|deice|catalog|order|register|vendor|setsound|setblast|readme|help|pkunzip|unzip|lha|dealers|swcbbs|apogee)\.(exe|com|bat)$/i;
 const EPISODE = /^(.*\D)(\d)([a-z]?)\.(exe|com)$/i;
 const ARCHIVE_EXTENSION = /\.(zip)$/i;
 
@@ -77,6 +77,32 @@ const episodesIn = (playable) => {
 
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
 
+const commonPrefixLength = (a, b) => {
+  let length = 0;
+  while (length < a.length && a[length] === b[length]) length += 1;
+  return length;
+};
+
+/** The program named most like the folder ("Keen4" -> KEEN4E.EXE), if any is close. */
+const namedLikeFolder = (playable, folderNames) => {
+  const ranked = folderNames.flatMap((name) => {
+    const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return playable.map((file) => ({
+      file,
+      score: commonPrefixLength(key, stemOf(file).toLowerCase()),
+    }));
+  });
+  const best = ranked.reduce((top, item) => (item.score > top.score ? item : top), { score: 2 });
+  return best.file;
+};
+
+/** One game's program: a known game, a START launcher, one named like the folder, else launch.mjs's pick. */
+const chooseExecutable = (playable, { gameId, folderNames, knownExecutables }) =>
+  playable.find((file) => knownExecutables.has(file.toUpperCase())) ??
+  playable.find((file) => /^start\.(exe|bat)$/i.test(file)) ??
+  namedLikeFolder(playable, folderNames) ??
+  selectExecutable(playable, { gameId });
+
 /** Follow a game.json runExe ("KEEN6.EXE" or "game\\KEEN6.EXE") case-insensitively. */
 const findRunExe = (node, runExe) => {
   const parts = runExe.split(/[\\/]+/).filter(Boolean);
@@ -98,7 +124,7 @@ const emptyReason = (entry, installers) => {
 };
 
 /** The games in one entry of games-custom/ (a folder, an unpacked zip, or the loose files). */
-const detectEntry = (entry, { loose }) => {
+const detectEntry = (entry, { loose, knownExecutables }) => {
   const folder = loose ? "" : entry.name;
   const base = {
     id: slugify(entry.name),
@@ -155,7 +181,13 @@ const detectEntry = (entry, { loose }) => {
     const place = severalFolders
       ? { id: `${base.id}-${slugify(node.name)}`, title: tidyTitle(node.name) }
       : base;
-    const executables = episodesIn(playable) ?? [selectExecutable(playable, { gameId: place.id })];
+    const executables = episodesIn(playable) ?? [
+      chooseExecutable(playable, {
+        gameId: place.id,
+        folderNames: loose ? [] : [node.name, entry.name],
+        knownExecutables,
+      }),
+    ];
     if (loose) {
       return executables.map((executable) =>
         game({
@@ -196,12 +228,13 @@ const uniqueIds = (items) => {
 
 /**
  * Every custom game under the games-custom/ root node.
+ * `knownExecutables` (upper case) are programs the library knows as games, preferred over extras.
  * @returns {{ games: object[], needsAttention: object[], skipped: { folder: string, files: string[] }[] }}
  */
-export function detectCustomGames(root) {
+export function detectCustomGames(root, { knownExecutables = new Set() } = {}) {
   const results = [
-    detectEntry({ ...root, dirs: [] }, { loose: true }),
-    ...root.dirs.map((entry) => detectEntry(entry, { loose: false })),
+    detectEntry({ ...root, dirs: [] }, { loose: true, knownExecutables }),
+    ...root.dirs.map((entry) => detectEntry(entry, { loose: false, knownExecutables })),
   ];
   const all = uniqueIds([
     ...results.flatMap((result) => result.games),
