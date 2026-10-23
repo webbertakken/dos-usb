@@ -4,7 +4,7 @@
  * Heavy scrapes run once here (resumable cache) so `build-library` stays fast.
  *
  * Run:  tsx scripts/ingest-source.ts <source> [--limit=N]
- *   sources: abandonwaredos
+ *   sources: abandonwaredos, dosgamesarchive
  */
 
 import fs from "fs";

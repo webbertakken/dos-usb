@@ -6,7 +6,7 @@
  * DOSBox. Fails loudly on any problem.
  *
  * Run with the dev server already listening on http://localhost:3000:
- *   npx playwright test? no - run directly:  node scripts/e2e/verify.mjs
+ *   yarn e2e
  */
 
 import { _electron as electron } from "playwright";
