@@ -49,7 +49,8 @@ launching a game reports a clear error with an install hint instead of failing s
 
 1. Download the latest release from the
    [Releases page](https://github.com/webbertakken/dos-usb/releases)
-2. Extract the contents to your USB drive (or anywhere you like)
+2. Extract the contents to your USB drive (or anywhere you like); downloaded games are stored in a
+   `games` folder beside the app
 3. Launch the app:
    - **Windows**: run `DOSGamesPortable.exe`
    - **Linux / macOS**: run the bundled app for your platform
