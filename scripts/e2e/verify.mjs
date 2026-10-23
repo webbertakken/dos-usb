@@ -10,7 +10,7 @@
  *     the unpackaged app against the dev server on http://localhost:3000
  *   node scripts/e2e/verify.mjs --packaged dist/linux-unpacked/dos-usb
  *     a packaged executable, serving the static export on app://dos-usb/,
- *     run from a fresh working directory (games are downloaded beside it)
+ *     started from a fresh working directory; games land beside the executable
  *
  * Screenshots land in $E2E_ARTIFACTS (default /tmp/dos-usb-e2e).
  */
@@ -41,12 +41,14 @@ const resolveTarget = (argv) => {
   }
   const executable = argv[flag + 1];
   if (!executable) throw new Error("--packaged needs the path to the packaged executable");
+  // Started from an unrelated directory: games must still land beside the executable.
   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), "dos-usb-packaged-"));
+  const executablePath = path.resolve(executable);
   return {
     name: "packaged",
     origin: "app://dos-usb",
-    launch: { executablePath: path.resolve(executable), args: [], cwd: workDir },
-    gamesRoot: workDir,
+    launch: { executablePath, args: [], cwd: workDir },
+    gamesRoot: path.dirname(executablePath),
   };
 };
 

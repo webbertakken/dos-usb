@@ -24,6 +24,7 @@ import {
   createStaticExportHandler,
 } from "./protocol/staticExport.mjs";
 import { buildContentSecurityPolicy } from "./protocol/contentSecurityPolicy.mjs";
+import { resolvePortableRoot } from "./portable/root.mjs";
 
 // Tracks the DOSBox process we spawned so it can be terminated cross-platform.
 let activeDosboxChild = null;
@@ -32,6 +33,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow;
+
+// Games (and the Windows DOSBox bundle) live beside the app, wherever it was
+// put - not in the working directory, which depends on how it was started.
+const portableRoot = resolvePortableRoot({
+  isPackaged: !isDev,
+  platform: process.platform,
+  env: process.env,
+  execPath: process.execPath,
+  cwd: process.cwd(),
+});
+const gamesDir = path.join(portableRoot, "games");
+console.log(`Portable root: ${portableRoot} (games in ${gamesDir})`);
 
 // The packaged renderer loads from app://dos-usb/, not file://, so the static
 // export's absolute asset paths and routes resolve. Must precede `ready`.
@@ -136,13 +149,12 @@ ipcMain.handle("log-error", async (event, errorData) => {
   return { received: true };
 });
 
-// Resolve the bundled store catalogue. Works in dev (public/) and in the
-// packaged app (out/), avoiding fetch() which is unreliable under file://.
+// Resolve the bundled store catalogue: public/ in dev (fresh from the
+// scraper), out/ in the packaged app (public/ is not packaged).
 function resolveCataloguePath() {
   const candidates = [
-    path.join(process.cwd(), "public", "catalogue.json"),
-    path.join(__dirname, "..", "out", "catalogue.json"),
     path.join(__dirname, "..", "public", "catalogue.json"),
+    path.join(__dirname, "..", "out", "catalogue.json"),
   ];
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
@@ -165,9 +177,8 @@ ipcMain.handle("get-store-catalogue", async () => {
 
 function resolveLibraryPath() {
   const candidates = [
-    path.join(process.cwd(), "public", "library.json"),
-    path.join(__dirname, "..", "out", "library.json"),
     path.join(__dirname, "..", "public", "library.json"),
+    path.join(__dirname, "..", "out", "library.json"),
   ];
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
@@ -271,7 +282,7 @@ async function setupDOSBox(gameId, gameDir, gameExe) {
 
     // Resolve the DOSBox executable for the current platform:
     // bundled portable build on Windows, a PATH binary elsewhere.
-    const baseDir = process.cwd();
+    const baseDir = portableRoot;
     const resolved = resolveDosbox({
       platform: process.platform,
       baseDir,
@@ -716,8 +727,6 @@ pause
 // Get available games from the games directory
 ipcMain.handle("get-games", async () => {
   try {
-    const gamesDir = path.join(process.cwd(), "games");
-
     // Create games directory if it doesn't exist
     if (!fs.existsSync(gamesDir)) {
       fs.mkdirSync(gamesDir, { recursive: true });
@@ -769,7 +778,7 @@ ipcMain.handle("get-games", async () => {
 // Save game metadata
 ipcMain.handle("save-game-metadata", async (event, { gameId, metadata }) => {
   try {
-    const gamePath = path.join(process.cwd(), "games", gameId);
+    const gamePath = path.join(gamesDir, gameId);
     const metadataPath = path.join(gamePath, "metadata.json");
 
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
@@ -794,8 +803,6 @@ ipcMain.handle("download-game", async (event, gameInfo) => {
       progress: 0,
     });
 
-    // Create games directory if it doesn't exist - store in ./games instead of userData
-    const gamesDir = path.join(process.cwd(), "games");
     await mkdir(gamesDir, { recursive: true });
 
     // Create directory for this specific game

@@ -22,6 +22,7 @@ export default defineConfig({
         "src/presentation/grid/**/*.ts",
         "electron/dosbox/**/*.mjs",
         "electron/protocol/**/*.mjs",
+        "electron/portable/**/*.mjs",
         "scripts/catalogue/**/*.ts",
       ],
       exclude: [
