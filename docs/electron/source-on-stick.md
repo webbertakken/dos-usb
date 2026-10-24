@@ -25,7 +25,7 @@ Core: `scripts/source/exportSource.ts` (pure); runner: `scripts/source/runExport
 
 ## Bundled runtime
 
-The packaged app runs dependency-free TypeScript as Node 22, so nothing needs installing:
+The packaged app runs dependency-free TypeScript as Node 24, so nothing needs installing:
 
 ```bash
 ELECTRON_RUN_AS_NODE=1 ./DOSGamesPortable.AppImage --experimental-strip-types --no-warnings script.ts
@@ -33,4 +33,4 @@ ELECTRON_RUN_AS_NODE=1 ./DOSGamesPortable.AppImage --experimental-strip-types --
 
 This depends on Electron's `RunAsNode` fuse, which `scripts/build/electronFuses.mjs` keeps enabled
 and the `afterPack` hook asserts on every build. Verified on the Linux AppImage and unpacked build
-(Electron 35.0.2, Node 22.14.0).
+(Electron 45.0.0, Node 24.22.0).

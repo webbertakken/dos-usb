@@ -79,7 +79,7 @@ without `ELECTRON_RUN_AS_NODE`) and launch the game; the lines that matter are `
 
 ## Running scripts without installing anything
 
-The app carries its own Node.js runtime (Electron 35, Node 22.14), which runs TypeScript directly.
+The app carries its own Node.js runtime (Electron 45, Node 24.22), which runs TypeScript directly.
 Verified on the Linux AppImage and unpacked build; the Windows and macOS lines follow the same
 Electron mechanism but are untested. Use it for dependency-free scripts (Node built-ins only: `fs`,
 `path`, `child_process`, ...). It cannot install or load npm packages.
