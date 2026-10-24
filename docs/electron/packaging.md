@@ -57,8 +57,8 @@ yarn electron-pack       # next build + unpacked app only: dist/linux-unpacked/d
 
 Next keeps its build artefacts in `.next/`; `out/` holds only the static export that is packaged.
 
-- **Dependencies**: only main-process packages (`axios`, `electron-is-dev`, `extract-zip`, `jsdom`)
-  belong in `dependencies`; electron-builder ships exactly those. Renderer packages are bundled by
+- **Dependencies**: only main-process packages (`axios`, `electron-is-dev`, `jsdom`, `yauzl`) belong
+  in `dependencies`; electron-builder ships exactly those. Renderer packages are bundled by
   `next build` and belong in `devDependencies`.
 - **Fuses**: `scripts/build/electronFuses.mjs` (the `afterPack` hook) disables `NODE_OPTIONS` in the
   packaged app and fails the build if the fuse did not take. Electron 35 aborts at start-up when

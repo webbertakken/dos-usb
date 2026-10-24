@@ -31,6 +31,7 @@ export default defineConfig({
         "electron/gift/**/*.mjs",
         "src/presentation/hooks/useOnlineStatus.ts",
         "electron/customGames/**/*.mjs",
+        "electron/zip/**/*.mjs",
         "scripts/catalogue/**/*.ts",
         "scripts/build/**/*.mjs",
         "scripts/source/**/*.ts",

@@ -2567,6 +2567,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/yauzl@npm:^3":
+  version: 3.4.0
+  resolution: "@types/yauzl@npm:3.4.0"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/9992cf7bf129466016baa4e99e05ad524afe2ff6e5d84e7408f2a7123bc4af3b4bfb639237308574b80e7e435571b6e1af6113910d166e8ea8b80da422ba8ecb
+  languageName: node
+  linkType: hard
+
+"@types/yazl@npm:^3":
+  version: 3.3.1
+  resolution: "@types/yazl@npm:3.3.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/bc72a56c88d99021ecb80ee9c0a2eb3dceb5bec522c20fd4e160d5c52dcc156c37b2e956a05d54e89e7ececba82aca07a361a9e8f66e5ebbbfcdcd8d2c0dfc0e
+  languageName: node
+  linkType: hard
+
 "@typescript/native-preview-darwin-arm64@npm:7.0.0-dev.20260505.1":
   version: 7.0.0-dev.20260505.1
   resolution: "@typescript/native-preview-darwin-arm64@npm:7.0.0-dev.20260505.1"
@@ -3198,6 +3216,13 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 10c0/c0228b6330f785b7fa59d2d360124ec6d9322f96ed9f3ee1f873e33ecc9503a6f0ffc3b71191a28c4ff6e930b753b30043da1c33844a9548f3018d491f09ce60
+  languageName: node
+  linkType: hard
+
+"buffer-crc32@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "buffer-crc32@npm:1.0.0"
+  checksum: 10c0/8b86e161cee4bb48d5fa622cbae4c18f25e4857e5203b89e23de59e627ab26beb82d9d7999f2b8de02580165f61f83f997beaf02980cdf06affd175b651921ab
   languageName: node
   linkType: hard
 
@@ -4046,6 +4071,8 @@ __metadata:
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@types/react-icons": "npm:^2.2.7"
+    "@types/yauzl": "npm:^3"
+    "@types/yazl": "npm:^3"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
     "@vitejs/plugin-react-swc": "npm:^4.3.0"
     "@vitest/coverage-istanbul": "npm:^3"
@@ -4058,7 +4085,6 @@ __metadata:
     electron-is-dev: "npm:^3.0.1"
     eslint: "npm:^10.3.0"
     eslint-plugin-unicorn: "npm:^64.0.0"
-    extract-zip: "npm:^2.0.1"
     happy-dom: "npm:^20.9.0"
     husky: "npm:9"
     jsdom: "npm:^26.0.0"
@@ -4076,6 +4102,8 @@ __metadata:
     vite: "npm:^6"
     vitest: "npm:^3"
     wait-on: "npm:^7.2.0"
+    yauzl: "npm:^3.4.0"
+    yazl: "npm:^3.3.1"
     zustand: "npm:^5.0.3"
   dependenciesMeta:
     electron:
@@ -8914,6 +8942,24 @@ __metadata:
     buffer-crc32: "npm:~0.2.3"
     fd-slicer: "npm:~1.1.0"
   checksum: 10c0/f265002af7541b9ec3589a27f5fb8f11cf348b53cc15e2751272e3c062cd73f3e715bc72d43257de71bbaecae446c3f1b14af7559e8ab0261625375541816422
+  languageName: node
+  linkType: hard
+
+"yauzl@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "yauzl@npm:3.4.0"
+  dependencies:
+    pend: "npm:~1.2.0"
+  checksum: 10c0/17a98c42c0065e8af429eb8a61f7a0e4562181ed54080366b838f34f741b6829f167f804787c86b7646bb042707f35871739f053de0548285e405a2eae4da025
+  languageName: node
+  linkType: hard
+
+"yazl@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "yazl@npm:3.3.1"
+  dependencies:
+    buffer-crc32: "npm:^1.0.0"
+  checksum: 10c0/8290dffd8afc4ea32459c0ce5d7e22af250515aa0170f289cbc896530d3cd40c5be4788b5e3e7aa5cd21889778071f424e1824faadbd257dbd5ff80fb60d1fa6
   languageName: node
   linkType: hard
 

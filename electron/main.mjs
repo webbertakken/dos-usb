@@ -8,7 +8,7 @@ import http from "http";
 import https from "https";
 import { createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
-import extract from "extract-zip";
+import { extractZip } from "./zip/extractZip.mjs";
 import electron from "electron";
 import { resolveDosbox, findOnPath, buildTerminationCommand } from "./dosbox/platform.mjs";
 import { buildAutoexec } from "./dosbox/launch.mjs";
@@ -604,7 +604,7 @@ async function listCustomGames() {
       unpackDir: customGamesUnpackDir,
       library: readLibrary(),
       log: console,
-      extractZip: extract,
+      extractZip,
     });
     customGameLaunches = scan.launches;
     return scan.games;
@@ -1004,7 +1004,7 @@ echo Running ${gameInfo.title}
             );
           } else {
             // Extract the ZIP file
-            await extract(downloadedFilePath, { dir: gameDir });
+            await extractZip(downloadedFilePath, { dir: gameDir });
 
             // Delete the zip file after extraction
             fs.unlinkSync(downloadedFilePath);
