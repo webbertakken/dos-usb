@@ -28,7 +28,7 @@ const library = [
     sources: [],
   },
 ];
-/** Stands in for extract-zip: the "zip" is a JSON list of files to create. */
+/** Stands in for extractZip: the "zip" is a JSON list of files to create. */
 const fakeExtract = async (zipPath, { dir }) => {
   const files = JSON.parse(fs.readFileSync(zipPath, "utf8"));
   for (const file of files) {

@@ -19,7 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { promisify } from "node:util";
-import extract from "extract-zip";
+import { extractZip } from "../../electron/zip/extractZip.mjs";
 import type { CanonicalGame } from "@/domain/library/types";
 import { resolveGameLaunch } from "../../electron/dosbox/resolveGameLaunch.mjs";
 import {
@@ -102,7 +102,7 @@ async function install(download: StarterDownload, options: Options): Promise<str
   const zip = await downloadZip(download, path.join(options.work, "zips"));
   fs.mkdirSync(gameDir, { recursive: true });
   try {
-    await extract(zip, { dir: gameDir });
+    await extractZip(zip, { dir: gameDir });
   } catch (error) {
     // A half-extracted folder must not be mistaken for an installed game.
     fs.rmSync(gameDir, { recursive: true, force: true });

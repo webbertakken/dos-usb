@@ -12,7 +12,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import extract from "extract-zip";
+import { extractZip } from "../electron/zip/extractZip.mjs";
 import { resolveArchiveDownload } from "../electron/download/archiveOrg.mjs";
 import { gameMetadata } from "../electron/download/gameMetadata.mjs";
 import type { DownloadPayload } from "../src/domain/library/select";
@@ -217,7 +217,7 @@ async function installGame(game: DownloadPayload, to: string) {
   );
   const zip = await cachedDownload(archiveZip ?? game.downloadUrl);
   await withScratch(async (scratch) => {
-    await extract(zip, { dir: scratch });
+    await extractZip(zip, { dir: scratch });
     copyTreeToStick(scratch, to, { keepsExisting: keepsExistingFile });
   });
   fs.writeFileSync(path.join(to, "metadata.json"), JSON.stringify(gameMetadata(game), null, 2));
