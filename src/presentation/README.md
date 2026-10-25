@@ -5,8 +5,8 @@ depends on the application layer to access domain functionality.
 
 ## Structure
 
-- **Adapters**: Transform domain and application objects into view models for the UI
-- **Hooks**: React hooks for accessing application state and functionality
+- **Hooks**: React hooks that hold UI state: the library load, online status, the welcome
+- **Format, grid, images**: Pure helpers that turn domain values into what the UI shows
 - **Components**: Reusable UI components (located in src/components)
 - **Pages**: Next.js pages that serve as entry points (located in src/app)
 
@@ -20,7 +20,7 @@ depends on the application layer to access domain functionality.
 
 ## Guidelines
 
-1. Use adapters to transform domain objects into view models
+1. Turn domain values into display values with pure helpers
 2. Keep UI logic separate from business logic
 3. Components should be as stateless and reusable as possible
 4. Use hooks to encapsulate logic for accessing application state
