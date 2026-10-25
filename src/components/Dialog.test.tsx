@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import Dialog from "./Dialog";
@@ -32,6 +32,20 @@ describe("Dialog", () => {
 
     const dialog = screen.getByRole("dialog", { name: "Edit details" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveProperty("open", true);
+  });
+
+  it("closes when the browser asks it to, and stays in charge of closing", async () => {
+    const onClose = vi.fn();
+    render(<Harness onClose={onClose} />);
+    await userEvent.click(screen.getByRole("button", { name: "Open" }));
+    const cancel = new Event("cancel", { cancelable: true });
+
+    fireEvent(screen.getByRole("dialog"), cancel);
+
+    expect(cancel.defaultPrevented).toBe(true);
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("moves focus inside when it opens", async () => {
