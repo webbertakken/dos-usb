@@ -1,15 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["group:monorepos", "local>webbertakken/.github:renovate-config"],
-  "ignorePaths": ["**/node_modules/**", "**/__fixtures__/**"],
-  "minimumReleaseAge": "3 days",
-  "packageRules": [
-    {
-      "description": "Action majors follow the Node runtimes GitHub deprecates, so keep them current",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major"],
-      "enabled": true,
-      "groupName": "GitHub Actions"
-    }
-  ]
+  "ignorePaths": ["**/node_modules/**", "**/__fixtures__/**"]
 }
