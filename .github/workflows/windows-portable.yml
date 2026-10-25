@@ -23,11 +23,11 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Installs (and caches) every tool pinned in mise.toml, Node and yarn
       # included, and puts them ahead of the runner's own on PATH.
-      - uses: jdx/mise-action@v5
+      - uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # v5
 
       - name: Read the Node version mise installed
         id: node
@@ -38,7 +38,7 @@ jobs:
         run: echo "cacheFolder=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
       - name: Restore yarn install cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             node_modules
@@ -76,14 +76,14 @@ jobs:
 
       - name: Upload screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-portable-screenshots
           path: ${{ runner.temp }}/e2e
           if-no-files-found: warn
 
       - name: Upload DOSGamesPortable.exe
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: DOSGamesPortable
           path: dist/DOSGamesPortable.exe
@@ -96,7 +96,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: DOSGamesPortable
 
