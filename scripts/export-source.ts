@@ -9,14 +9,16 @@ import { parseExportArgs } from "./source/exportSource";
 import { execFileSync } from "node:child_process";
 import { exportSource } from "./source/runExport";
 
+function runGitleaks(args: string[]): void {
+  execFileSync("gitleaks", [...args, "--no-banner", "--redact", "--exit-code", "1"], {
+    stdio: "inherit",
+  });
+}
+
 /** Scan the exported files and their history; fails on any finding. */
 function gitleaksScan(dir: string): void {
-  const run = (args: string[]) =>
-    execFileSync("gitleaks", [...args, "--no-banner", "--redact", "--exit-code", "1"], {
-      stdio: "inherit",
-    });
-  run(["git", dir]);
-  run(["dir", dir]);
+  runGitleaks(["git", dir]);
+  runGitleaks(["dir", dir]);
 }
 
 const args = parseExportArgs(process.argv.slice(2));

@@ -50,9 +50,9 @@ describe("parseGiftMessage", () => {
   });
 });
 
-describe("readGiftMessage", () => {
-  const log = () => ({ info: vi.fn(), warn: vi.fn() });
+const log = () => ({ info: vi.fn(), warn: vi.fn() });
 
+describe("readGiftMessage", () => {
   it("reads gift.json beside the app", () => {
     const readFile = vi.fn(() => '{"recipientName":"Sam"}');
     const logger = log();
