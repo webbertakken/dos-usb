@@ -80,14 +80,12 @@ export function planStick(input: StickInput): StickPlan {
           to: linuxDosboxDir(input.targetDir),
         },
       ]),
-      ...input.games.map(
-        (game): StickStep => ({
-          kind: "installGame",
-          label: game.title,
-          game,
-          to: target("games", game.id),
-        }),
-      ),
+      ...input.games.map((game): StickStep => ({
+        kind: "installGame",
+        label: game.title,
+        game,
+        to: target("games", game.id),
+      })),
       {
         kind: "prepareCustomGames",
         label: "Folder for the recipient's own games",
