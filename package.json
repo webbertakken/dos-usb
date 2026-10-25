@@ -61,7 +61,7 @@
     "@types/yazl": "^3",
     "@typescript/native-preview": "^7.0.0-dev.20260505.1",
     "@vitejs/plugin-react-swc": "^4.3.0",
-    "@vitest/coverage-istanbul": "^3",
+    "@vitest/coverage-istanbul": "^4.0.0",
     "axe-core": "4.14.0",
     "cheerio": "^1.0.0",
     "concurrently": "^8.2.2",
@@ -83,7 +83,7 @@
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vite": "^7.0.0",
-    "vitest": "^3",
+    "vitest": "^4.0.0",
     "wait-on": "^7.2.0",
     "yazl": "^3.3.1",
     "zustand": "^5.0.3"
