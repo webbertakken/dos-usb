@@ -193,16 +193,13 @@ export default function LibraryPage() {
       </div>
 
       {!online && (
-        <div
-          role="status"
-          className="fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-lg items-start gap-3 rounded-2xl border border-cyan/50 bg-panel p-4 text-paper shadow-2xl shadow-black/60 motion-safe:animate-rise sm:inset-x-auto sm:bottom-6 sm:left-6"
-        >
+        <output className="fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-lg items-start gap-3 rounded-2xl border border-cyan/50 bg-panel p-4 text-paper shadow-2xl shadow-black/60 motion-safe:animate-rise sm:inset-x-auto sm:bottom-6 sm:left-6">
           <FaWifi className="mt-1 shrink-0 text-xl text-cyan" aria-hidden="true" />
-          <p>
+          <span>
             You are offline. The games on your stick still work: find them in My Games. Downloading
             new games here needs an internet connection.
-          </p>
-        </div>
+          </span>
+        </output>
       )}
 
       {launchError && (

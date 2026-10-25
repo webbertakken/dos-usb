@@ -65,12 +65,20 @@ describe("LibraryCard", () => {
   it("shows how far a download has come", () => {
     renderCard({ downloadStatus: { gameId: "keen-1", status: "downloading", progress: 42 } });
 
-    expect(screen.getByRole("progressbar", { name: "Downloading Commander Keen" })).toHaveAttribute(
-      "aria-valuenow",
-      "42",
-    );
+    const bar = screen.getByRole("progressbar", { name: "Downloading Commander Keen" });
+    expect(bar).toBeInstanceOf(HTMLProgressElement);
+    expect(bar).toHaveAttribute("value", "42");
+    expect(bar).toHaveAttribute("max", "100");
     expect(screen.getByText("Downloading 42%")).toBeVisible();
     expect(screen.queryByRole("button", { name: /Download/ })).not.toBeInTheDocument();
+  });
+
+  it("shows unpacking as progress without a known amount", () => {
+    renderCard({ downloadStatus: { gameId: "keen-1", status: "extracting" } });
+
+    const bar = screen.getByRole("progressbar", { name: "Downloading Commander Keen" });
+    expect(bar).not.toHaveAttribute("value");
+    expect(screen.getByText("Unpacking…")).toBeVisible();
   });
 
   it("says what went wrong in plain words and offers a retry", async () => {
