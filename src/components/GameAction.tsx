@@ -51,20 +51,17 @@ const GameAction: React.FC<GameActionProps> = ({
   if (status === "downloading" || status === "extracting") {
     const progress = status === "downloading" ? (downloadStatus?.progress ?? 0) : undefined;
     return (
-      <div
-        role="progressbar"
-        aria-label={`Downloading ${game.title}`}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={progress}
-        className="relative h-13 w-full overflow-hidden rounded-xl bg-raised ring-1 ring-cyan/40"
-      >
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 bg-[repeating-linear-gradient(90deg,rgb(127_214_236/0.32)_0_10px,rgb(127_214_236/0.18)_10px_12px)] transition-[width] duration-500"
-          style={{ width: `${progress ?? 100}%` }}
+      <div className="relative h-13 w-full overflow-hidden rounded-xl bg-raised ring-1 ring-cyan/40">
+        <progress
+          aria-label={`Downloading ${game.title}`}
+          max={100}
+          value={progress}
+          className="absolute inset-0 h-full w-full appearance-none bg-transparent indeterminate:bg-[repeating-linear-gradient(90deg,rgb(127_214_236/0.32)_0_10px,rgb(127_214_236/0.18)_10px_12px)] [&::-moz-progress-bar]:bg-[repeating-linear-gradient(90deg,rgb(127_214_236/0.32)_0_10px,rgb(127_214_236/0.18)_10px_12px)] [&::-webkit-progress-bar]:bg-transparent [&::-webkit-progress-value]:bg-[repeating-linear-gradient(90deg,rgb(127_214_236/0.32)_0_10px,rgb(127_214_236/0.18)_10px_12px)] [&::-webkit-progress-value]:bg-transparent [&::-webkit-progress-value]:transition-[width] [&::-webkit-progress-value]:duration-500"
         />
-        <span className="relative flex h-full items-center justify-center gap-3 font-display font-bold text-cyan">
+        <span
+          aria-hidden="true"
+          className="relative flex h-full items-center justify-center gap-3 font-display font-bold text-cyan"
+        >
           <PixelSpinner />
           {progress === undefined ? "Unpacking…" : `Downloading ${progress}%`}
         </span>

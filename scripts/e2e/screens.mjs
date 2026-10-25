@@ -96,7 +96,13 @@ const stubIpc = (app, channel, behaviour) =>
     ({ ipcMain }, { channel, behaviour }) => {
       ipcMain.removeHandler(channel);
       ipcMain.handle(channel, () => {
-        if (behaviour.kind === "never") return new Promise(() => {});
+        if (behaviour.kind === "never") {
+          // Held, so it is never collected: Electron rejects an invoke whose
+          // pending reply is garbage collected ("reply was never sent").
+          const pending = new Promise(() => {});
+          globalThis.neverSettled = [...(globalThis.neverSettled ?? []), pending];
+          return pending;
+        }
         if (behaviour.kind === "reject") throw new Error(behaviour.message);
         return behaviour.value;
       });
@@ -350,7 +356,10 @@ const libraryTour = async (width, { root, userData }) => {
     await page.locator("main h3").first().click();
     await page.getByRole("dialog").waitFor();
     await shot("library-detail");
-    await page.getByRole("dialog").evaluate((el) => el.scrollTo(0, el.scrollHeight));
+    await page.getByRole("dialog").evaluate((dialog) => {
+      const content = dialog.querySelector(".overflow-y-auto");
+      content?.scrollTo(0, content.scrollHeight);
+    });
     await shot("library-detail-bottom");
     await page.keyboard.press("Escape");
 

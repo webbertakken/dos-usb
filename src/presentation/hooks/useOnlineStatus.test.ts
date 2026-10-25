@@ -25,10 +25,10 @@ describe("useOnlineStatus", () => {
   });
 });
 
+const Probe = () => (useOnlineStatus() ? "online" : "offline");
+
 describe("useOnlineStatus while prerendering", () => {
   it("assumes online, so the static export never shows an offline flash", () => {
-    const Probe = () => (useOnlineStatus() ? "online" : "offline");
-
     expect(renderToString(createElement(Probe))).toBe("online");
   });
 });

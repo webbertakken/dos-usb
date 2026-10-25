@@ -9,8 +9,10 @@ interface SkeletonGridProps {
 
 /** Card-shaped placeholders that hold the page's shape while games load. */
 const SkeletonGrid: React.FC<SkeletonGridProps> = ({ label, className, count = 4 }) => (
-  <div role="status" aria-live="polite">
-    <span className="sr-only">{label}</span>
+  <div>
+    <output aria-live="polite" className="sr-only">
+      {label}
+    </output>
     <div aria-hidden="true" className={className}>
       {Array.from({ length: count }, (_, index) => (
         <div

@@ -50,6 +50,10 @@ const gamesDir = path.join(portableRoot, "games");
 // Games the user owns and copies in themselves; zips unpack beside it.
 const customGamesDir = path.join(portableRoot, "games-custom");
 const customGamesUnpackDir = path.join(portableRoot, "games-custom-unpacked");
+
+/** Chromium's net error for a load that another navigation replaced. */
+const ERR_ABORTED = -3;
+
 console.log(
   `Portable root: ${portableRoot} (games in ${gamesDir}, your games in ${customGamesDir})`,
 );
@@ -130,17 +134,26 @@ function createWindow() {
 
   // In dev the Next server may not be up yet (or may restart), which yields a
   // white screen on ERR_CONNECTION_REFUSED. Retry loading until it is ready.
-  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription, validatedUrl) => {
-    console.error(`Failed to load: ${errorDescription} (${errorCode}) ${validatedUrl ?? ""}`);
-    if (isDev && !mainWindow.isDestroyed()) {
-      setTimeout(() => {
-        if (!mainWindow.isDestroyed()) {
-          console.log("Retrying dev server load...");
-          mainWindow.loadURL(startUrl);
-        }
-      }, 1000);
-    }
-  });
+  // An aborted load (ERR_ABORTED) was replaced by another navigation: retrying
+  // it would navigate away from where the user, or a test, went.
+  mainWindow.webContents.on(
+    "did-fail-load",
+    (event, errorCode, errorDescription, validatedUrl, isMainFrame) => {
+      if (errorCode === ERR_ABORTED || !isMainFrame) {
+        console.log(`Load replaced or in a sub-frame, not retried: ${validatedUrl ?? ""}`);
+        return;
+      }
+      console.error(`Failed to load: ${errorDescription} (${errorCode}) ${validatedUrl ?? ""}`);
+      if (isDev && !mainWindow.isDestroyed()) {
+        setTimeout(() => {
+          if (!mainWindow.isDestroyed()) {
+            console.log("Retrying dev server load...");
+            mainWindow.loadURL(startUrl);
+          }
+        }, 1000);
+      }
+    },
+  );
 
   // Handle uncaught exceptions in the main process
   process.on("uncaughtException", (error) => {

@@ -11,7 +11,8 @@ import EmptyState from "../components/EmptyState";
 import SearchField from "../components/SearchField";
 import SkeletonGrid from "../components/SkeletonGrid";
 import { buttonClass } from "../components/buttonStyles";
-import { Welcome, type GiftMessage } from "../domain/firstRun/welcome";
+import type { GiftMessage } from "../domain/firstRun/welcome";
+import { useWelcome } from "../presentation/hooks/useWelcome";
 import { Game, GameMetadata } from "../types";
 import { FaGift } from "react-icons/fa";
 
@@ -43,7 +44,7 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [gift, setGift] = useState<GiftMessage | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const welcome = useWelcome();
   const gamesHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -57,7 +58,6 @@ export default function Home() {
   }, [refreshGames]);
 
   useEffect(() => {
-    setShowWelcome(!Welcome.hasBeenSeen(window.localStorage));
     window.electron
       ?.getGiftMessage?.()
       .then(setGift)
@@ -70,8 +70,7 @@ export default function Home() {
   }, [games, searchTerm]);
 
   const dismissWelcome = () => {
-    Welcome.markSeen(window.localStorage);
-    setShowWelcome(false);
+    welcome.dismiss();
     gamesHeadingRef.current?.focus();
   };
 
@@ -134,7 +133,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-5 pb-24 pt-6 sm:px-8 sm:pt-8">
-      {showWelcome && <WelcomePanel gift={gift} onDismiss={dismissWelcome} />}
+      {welcome.visible && <WelcomePanel gift={gift} onDismiss={dismissWelcome} />}
 
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -151,19 +150,15 @@ export default function Home() {
             My Games
           </h1>
         </div>
-        {!showWelcome && gift && (
-          <button
-            type="button"
-            onClick={() => setShowWelcome(true)}
-            className={buttonClass("gift")}
-          >
+        {!welcome.visible && gift && (
+          <button type="button" onClick={welcome.reopen} className={buttonClass("gift")}>
             <FaGift aria-hidden="true" />
             Read your birthday message
           </button>
         )}
       </div>
 
-      {!showWelcome && games.length > SEARCH_THRESHOLD && (
+      {!welcome.visible && games.length > SEARCH_THRESHOLD && (
         <SearchField
           id="my-games-search"
           label="Search my games"

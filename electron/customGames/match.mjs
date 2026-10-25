@@ -83,15 +83,15 @@ export function createLibraryMatcher(library) {
   const byId = new Map(library.map((game) => [game.id, game]));
   const byRunExe = indexRunExecutables(library);
   const titles = library.map((game) => ({ game, key: normaliseTitle(game.title) }));
+  const best = (test) =>
+    titles
+      .filter(test)
+      .map(({ game }) => game)
+      .sort(byPopularity)[0];
 
   const matchTitle = (title) => {
     const key = normaliseTitle(title);
     if (!key) return null;
-    const best = (test) =>
-      titles
-        .filter(test)
-        .map(({ game }) => game)
-        .sort(byPopularity)[0];
     return (
       best((candidate) => candidate.key === key) ??
       best(

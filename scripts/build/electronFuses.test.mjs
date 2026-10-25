@@ -55,19 +55,20 @@ describe("fuseConfigFor", () => {
   });
 });
 
-describe("createAfterPack", () => {
-  const wireWith = (nodeOptions, runAsNode) => ({
-    [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: nodeOptions,
-    [FuseV1Options.RunAsNode]: runAsNode,
-  });
-  const setup = (nodeOptions, runAsNode = FuseState.ENABLE) => {
-    const flipFuses = vi.fn(async () => 1);
-    const getCurrentFuseWire = vi.fn(async () => wireWith(nodeOptions, runAsNode));
-    const log = vi.fn();
-    const afterPack = createAfterPack({ flipFuses, getCurrentFuseWire, log });
-    return { afterPack, flipFuses, getCurrentFuseWire, log };
-  };
+const wireWith = (nodeOptions, runAsNode) => ({
+  [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: nodeOptions,
+  [FuseV1Options.RunAsNode]: runAsNode,
+});
 
+const setup = (nodeOptions, runAsNode = FuseState.ENABLE) => {
+  const flipFuses = vi.fn(async () => 1);
+  const getCurrentFuseWire = vi.fn(async () => wireWith(nodeOptions, runAsNode));
+  const log = vi.fn();
+  const afterPack = createAfterPack({ flipFuses, getCurrentFuseWire, log });
+  return { afterPack, flipFuses, getCurrentFuseWire, log };
+};
+
+describe("createAfterPack", () => {
   it("flips the fuses on the packaged executable and confirms them", async () => {
     const { afterPack, flipFuses, getCurrentFuseWire, log } = setup(FuseState.DISABLE);
 
