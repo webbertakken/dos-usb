@@ -59,7 +59,7 @@
     "@types/yauzl": "^3",
     "@types/yazl": "^3",
     "@typescript/native-preview": "^7.0.0-dev.20260505.1",
-    "@vitejs/plugin-react-swc": "^4.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
     "@vitest/coverage-istanbul": "^4.0.0",
     "axe-core": "4.14.0",
     "cheerio": "^1.0.0",
