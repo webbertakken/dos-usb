@@ -2416,26 +2416,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-icon-base@npm:*":
-  version: 2.1.6
-  resolution: "@types/react-icon-base@npm:2.1.6"
+"@types/react-icons@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/react-icons@npm:3.0.0"
   dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/f520752445084a6b9cc75c56d38419903d04e2755e870de0b1df93c4da3fdaaba4122c980cf7a3f4b6f658e39bcbdb8f3a8f7488f11753e6d552704647db1319
+    react-icons: "npm:*"
+  checksum: 10c0/eb40cbfd1a54bffac54cd56258419fea3cdff62ea71c816bf433662d97cdabb0402df53b499a8096fa847e00a3953679a173d9efdf21bc56f0494b702815ca0e
   languageName: node
   linkType: hard
 
-"@types/react-icons@npm:^2.2.7":
-  version: 2.2.7
-  resolution: "@types/react-icons@npm:2.2.7"
-  dependencies:
-    "@types/react": "npm:*"
-    "@types/react-icon-base": "npm:*"
-  checksum: 10c0/efaabb581e72cbd223b0348f72205380e0ead8904febbbb353d721dbaf4c398d4f164bd895ceaa8312bd0c86f0cc75e75cb58bb78ce29abc98f9c31b43267c7a
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:*, @types/react@npm:^19":
+"@types/react@npm:^19":
   version: 19.3.0
   resolution: "@types/react@npm:19.3.0"
   dependencies:
@@ -3923,7 +3913,7 @@ __metadata:
     "@types/node": "npm:^24.19.2"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
-    "@types/react-icons": "npm:^2.2.7"
+    "@types/react-icons": "npm:^3.0.0"
     "@types/yauzl": "npm:^3"
     "@types/yazl": "npm:^3"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
@@ -6976,7 +6966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-icons@npm:^5.5.0":
+"react-icons@npm:*, react-icons@npm:^5.5.0":
   version: 5.7.0
   resolution: "react-icons@npm:5.7.0"
   peerDependencies:
