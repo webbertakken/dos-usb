@@ -70,7 +70,7 @@
     "eslint-plugin-unicorn": "^79.0.0",
     "happy-dom": "^21.0.0",
     "husky": "9",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.0.0",
     "next": "patch:next@npm%3A16.4.3#~/.yarn/patches/next-npm-16.4.3-b100b90213.patch",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.63.0",
