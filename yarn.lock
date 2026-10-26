@@ -2416,15 +2416,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-icons@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/react-icons@npm:3.0.0"
-  dependencies:
-    react-icons: "npm:*"
-  checksum: 10c0/eb40cbfd1a54bffac54cd56258419fea3cdff62ea71c816bf433662d97cdabb0402df53b499a8096fa847e00a3953679a173d9efdf21bc56f0494b702815ca0e
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:^19":
   version: 19.3.0
   resolution: "@types/react@npm:19.3.0"
@@ -3913,7 +3904,6 @@ __metadata:
     "@types/node": "npm:^24.19.2"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
-    "@types/react-icons": "npm:^3.0.0"
     "@types/yauzl": "npm:^3"
     "@types/yazl": "npm:^3"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
@@ -6966,7 +6956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-icons@npm:*, react-icons@npm:^5.5.0":
+"react-icons@npm:^5.5.0":
   version: 5.7.0
   resolution: "react-icons@npm:5.7.0"
   peerDependencies:
