@@ -3832,7 +3832,7 @@ __metadata:
     husky: "npm:9"
     jsdom: "npm:^26.0.0"
     lint-staged: "npm:^16.4.0"
-    next: "npm:16.4.3"
+    next: "patch:next@npm%3A16.4.3#~/.yarn/patches/next-npm-16.4.3-b100b90213.patch"
     oxfmt: "npm:^0.74.0"
     oxlint: "npm:^1.63.0"
     playwright: "npm:1.64.1"
@@ -6347,6 +6347,66 @@ __metadata:
   bin:
     next: dist/bin/next
   checksum: 10c0/a61625eb95fa29f15d84a71333d24ebb5a2666bf7a8235aa3d6eb3ac8c9ea1159c12ffbfe5f4c315646a34b6fcaf87b3b3f737222b364e331f7e6da16d1d857e
+  languageName: node
+  linkType: hard
+
+"next@patch:next@npm%3A16.4.3#~/.yarn/patches/next-npm-16.4.3-b100b90213.patch":
+  version: 16.4.3
+  resolution: "next@patch:next@npm%3A16.4.3#~/.yarn/patches/next-npm-16.4.3-b100b90213.patch::version=16.4.3&hash=904898"
+  dependencies:
+    "@next/env": "npm:16.4.3"
+    "@next/swc-darwin-arm64": "npm:16.4.3"
+    "@next/swc-darwin-x64": "npm:16.4.3"
+    "@next/swc-linux-arm64-gnu": "npm:16.4.3"
+    "@next/swc-linux-arm64-musl": "npm:16.4.3"
+    "@next/swc-linux-x64-gnu": "npm:16.4.3"
+    "@next/swc-linux-x64-musl": "npm:16.4.3"
+    "@next/swc-win32-arm64-msvc": "npm:16.4.3"
+    "@next/swc-win32-x64-msvc": "npm:16.4.3"
+    "@swc/helpers": "npm:0.5.23"
+    baseline-browser-mapping: "npm:^2.9.19"
+    caniuse-lite: "npm:^1.0.30001579"
+    postcss: "npm:8.5.23"
+    sharp: "npm:^0.35.5"
+    styled-jsx: "npm:5.1.6"
+  peerDependencies:
+    "@opentelemetry/api": ^1.1.0
+    "@playwright/test": ^1.51.1
+    babel-plugin-react-compiler: "*"
+    react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+    react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+    sass: ^1.3.0
+  dependenciesMeta:
+    "@next/swc-darwin-arm64":
+      optional: true
+    "@next/swc-darwin-x64":
+      optional: true
+    "@next/swc-linux-arm64-gnu":
+      optional: true
+    "@next/swc-linux-arm64-musl":
+      optional: true
+    "@next/swc-linux-x64-gnu":
+      optional: true
+    "@next/swc-linux-x64-musl":
+      optional: true
+    "@next/swc-win32-arm64-msvc":
+      optional: true
+    "@next/swc-win32-x64-msvc":
+      optional: true
+    sharp:
+      optional: true
+  peerDependenciesMeta:
+    "@opentelemetry/api":
+      optional: true
+    "@playwright/test":
+      optional: true
+    babel-plugin-react-compiler:
+      optional: true
+    sass:
+      optional: true
+  bin:
+    next: dist/bin/next
+  checksum: 10c0/9f06bba7a60e03f1f639f0b9b3fc23f14100848c8705ced924ecba46f0007043adea87e0e76e187f61dfe2f062dc171cbca0311746846fa1284b650d279eaf57
   languageName: node
   linkType: hard
 
