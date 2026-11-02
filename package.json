@@ -120,5 +120,10 @@
     "sharp": {
       "built": true
     }
+  },
+  "resolutions": {
+    "@electron/asar": "^4.3.1",
+    "minimatch": "^11.0.3",
+    "dir-compare@npm:^4.2.0": "patch:dir-compare@npm%3A4.2.0#~/.yarn/patches/dir-compare-npm-4.2.0-5a7f002af6.patch"
   }
 }
